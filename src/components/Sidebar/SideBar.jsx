@@ -1,16 +1,31 @@
 import React from "react";
-import Header from "./Header";
+import Header from "./SideBarHeader";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+
 function SideBar() {
   return (
-    <div>
-      <aside className="min-h-screen hidden md:flex flex-col w-64 bg-slate-900 text-slate-300 border-r border-slate-800 shrink-0 select-none">
-        <Header />
+    <aside
+      className="
+        hidden
+        md:flex
+        flex-col
+        w-64
+        h-screen
+        bg-slate-900
+        border-r
+        border-slate-800
+        shrink-0
+      "
+    >
+      <Header />
+
+      <div className="flex-1 overflow-y-auto">
         <Navbar />
-        <Footer />
-      </aside>
-    </div>
+      </div>
+
+      <Footer />
+    </aside>
   );
 }
 

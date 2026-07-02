@@ -1,13 +1,26 @@
 import React from "react";
-import Login from "./pages/Login/Login.jsx";
 import DashBoard from "./pages/Admin/Dashboard/DashBoard.jsx";
 import SideBar from "./components/Sidebar/SideBar.jsx";
+import MobileHeader from "./components/MobileHeader.jsx";
+import EmployeeDirectory from "./pages/Admin/EmployeeDirectory/EmployeeDirectory.jsx";
+
 function App() {
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
-      <SideBar />
-      {/* <Login/> */}
-      {/* <DashBoard/> */}
+    <div className="h-screen ">
+      {/* Mobile Header */}
+      <div className="md:hidden">
+        <MobileHeader />
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="flex h-full">
+        <SideBar />
+
+        <main className="flex-1 md:overflow-y-auto">
+          {/* <DashBoard /> */}
+          <EmployeeDirectory/>
+        </main>
+      </div>
     </div>
   );
 }

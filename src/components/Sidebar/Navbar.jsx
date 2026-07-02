@@ -10,12 +10,12 @@ function Navbar() {
     { id: "leaves", label: "Leave Ledger", icon: CalendarClock },
     { id: "settings", label: "Console & Backup", icon: Settings },
   ]; // 1. Core States loaded with fallback LocalStorage persistence
-  const [activeTab, setActiveTab] = useState('Home')
+  const [activeTab, setActiveTab] = useState('home')
    
   return (
     <div>
       {/* Sidebar Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1.5" id="sidebar-nav">
+      <nav className="flex-1 px-4 py-6 space-y-1.5">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
