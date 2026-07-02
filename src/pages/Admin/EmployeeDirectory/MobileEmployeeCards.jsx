@@ -1,7 +1,9 @@
-import React from "react";
-import { Star, Eye } from "lucide-react";
-
+import {useState} from "react";
+import { Eye, Star, Building2, IndianRupee } from "lucide-react";
+import EmployeeDetailDrawer from "./EmployeeDetailDrawer";
 function MobileEmployeeCards() {
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+  
   const employees = [
     {
       id: "EMP-001",
@@ -65,175 +67,140 @@ function MobileEmployeeCards() {
     },
   ];
 
-  const renderStatus = (status) => {
+  const statusBadge = (status) => {
     switch (status) {
       case "Active":
         return (
-          <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-semibold">
+          <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
             Active
-          </span>
-        );
-
-      case "Inactive":
-        return (
-          <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-[11px] font-semibold">
-            Inactive
           </span>
         );
 
       case "On Leave":
         return (
-          <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-[11px] font-semibold">
+          <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
             On Leave
           </span>
         );
 
+      case "Inactive":
+        return (
+          <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
+            Inactive
+          </span>
+        );
+      case "Suspended":
+        return (
+          <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
+            Suspended
+          </span>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 p-3">
       {employees.map((emp) => {
         const initials = emp.firstName[0] + emp.lastName[0];
 
         return (
           <div
             key={emp.id}
-            className="
-              bg-white
-              rounded-2xl
-              border
-              border-slate-200
-              shadow-sm
-              p-4
-              active:scale-[0.98]
-              transition-all
-            "
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 active:scale-[0.98] transition-all"
           >
             {/* Top */}
 
-            <div className="flex items-start gap-3">
-              <div
-                className={`
-                  h-14
-                  w-14
-                  rounded-full
-                  bg-linear-to-br
-                  ${emp.avatarColor}
-                  flex
-                  items-center
-                  justify-center
-                  text-white
-                  font-bold
-                  text-lg
-                  shrink-0
-                `}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSelectedEmployee(emp)}
+                className={`h-12 w-12 rounded-full bg-linear-to-br ${emp.avatarColor}
+                flex items-center justify-center text-white font-bold`}
               >
                 {initials}
-              </div>
+              </button>
 
               <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start gap-2">
-                  <div>
-                    <h2 className="font-bold text-slate-900 truncate">
-                      {emp.firstName} {emp.lastName}
-                    </h2>
+                <h2 className="font-semibold text-slate-900 truncate">
+                  {emp.firstName} {emp.lastName}
+                </h2>
 
-                    <p className="text-xs text-slate-500 mt-1 truncate">
-                      {emp.email}
-                    </p>
-                  </div>
+                <p className="text-xs text-slate-500 truncate">{emp.role}</p>
 
-                  {renderStatus(emp.status)}
-                </div>
+                <p className="text-[11px] text-slate-400 truncate">
+                  <a
+                    href={`mailto:${emp.email}`}
+                    className="hover:text-indigo-600"
+                  >
+                    {emp.email}
+                  </a>
+                </p>
               </div>
+
+              {statusBadge(emp.status)}
             </div>
-
-            {/* Divider */}
-
-            <div className="border-t border-slate-100 my-4"></div>
 
             {/* Details */}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-[11px] uppercase text-slate-400">
-                  Employee ID
-                </p>
+            <div className="mt-4 flex justify-between items-center">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-slate-600">
+                  <Building2 size={15} />
+                  {emp.department}
+                </div>
 
-                <h4 className="font-medium mt-1">{emp.id}</h4>
-              </div>
-
-              <div>
-                <p className="text-[11px] uppercase text-slate-400">
-                  Department
-                </p>
-
-                <h4 className="font-medium mt-1">{emp.department}</h4>
-              </div>
-
-              <div>
-                <p className="text-[11px] uppercase text-slate-400">Role</p>
-
-                <h4 className="font-medium mt-1">{emp.role}</h4>
-              </div>
-
-              <div>
-                <p className="text-[11px] uppercase text-slate-400">Salary</p>
-
-                <h4 className="font-semibold mt-1 text-indigo-600">
-                  ₹{emp.salary.toLocaleString("en-IN")}
-                </h4>
-              </div>
-            </div>
-
-            {/* Rating */}
-
-            <div className="flex items-center justify-between mt-5">
-              <div>
-                <p className="text-[11px] uppercase text-slate-400 mb-1">
-                  Performance
-                </p>
-
-                <div className="flex gap-1">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star
-                      key={index}
-                      className={`h-4 w-4 ${
-                        index < emp.performanceRating
-                          ? "fill-amber-400 text-amber-400"
-                          : "text-slate-300"
-                      }`}
-                    />
-                  ))}
+                <div className="flex items-center gap-2 text-sm font-semibold text-indigo-600">
+                  <IndianRupee size={15} />
+                  {emp.salary.toLocaleString("en-IN")}
                 </div>
               </div>
 
-              <button
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  bg-indigo-600
-                  hover:bg-indigo-700
-                  text-white
-                  px-4
-                  py-2
-                  rounded-xl
-                  text-sm
-                  font-medium
-                  transition
-                "
-              >
-                <Eye size={16} />
-                View
-              </button>
+              <div className="text-right">
+                <div className="flex items-center justify-end gap-1 text-amber-500">
+                  <Star className="fill-amber-400 h-4 w-4" />
+                  <span className="text-sm font-semibold text-slate-700">
+                    {emp.performanceRating}.0
+                  </span>
+                </div>
+
+                <p className="text-[11px] text-slate-400 mt-1">{emp.id}</p>
+              </div>
             </div>
+
+            {/* Button */}
+
+            <button
+              onClick={() => setSelectedEmployee(emp)}
+              className="
+                mt-4
+                w-full
+                flex
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-indigo-600
+                py-2.5
+                text-white
+                text-sm
+                font-medium
+                active:scale-95
+                transition-all
+              "
+            >
+              <Eye size={16} />
+              View Details
+            </button>
           </div>
         );
       })}
+       <EmployeeDetailDrawer
+              selectedEmployee={selectedEmployee}
+              setSelectedEmployee={setSelectedEmployee}
+              isEditing={false} 
+            />
+          
     </div>
   );
 }

@@ -1,7 +1,8 @@
-import React from "react";
 import { Star, Eye } from "lucide-react";
-
+import EmployeeDetailDrawer from "./EmployeeDetailDrawer";
+import { useState } from "react";
 function DesktopEmployeeTable() {
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const employees = [
     {
       id: "EMP-001",
@@ -87,6 +88,12 @@ function DesktopEmployeeTable() {
             Inactive
           </span>
         );
+      case "Suspended":
+        return (
+          <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
+            Suspended
+          </span>
+        );
 
       default:
         return null;
@@ -94,24 +101,18 @@ function DesktopEmployeeTable() {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="bg-white rounded-3xl border border-slate-200 shadow-md overflow-hidden">
+      <div className="overflow-x-auto cursor-pointer">
         <table className="min-w-full">
-          <thead className="sticky top-0 bg-slate-50 border-b border-slate-200">
-            <tr className="text-xs uppercase tracking-wider text-slate-500">
-              <th className="px-6 py-4 text-left">Employee</th>
-
-              <th className="px-6 py-4 text-left">Employee ID</th>
-
-              <th className="px-6 py-4 text-left">Department</th>
-
-              <th className="px-6 py-4 text-left">Status</th>
-
-              <th className="px-6 py-4 text-left">Performance</th>
-
-              <th className="px-6 py-4 text-right">Salary</th>
-
-              <th className="px-6 py-4 text-center">Action</th>
+          <thead className="sticky top-0 z-10 bg-white border-b border-slate-200">
+            <tr className="text-[11px] uppercase tracking-[0.15em] font-semibold text-slate-500">
+              <th className="px-5 py-3 text-left">Employee</th>
+              <th className="px-5 py-3 text-left">Employee ID</th>
+              <th className="px-5 py-3 text-left">Department</th>
+              <th className="px-5 py-3 text-left">Status</th>
+              <th className="px-5 py-3 text-left">Performance</th>
+              <th className="px-5 py-3 text-right">Salary</th>
+              <th className="px-5 py-3 text-center">Action</th>
             </tr>
           </thead>
 
@@ -122,25 +123,32 @@ function DesktopEmployeeTable() {
               return (
                 <tr
                   key={emp.id}
-                  className="hover:bg-slate-50 transition-all duration-200"
+                  className="group cursor-pointer hover:bg-indigo-50/40 transition-all duration-200"
                 >
                   {/* Employee */}
 
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
-                      <div
-                        className={`h-11 w-11 rounded-full bg-linear-to-br ${emp.avatarColor} flex items-center justify-center text-white font-semibold`}
+                      <button
+                        onClick={() => setSelectedEmployee(emp)}
+                        className={`h-10 w-10 rounded-full bg-linear-to-br ${emp.avatarColor}
+flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white hover:ring-indigo-500 transition-all hover:scale-105`}
                       >
                         {initials}
-                      </div>
+                      </button>
 
-                      <div>
-                        <h3 className="font-semibold text-slate-900">
+                      <div className=" group ">
+                        <h3 className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-all ">
                           {emp.firstName} {emp.lastName}
                         </h3>
 
-                        <p className="text-xs text-slate-500 mt-1">
-                          {emp.email}
+                        <p className="text-[11px] hover:text-slate-700 hover:underline text-slate-500 mt-1 ">
+                          <a
+                            href={`mailto:${emp.email}`}
+                            className="hover:text-slate-600"
+                          >
+                            {emp.email}
+                          </a>
                         </p>
                       </div>
                     </div>
@@ -148,16 +156,18 @@ function DesktopEmployeeTable() {
 
                   {/* Employee ID */}
 
-                  <td className="px-6 py-5 font-mono text-sm text-slate-700">
+                  <td className="px-6 py-5 font-mono text-xs tracking-wide text-slate-500">
                     {emp.id}
                   </td>
 
                   {/* Department */}
 
                   <td className="px-6 py-5">
-                    <h4 className="font-medium text-slate-900">{emp.role}</h4>
+                    <h4 className="text-sm font-semibold text-slate-900">
+                      {emp.role}
+                    </h4>
 
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-[11px] text-slate-500 mt-1">
                       {emp.department}
                     </p>
                   </td>
@@ -173,7 +183,7 @@ function DesktopEmployeeTable() {
                       {Array.from({ length: 5 }).map((_, index) => (
                         <Star
                           key={index}
-                          className={`h-4 w-4 ${
+                          className={`h-3.5 w-3.5 ${
                             index < emp.performanceRating
                               ? "fill-amber-400 text-amber-400"
                               : "text-slate-300"
@@ -186,24 +196,24 @@ function DesktopEmployeeTable() {
                   {/* Salary */}
 
                   <td className="px-6 py-5 text-right">
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="text-sm font-bold text-slate-900">
                       ₹{emp.salary.toLocaleString("en-IN")}
                     </h3>
 
-                    <p className="text-xs text-slate-400 mt-1">Annual Salary</p>
+                    <p className="text-xs text-slate-400 mt-1">Annual CTC</p>
                   </td>
 
                   {/* Action */}
 
                   <td className="px-6 py-5 text-center">
                     <button
+                      onClick={() => setSelectedEmployee(emp)}
                       className="
                         inline-flex
                         items-center
-                        gap-2
-                        px-4
-                        py-2
-                        rounded-lg
+                        gap-1.5
+                       px-3 py-1.5
+                        rounded-xl                       
                         border
                         border-slate-200
                         hover:bg-indigo-50
@@ -212,7 +222,7 @@ function DesktopEmployeeTable() {
                         transition-all
                       "
                     >
-                      <Eye size={16} />
+                      <Eye size={14} />
                       View
                     </button>
                   </td>
@@ -222,6 +232,11 @@ function DesktopEmployeeTable() {
           </tbody>
         </table>
       </div>
+      <EmployeeDetailDrawer
+        selectedEmployee={selectedEmployee}
+        setSelectedEmployee={setSelectedEmployee}
+        isEditing={false} 
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 
-function RegisterEmployeeModel() {
+function AddEmployeeForm() {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function RegisterEmployeeModel() {
   )
 }
 
-export default RegisterEmployeeModel
+export default AddEmployeeForm
