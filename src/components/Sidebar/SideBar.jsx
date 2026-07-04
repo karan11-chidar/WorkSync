@@ -3,7 +3,7 @@ import Header from "./SideBarHeader";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
-function SideBar() {
+function SideBar({navItems}) {
   return (
     <aside
       className="
@@ -21,7 +21,7 @@ function SideBar() {
       <Header />
 
       <div className="flex-1 overflow-y-auto">
-        <Navbar />
+        <Navbar navItems={navItems}/>
       </div>
 
       <Footer />

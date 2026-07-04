@@ -7,28 +7,68 @@ import TaskBoard from "./pages/Admin/TaskBoard/TaskBoard.jsx";
 import Departments from "./pages/Admin/Departments/Departments.jsx";
 import TodayAttendance from "./pages/Admin/Attendance/TodayAttendance.jsx";
 import LeaveLedger from "./pages/Admin/LeaveLedger/LeaveLedger.jsx";
-
+import EmployeeHeader from"./pages/Employee/EmployeeHeader.jsx";
+import EmployeeNavbar from "./pages/Employee/EmployeeNavbar.jsx";
+import {
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Clock,
+  CalendarClock,
+  Settings,
+  ListTodo,
+  Home,
+  CalendarCheck,
+  FileText,
+  CheckSquare,
+  User,
+  Menu,
+  X,
+} from "lucide-react";
 function App() {
+  // Admin nav
+  const navItemsAdmin = [
+      { id: "home", label: "Company Overview", icon: LayoutDashboard },
+      { id: "employees", label: "Employee Directory", icon: Users },
+      { id: "departments", label: "Departments", icon: Briefcase },
+      { id: "tasks", label: "Tasks Board", icon: ListTodo },
+      { id: "attendance", label: "Today's Attendance", icon: Clock },
+      { id: "leaves", label: "Leave Ledger", icon: CalendarClock },
+      { id: "settings", label: "Console & Backup", icon: Settings },
+  ];
+  // Employee nav
+  const navItemsEmployee = [
+    { id: "Home", label: "Home", icon: Home },
+    { id: "Attendance & Calendar", label: "Attendance", icon: CalendarCheck },
+    { id: "Time-Off / Leaves", label: "Leaves", icon: FileText },
+    { id: "My Tasks", label: "Tasks", icon: CheckSquare },
+    { id: "Profile", label: "Profile", icon: User },
+  ];
   return (
     <div className="h-screen ">
+      {/* Admin Portal */}
       {/* Mobile Header */}
-      <div className="md:hidden">
+      {/* <div className="md:hidden">
         <MobileHeader />
-      </div>
+      </div> */}
 
       {/* Desktop Layout */}
-      <div className="flex h-full">
-        <SideBar />
+      {/* <div className="flex h-full">
+        <SideBar /> */}
 
-        <main className="flex-1 md:overflow-y-auto">
+        {/* <main className="flex-1 md:overflow-y-auto"> */}
           {/* <DashBoard /> */}
           {/* <EmployeeDirectory/> */}
           {/* <Departments/> */}
           {/* <TaskBoard /> */}
           {/* <TodayAttendance/> */}
-          <LeaveLedger/>
-        </main>
-      </div>
+          {/* <LeaveLedger/> */}
+
+        {/* </main> */}
+      {/* </div> */}
+
+      {/* Employee Portal */}
+      <SideBar navItems={navItemsEmployee}/>
     </div>
   );
 }
