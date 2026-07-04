@@ -2,7 +2,7 @@ import React from 'react'
 import StateCard from './StateCard'
 function AttendanceCountCards() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-7">
       <StateCard
         title="Attendance Rate"
         textColor="text-slate-400"

@@ -6,6 +6,7 @@ import EmployeeDirectory from "./pages/Admin/EmployeeDirectory/EmployeeDirectory
 import TaskBoard from "./pages/Admin/TaskBoard/TaskBoard.jsx";
 import Departments from "./pages/Admin/Departments/Departments.jsx";
 import TodayAttendance from "./pages/Admin/Attendance/TodayAttendance.jsx";
+import LeaveLedger from "./pages/Admin/LeaveLedger/LeaveLedger.jsx";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           {/* <Departments/> */}
           {/* <TaskBoard /> */}
           {/* <TodayAttendance/> */}
+          <LeaveLedger/>
         </main>
       </div>
     </div>
