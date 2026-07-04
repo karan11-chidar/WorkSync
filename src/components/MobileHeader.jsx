@@ -27,7 +27,9 @@ function MobileHeader() {
         </div>
       </div>
 
-      <button className="md:hidden p-1.5 text-slate-400 hover:text-white">
+      <button
+        // onClick={}
+        className="md:hidden p-1.5 text-slate-400 hover:text-white">
         <Menu className="h-5 w-5" />
       </button>
     </div>

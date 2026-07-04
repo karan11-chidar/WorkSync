@@ -1,4 +1,3 @@
-import React from "react";
 import {
   X,
   Edit,
@@ -9,19 +8,16 @@ import {
   Star,
   FileText,
 } from "lucide-react";
-
-const EmployeeDetailDrawer = ({
+export function EmployeeDetailDrawer(props) {
+const {
   selectedEmployee,
-  isEditing,
   setSelectedEmployee,
-  openEditMode,
+  handleEditEmployee,
   onDeleteEmployee,
-  renderStatusPill,
-}) => {
-  if (!selectedEmployee || isEditing) return null;
-
+  } = props;
+  if (!selectedEmployee) return null;
   return (
-    <div className="fixed inset-0 z-50 flex justify-end" >
+    <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
       <div
         onClick={() => setSelectedEmployee(null)}
@@ -32,6 +28,8 @@ const EmployeeDetailDrawer = ({
     backdrop-blur-md
     transition-all
     duration-300
+    ease-in-out
+    transform
     cursor-pointer
   "
       />
@@ -61,7 +59,10 @@ const EmployeeDetailDrawer = ({
           {/* Action Buttons */}
           <div className="flex gap-2">
             <button
-              onClick={() => openEditMode && openEditMode(selectedEmployee)}
+              onClick={() => {
+                handleEditEmployee(selectedEmployee);
+                setSelectedEmployee(null);
+              }}
               className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors active:scale-95"
             >
               <Edit className="h-3.5 w-3.5" /> Edit Profile
@@ -113,15 +114,19 @@ const EmployeeDetailDrawer = ({
                 Status Badge
               </span>
               <div className="mt-0.5">
-                {renderStatusPill ? (
-                  renderStatusPill(selectedEmployee.status)
-                ) : (
-                  <span
-                    className={`px-2 py-0.5 inline-flex text-[10px] leading-5 font-semibold rounded-full ${selectedEmployee.status === "Active" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"}`}
-                  >
-                    {selectedEmployee.status || "Active"}
-                  </span>
-                )}
+                <span
+                  className={`px-2 py-0.5 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
+                    selectedEmployee.status === "Active"
+                      ? "bg-green-100 text-green-800"
+                      : selectedEmployee.status === "On Leave"
+                        ? "bg-amber-100 text-amber-800"
+                        : selectedEmployee.status === "Inactive"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {selectedEmployee.status || "Active"}
+                </span>
               </div>
             </div>
             <div>

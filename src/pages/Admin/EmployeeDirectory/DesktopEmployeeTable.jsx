@@ -1,8 +1,6 @@
 import { Star, Eye } from "lucide-react";
-import EmployeeDetailDrawer from "./EmployeeDetailDrawer";
 import { useState } from "react";
-function DesktopEmployeeTable() {
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
+function DesktopEmployeeTable(props) {
   const employees = [
     {
       id: "EMP-001",
@@ -130,7 +128,7 @@ function DesktopEmployeeTable() {
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <button
-                        onClick={() => setSelectedEmployee(emp)}
+                        onClick={() => props.handleSelectEmployee(emp)}
                         className={`h-10 w-10 rounded-full bg-linear-to-br ${emp.avatarColor}
 flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white hover:ring-indigo-500 transition-all hover:scale-105`}
                       >
@@ -207,7 +205,7 @@ flex items-center justify-center text-white font-bold shadow-md ring-2 ring-whit
 
                   <td className="px-6 py-5 text-center">
                     <button
-                      onClick={() => setSelectedEmployee(emp)}
+                      onClick={() => props.handleSelectEmployee(emp)}
                       className="
                         inline-flex
                         items-center
@@ -232,11 +230,6 @@ flex items-center justify-center text-white font-bold shadow-md ring-2 ring-whit
           </tbody>
         </table>
       </div>
-      <EmployeeDetailDrawer
-        selectedEmployee={selectedEmployee}
-        setSelectedEmployee={setSelectedEmployee}
-        isEditing={false} 
-      />
     </div>
   );
 }

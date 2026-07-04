@@ -1,9 +1,7 @@
 import {useState} from "react";
 import { Eye, Star, Building2, IndianRupee } from "lucide-react";
-import EmployeeDetailDrawer from "./EmployeeDetailDrawer";
-function MobileEmployeeCards() {
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
-  
+function MobileEmployeeCards(props) {
+  const { handleEditEmployee, handleSelectEmployee } = props;
   const employees = [
     {
       id: "EMP-001",
@@ -114,7 +112,9 @@ function MobileEmployeeCards() {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setSelectedEmployee(emp)}
+                onClick={() =>
+                  handleSelectEmployee(emp)
+                }
                 className={`h-12 w-12 rounded-full bg-linear-to-br ${emp.avatarColor}
                 flex items-center justify-center text-white font-bold`}
               >
@@ -171,7 +171,7 @@ function MobileEmployeeCards() {
             {/* Button */}
 
             <button
-              onClick={() => setSelectedEmployee(emp)}
+              onClick={() => handleSelectEmployee(emp)}
               className="
                 mt-4
                 w-full
@@ -195,12 +195,6 @@ function MobileEmployeeCards() {
           </div>
         );
       })}
-       <EmployeeDetailDrawer
-              selectedEmployee={selectedEmployee}
-              setSelectedEmployee={setSelectedEmployee}
-              isEditing={false} 
-            />
-          
     </div>
   );
 }

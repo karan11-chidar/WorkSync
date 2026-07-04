@@ -1,21 +1,29 @@
 import React,{useState} from 'react'
 import {
-  LayoutDashboard, Users, Briefcase, Clock,CalendarClock,Settings} from 'lucide-react';
+  LayoutDashboard,
+  Users,
+  Briefcase,
+  Clock,
+  CalendarClock,
+  Settings,
+  ListTodo,
+} from "lucide-react";
 function Navbar() {
   // / Render navigation lists
   const navItems = [
     { id: "home", label: "Company Overview", icon: LayoutDashboard },
     { id: "employees", label: "Employee Directory", icon: Users },
+    { id: "departments", label: "Departments", icon: Briefcase },
+    { id: "tasks", label: "Tasks Board", icon: ListTodo },
     { id: "attendance", label: "Today's Attendance", icon: Clock },
     { id: "leaves", label: "Leave Ledger", icon: CalendarClock },
     { id: "settings", label: "Console & Backup", icon: Settings },
   ]; // 1. Core States loaded with fallback LocalStorage persistence
   const [activeTab, setActiveTab] = useState('home')
-   
   return (
     <div>
       {/* Sidebar Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-1.5">
+      <nav className="flex-1 px-4 py-6 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

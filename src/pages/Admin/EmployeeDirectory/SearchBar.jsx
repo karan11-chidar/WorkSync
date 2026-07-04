@@ -1,7 +1,7 @@
 import React from 'react'
 import { NotebookPen, Search,UserPlus } from 'lucide-react'
-function SearchBar() {
-    const [searchTerm, setSearchTerm] = React.useState('');
+function SearchBar(props) {
+  const [searchTerm, setSearchTerm] = React.useState('');
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
       <div className="relative flex-1">
@@ -16,16 +16,12 @@ function SearchBar() {
       </div>
       <div className="flex gap-2 flex-wrap">
         <button
-          // onClick={openAddMode}
+          onClick={() => {
+           props.handleAddEmployee();
+          }}
           className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-95"
         >
           <UserPlus className="h-4 w-4" /> Add Employee
-        </button>
-        <button
-          // onClick={openAddMode}
-          className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-95"
-        >
-          <NotebookPen className="h-4 w-4" /> Create Task
         </button>
       </div>
     </div>
