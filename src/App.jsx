@@ -24,6 +24,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import EmployeeAttendance from "./pages/Employee/Attendance/EmployeeAttendance.jsx";
 function App() {
   // Admin nav
   const navItemsAdmin = [
@@ -77,7 +78,8 @@ function App() {
       <div className="flex h-full">
         <SideBar navItems={navItemsEmployee} headerTitle="Employee Portal" />
         <main className="flex-1 md:overflow-y-auto">
-          <EmployeeDashBoard/>
+          {/* <EmployeeDashBoard/> */}
+          <EmployeeAttendance/>
         </main>
       </div>
     </div>
