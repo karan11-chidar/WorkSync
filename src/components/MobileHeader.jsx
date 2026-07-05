@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from "../assets/c-logo.png";
 import { Menu } from "lucide-react";
-function MobileHeader() {
+function MobileHeader({headerTitle}) {
   return (
     <div className="md:hidden lg:hidden h-16 flex items-center bg-slate-900 justify-between border-b border-slate-800 px-4">
       <div className="flex items-center gap-2">
@@ -18,7 +18,7 @@ function MobileHeader() {
 
         <div>
           <h1 className="text-sm font-bold text-white tracking-wider uppercase">
-            Admin
+            {headerTitle}
           </h1>
 
           <span className="text-[10px] text-slate-500 font-semibold block">

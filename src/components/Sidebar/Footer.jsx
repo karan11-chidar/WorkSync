@@ -1,6 +1,6 @@
 import React from 'react'
 import { LogOut } from 'lucide-react';
-function Footer() {
+function Footer({headerTitle}) {
   return (
     <div className="mt-auto p-4 border-t border-slate-800">
       <div className="mt-4 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
@@ -15,7 +15,7 @@ function Footer() {
           <LogOut className="h-3.5 w-3.5" /> Sign Out
         </button>
         <div className="text-[10px] text-slate-500 font-medium text-center">
-          Admin Level Logging Live
+         {headerTitle} Level Logging Live
         </div>
       </div>
     </div>

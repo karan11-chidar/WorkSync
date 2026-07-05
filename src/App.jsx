@@ -1,5 +1,5 @@
 import React from "react";
-import DashBoard from "./pages/Admin/Dashboard/DashBoard.jsx";
+import AdminDashBoard from "./pages/Admin/Dashboard/DashBoard.jsx";
 import SideBar from "./components/Sidebar/SideBar.jsx";
 import MobileHeader from "./components/MobileHeader.jsx";
 import EmployeeDirectory from "./pages/Admin/EmployeeDirectory/EmployeeDirectory.jsx";
@@ -7,8 +7,7 @@ import TaskBoard from "./pages/Admin/TaskBoard/TaskBoard.jsx";
 import Departments from "./pages/Admin/Departments/Departments.jsx";
 import TodayAttendance from "./pages/Admin/Attendance/TodayAttendance.jsx";
 import LeaveLedger from "./pages/Admin/LeaveLedger/LeaveLedger.jsx";
-import EmployeeHeader from"./pages/Employee/EmployeeHeader.jsx";
-import EmployeeNavbar from "./pages/Employee/EmployeeNavbar.jsx";
+import EmployeeDashBoard from "./pages/Employee/DashBoard/DashBoard.jsx"
 import {
   LayoutDashboard,
   Users,
@@ -39,9 +38,13 @@ function App() {
   // Employee nav
   const navItemsEmployee = [
     { id: "Home", label: "Home", icon: Home },
-    { id: "Attendance & Calendar", label: "Attendance", icon: CalendarCheck },
-    { id: "Time-Off / Leaves", label: "Leaves", icon: FileText },
-    { id: "My Tasks", label: "Tasks", icon: CheckSquare },
+    {
+      id: "Attendance & Calendar",
+      label: "Attendance & Calendar",
+      icon: CalendarCheck,
+    },
+    { id: "Time-Off / Leaves", label: "Time-Off / Leaves", icon: FileText },
+    { id: "My Tasks", label: "My Tasks", icon: CheckSquare },
     { id: "Profile", label: "Profile", icon: User },
   ];
   return (
@@ -56,19 +59,27 @@ function App() {
       {/* <div className="flex h-full">
         <SideBar /> */}
 
-        {/* <main className="flex-1 md:overflow-y-auto"> */}
-          {/* <DashBoard /> */}
-          {/* <EmployeeDirectory/> */}
-          {/* <Departments/> */}
-          {/* <TaskBoard /> */}
-          {/* <TodayAttendance/> */}
-          {/* <LeaveLedger/> */}
+      {/* <main className="flex-1 md:overflow-y-auto"> */}
+      {/* <DashBoard /> */}
+      {/* <EmployeeDirectory/> */}
+      {/* <Departments/> */}
+      {/* <TaskBoard /> */}
+      {/* <TodayAttendance/> */}
+      {/* <LeaveLedger/> */}
 
-        {/* </main> */}
+      {/* </main> */}
       {/* </div> */}
 
       {/* Employee Portal */}
-      <SideBar navItems={navItemsEmployee}/>
+      <div className="md:hidden">
+        <MobileHeader headerTitle="Employee Portal" />
+      </div> 
+      <div className="flex h-full">
+        <SideBar navItems={navItemsEmployee} headerTitle="Employee Portal" />
+        <main className="flex-1 md:overflow-y-auto">
+          <EmployeeDashBoard/>
+        </main>
+      </div>
     </div>
   );
 }
