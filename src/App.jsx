@@ -27,6 +27,7 @@ import {
 import EmployeeAttendance from "./pages/Employee/Attendance/EmployeeAttendance.jsx";
 import LeaveDashboardView from "./pages/Employee/Leaves/LeaveDashboardView.jsx";
 import EmployeeTaskList from "./pages/Employee/Tasks/AssignedTasksPortal.jsx";
+import EmployeeProfile from "./pages/Employee/Profile/EmployeeProfileView.jsx";
 function App() {
   // Admin nav
   const navItemsAdmin = [
@@ -83,7 +84,8 @@ function App() {
           {/* <EmployeeDashBoard/> */}
           {/* <EmployeeAttendance/> */}
           {/* <LeaveDashboardView/> */}
-          <EmployeeTaskList/>
+          {/* <EmployeeTaskList/> */}
+          <EmployeeProfile/>
         </main>
       </div>
     </div>
