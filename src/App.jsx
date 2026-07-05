@@ -25,6 +25,8 @@ import {
   X,
 } from "lucide-react";
 import EmployeeAttendance from "./pages/Employee/Attendance/EmployeeAttendance.jsx";
+import LeaveDashboardView from "./pages/Employee/Leaves/LeaveDashboardView.jsx";
+import EmployeeTaskList from "./pages/Employee/Tasks/AssignedTasksPortal.jsx";
 function App() {
   // Admin nav
   const navItemsAdmin = [
@@ -79,7 +81,9 @@ function App() {
         <SideBar navItems={navItemsEmployee} headerTitle="Employee Portal" />
         <main className="flex-1 md:overflow-y-auto">
           {/* <EmployeeDashBoard/> */}
-          <EmployeeAttendance/>
+          {/* <EmployeeAttendance/> */}
+          {/* <LeaveDashboardView/> */}
+          <EmployeeTaskList/>
         </main>
       </div>
     </div>
