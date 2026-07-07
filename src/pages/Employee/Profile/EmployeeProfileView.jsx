@@ -69,7 +69,6 @@ export default function EmployeeProfileView() {
   return (
     <div className="w-full max-w-2xl mx-auto p-2">
       <div className="bg-white rounded-3xl border border-slate-100 shadow-md overflow-hidden transition-all duration-300">
-        {/* TOP BANNER FRAME: प्रीमियम डार्क ग्रेडिएंट */}
         <div className="h-32 bg-linear-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 flex justify-between items-start relative">
           <div className="space-y-0.5">
             <span className="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase tracking-wider backdrop-blur-xs">
