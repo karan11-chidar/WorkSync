@@ -16,6 +16,7 @@ import EmployeeAttendance from "./pages/Employee/Attendance/EmployeeAttendance.j
 import LeaveDashboardView from "./pages/Employee/Leaves/LeaveDashboardView.jsx";
 import EmployeeTaskList from "./pages/Employee/Tasks/AssignedTasksPortal.jsx";
 import EmployeeProfile from "./pages/Employee/Profile/EmployeeProfileView.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 import {
   LayoutDashboard,
@@ -31,12 +32,12 @@ import {
   CheckSquare,
   User,
 } from "lucide-react";
-import NotFoundPage from "./pages/NotFoundPage.jsx";
+import LinearProgressStream from "./components/LinearProgressStream.jsx";
 
 function App() {
-  // Admin nav
+  // 🔥 ADMIN NAVIGATION MATRIX (100% Lowercase & Space-Free IDs)
   const navItemsAdmin = [
-    { id: "home", label: "Company Overview", icon: LayoutDashboard },
+    { id: "dashboard", label: "Company Overview", icon: LayoutDashboard },
     { id: "employees", label: "Employee Directory", icon: Users },
     { id: "departments", label: "Departments", icon: Briefcase },
     { id: "tasks", label: "Tasks Board", icon: ListTodo },
@@ -44,17 +45,13 @@ function App() {
     { id: "leaves", label: "Leave Ledger", icon: CalendarClock },
   ];
 
-  // Employee nav
+  // 🔥 EMPLOYEE NAVIGATION MATRIX (Clean CamelCase & Symbol-Free IDs)
   const navItemsEmployee = [
-    { id: "Home", label: "Home", icon: Home },
-    {
-      id: "Attendance & Calendar",
-      label: "Attendance & Calendar",
-      icon: CalendarCheck,
-    },
-    { id: "Time-Off / Leaves", label: "Time-Off / Leaves", icon: FileText },
-    { id: "My Tasks", label: "My Tasks", icon: CheckSquare },
-    { id: "Profile", label: "Profile", icon: User },
+    { id: "dashboard", label: "Home", icon: Home },
+    { id: "attendance", label: "Attendance & Calendar", icon: CalendarCheck },
+    { id: "leaves", label: "Time-Off / Leaves", icon: FileText },
+    { id: "tasks", label: "My Tasks", icon: CheckSquare },
+    { id: "profile", label: "Profile", icon: User },
   ];
 
   return (
@@ -110,6 +107,7 @@ function App() {
                   <Route path="attendance" element={<EmployeeAttendance />} />
                   <Route path="tasks" element={<EmployeeTaskList />} />
                   <Route path="profile" element={<EmployeeProfile />} />
+                  <Route path="profile/:employeeId" element={<EmployeeProfile />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>

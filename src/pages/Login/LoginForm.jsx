@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Mail,Lock,ArrowRight} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 function LoginForm() {
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({
     email: '',
     password: '',
@@ -66,6 +68,7 @@ function LoginForm() {
             </div>
             <div>
               <button
+                onClick={()=>navigate("/admin/dashboard")}
                 className="w-full h-11 flex justify-center items-center gap-2 px-4 border border-transparent rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all cursor-pointer shadow-md"
               >
                 Sign In <ArrowRight className="h-4 w-4" />

@@ -3,7 +3,7 @@ import DepartmentHeader from './DepartmentHeader';
 import CreateDepartment from './CreateDepartment';
 import DepartmentCards from './DepartmentsCards';
 function Departments() {
-  const [isDeptOpen, setIsDeptOpen] = useState(true);
+  const [isDeptOpen, setIsDeptOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
   const [isDelete, setIsDelete] = useState(false);
   const employees = [

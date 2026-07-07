@@ -17,11 +17,14 @@ import {
   Award,
   FileText,
 } from "lucide-react";
+import { useParams } from "react-router-dom";
 
 export default function EmployeeProfileView() {
+  const { employeeId, employeeName } = useParams();
+  const notPresentEmployeeId = employeeId ?? "0173";
   // कॉर्पोरेट-ग्रेड कंप्लीट एम्प्लॉई ऑब्जेक्ट
   const [employeeProfile, setEmployeeProfile] = useState({
-    empId: "EMP-2026-0894",
+    empId: `${employeeId}`,
     firstName: "Karan",
     lastName: "Chidar",
     email: "karan.chidar@company.com",
@@ -46,12 +49,11 @@ export default function EmployeeProfileView() {
   const [isEditingPhoto, setIsEditingPhoto] = useState(false);
   const [inputUrl, setInputUrl] = useState("");
   const [photoError, setPhotoError] = useState(null);
-
+ 
   const stars = Array.from(
     { length: 5 },
     (_, i) => i < employeeProfile.performanceRating,
   );
-
   const handlePhotoUpdate = (e) => {
     e.preventDefault();
     setPhotoError(null);

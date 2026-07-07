@@ -21,7 +21,7 @@ function SideBar({navItems,headerTitle}) {
       <Header headerTitle={headerTitle} />
 
       <div className="flex-1 overflow-y-auto">
-        <Navbar navItems={navItems}/>
+        <Navbar navItems={navItems} headerTitle={headerTitle } />
       </div>
 
       <Footer headerTitle={ headerTitle} />
