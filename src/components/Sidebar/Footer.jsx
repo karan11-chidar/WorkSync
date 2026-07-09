@@ -5,11 +5,11 @@ function Footer({ headerTitle }) {
   const navigate = useNavigate();
   return (
     <div className="mt-auto p-4 border-t border-slate-800">
-      <div className="mt-4 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+      <div className="hidden md:block mt-4 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
         Operations Console
       </div>
 
-      <p className="text-[10px] text-slate-400 mt-2">
+      <p className="hidden md:block text-[10px] text-slate-400 mt-2">
         Authorized administrator connection logged live.
       </p>
       <div className="p-4 border-t border-slate-800 space-y-3">
