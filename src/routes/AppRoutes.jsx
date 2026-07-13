@@ -1,5 +1,5 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Routes, Route, useLocation } from 'react-router-dom'
 // Pages Imports
 import AdminLayout from '../layouts/AdminLayout';
 import EmployeeLayout from '../layouts/EmployeeLayout';
@@ -16,35 +16,51 @@ import LeaveDashboardView from "./../pages/Employee/Leaves/LeaveDashboardView.js
 import EmployeeTaskList from "./../pages/Employee/Tasks/AssignedTasksPortal.jsx";
 import EmployeeProfile from "./../pages/Employee/Profile/EmployeeProfileView.jsx";
 import NotFoundPage from "./../pages/NotFoundPage.jsx";
+import LinearProgressStream from '../components/Animations/LinearProgressStream.jsx';
 function AppRoutes() {
+  const [isLoading, setIsLoading] = useState(false);
+  const MIN_ROUTE_LOADER_TIME = 800;
+  const location = useLocation();
+  useEffect(() => {
+    setIsLoading(true);
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, MIN_ROUTE_LOADER_TIME);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
   return (
-    <Routes>
-      {/* 🎬 Login Entrance */}
-      <Route path="/" element={<Login />} />
+    <>
+      <LinearProgressStream isLoading={isLoading}/>
+      <Routes>
+        {/* 🎬 Login Entrance */}
+        <Route path="/" element={<Login />} />
 
-      {/* 👑 Admin Portal Layout Wrapper */}
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route path="dashboard" element={<AdminDashBoard />} />
-        <Route path="departments" element={<Departments />} />
-        <Route path="tasks" element={<TaskBoard />} />
-        <Route path="attendance" element={<TodayAttendance />} />
-        <Route path="leaves" element={<LeaveLedger />} />
-        <Route path="employees" element={<EmployeeDirectory />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
+        {/* 👑 Admin Portal Layout Wrapper */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="dashboard" element={<AdminDashBoard />} />
+          <Route path="departments" element={<Departments />} />
+          <Route path="tasks" element={<TaskBoard />} />
+          <Route path="attendance" element={<TodayAttendance />} />
+          <Route path="leaves" element={<LeaveLedger />} />
+          <Route path="employees" element={<EmployeeDirectory />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
 
-      {/* 🧑‍💻 Employee Portal Layout Wrapper */}
-      <Route path="/employee" element={<EmployeeLayout/>}>
-        <Route path="dashboard" element={<EmployeeDashBoard />} />
-        <Route path="leaves" element={<LeaveDashboardView />} />
-        <Route path="attendance" element={<EmployeeAttendance />} />
-        <Route path="tasks" element={<EmployeeTaskList />} />
-        <Route path="profile" element={<EmployeeProfile />} />
-        <Route path="profile/:employeeId" element={<EmployeeProfile />} />
+        {/* 🧑‍💻 Employee Portal Layout Wrapper */}
+        <Route path="/employee" element={<EmployeeLayout />}>
+          <Route path="dashboard" element={<EmployeeDashBoard />} />
+          <Route path="leaves" element={<LeaveDashboardView />} />
+          <Route path="attendance" element={<EmployeeAttendance />} />
+          <Route path="tasks" element={<EmployeeTaskList />} />
+          <Route path="profile" element={<EmployeeProfile />} />
+          <Route path="profile/:employeeId" element={<EmployeeProfile />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
-      </Route>
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }
 
