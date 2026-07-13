@@ -71,7 +71,7 @@ function Departments() {
   }
   return (
     <div className="space-y-6">
-      <DepartmentHeader />
+      <DepartmentHeader setIsDeptOpen={setIsDeptOpen} />
       <DepartmentCards departments={departments} setIsEditing={setIsEditing}onDelete={onDelete} />
       <CreateDepartment
         editingDept={isEditing}
