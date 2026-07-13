@@ -10,6 +10,7 @@ import {
   Clock,
   CalendarClock,
 } from "lucide-react";
+import LinearProgressStream from '../components/Animations/LinearProgressStream';
 function AdminLayout() {
   // 🔥 ADMIN NAVIGATION MATRIX (100% Lowercase & Space-Free IDs)
   const navItemsAdmin = [
@@ -23,6 +24,7 @@ function AdminLayout() {
   const [openSidebar, setOpenSidebar] = useState(false);
   return (
     <div className="h-screen flex flex-col md:flex-row">
+      <LinearProgressStream />
       {/* Mobile Header */}
       <div className="md:hidden">
         <MobileHeader headerTitle="Admin Portal" setOpenSidebar={setOpenSidebar} />
