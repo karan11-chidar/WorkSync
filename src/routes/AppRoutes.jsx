@@ -19,7 +19,7 @@ import NotFoundPage from "./../pages/NotFoundPage.jsx";
 import LinearProgressStream from '../components/Animations/LinearProgressStream.jsx';
 function AppRoutes() {
   const [isLoading, setIsLoading] = useState(false);
-  const MIN_ROUTE_LOADER_TIME = 800;
+  const MIN_ROUTE_LOADER_TIME = 1000;
   const location = useLocation();
   useEffect(() => {
     setIsLoading(true);
