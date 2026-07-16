@@ -1,33 +1,70 @@
 import React, { useState } from 'react'
-import { Mail,Lock,ArrowRight} from 'lucide-react';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { login } from '../../features/auth/authService';
 import { useNavigate } from 'react-router-dom';
 function LoginForm() {
-  const navigate = useNavigate();
-  const [userDetails, setUserDetails] = useState({
+  const [formData,setFormData ] = useState({
     email: '',
     password: '',
   });
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserDetails({ ...userDetails, [name]: value });
-  }
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(userDetails);
-    setUserDetails({
+  const [errors, setErrors] = useState({
+    email: '',
+    password:'',
+  })
+  const navigate = useNavigate();
+  let [isDisabled, setIsDisabled] = useState(false);
+  const validateLoginForm = ({email,password}) => {
+    const errors = {
       email: '',
       password:''
-   })
+    }
+     errors.email = (email === '' || email==='abc@gmail.com') ? '❌ Please enter a valid email.' : '';
+     errors.password = (password === '' || password.length < 6) ? '❌ Please enter a valid password.' : '';
+    const isValid = (errors.email === '' && errors.password === '') ? true : false;
+    return {isValid, errors}
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' });
+  }
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    let res;
+    const formErrors = validateLoginForm(formData);
+    if (!formErrors.isValid) {
+      console.log('Validation UnSuccessful');
+      setErrors(formErrors.errors);
+      return;
+    }
+    console.log("Validation Successful");
+    try {
+    setIsDisabled(true);
+         res = await login(formData);
+    } catch (err) {
+      console.log(err);
+    }
+    finally {
+    setIsDisabled(false);
+    }
+     setFormData({
+       email: "",
+       password: "",
+     });
+    setErrors({
+      email: '',
+      password:''
+    })
+        if (res) navigate("/admin/dashboard");
   }
     return (
-      <div className=" sm:mx-auto sm:w-full mt-6 w-full max-w-md mx-auto">
+      <div className=" sm:mx-auto sm:w-full mt-5 w-full max-w-md mx-auto">
         <div className="bg-slate-800 py-8 px-6 shadow-xl rounded-3xl border border-slate-700/60 sm:px-10">
-          <h1 className="text-white text-2xl font-medium font-sans text-center">
+          <h1 className="text-white text-2xl font-medium font-sans text-center mb-5">
             Login Form
           </h1>
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
                 Email Address
@@ -37,15 +74,20 @@ function LoginForm() {
                   <Mail className="h-4.5 w-4.5" />
                 </div>
                 <input
-                  name='email'
+                  name="email"
                   type="email"
-                  value={userDetails.email}
+                  value={formData.email}
                   onChange={handleChange}
                   required
                   placeholder="your.email@gmail.com"
                   className="block w-full pl-10 pr-3 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-all font-medium font-sans"
                 />
               </div>
+              {errors.email && (
+                <span className="text-[0.725rem] text-red-500 ml-2 ">
+                  {errors.email}
+                </span>
+              )}
             </div>
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
@@ -56,20 +98,25 @@ function LoginForm() {
                   <Lock className="h-4.5 w-4.5" />
                 </div>
                 <input
-                  name='password'
+                  name="password"
                   type="password"
                   onChange={handleChange}
-                  value={userDetails.password}
+                  value={formData.password}
                   required
                   placeholder="••••••••"
                   className="block w-full pl-10 pr-3 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-all font-medium"
                 />
               </div>
+              {errors.password && (
+                <span className="text-[0.725rem]  text-red-500 ml-2  ">
+                  {errors.password}
+                </span>
+              )}
             </div>
             <div>
               <button
-                // onClick={()=>navigate("/admin/dashboard")}
-                className="w-full h-11 flex justify-center items-center gap-2 px-4 border border-transparent rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all cursor-pointer shadow-md"
+                disabled={isDisabled}
+                className={`disabled:opacity-50 disabled:cursor-not-allowed w-full h-11  flex justify-center items-center gap-2 px-4 border border-transparent rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all cursor-pointer shadow-md`}
               >
                 Sign In <ArrowRight className="h-4 w-4" />
               </button>
