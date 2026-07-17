@@ -12,7 +12,8 @@ function LoginForm() {
     password:'',
   })
   const navigate = useNavigate();
-  let [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [signInBtn, setSignInBtn] = useState('Sign In');
   const validateLoginForm = ({email,password}) => {
     const errors = {
       email: '',
@@ -40,13 +41,15 @@ function LoginForm() {
     }
     console.log("Validation Successful");
     try {
-    setIsDisabled(true);
+      setIsDisabled(true);
+      setSignInBtn('Signing');
          res = await login(formData);
     } catch (err) {
       console.log(err);
     }
     finally {
-    setIsDisabled(false);
+      setIsDisabled(false);
+      setSignInBtn('Sign In');
     }
      setFormData({
        email: "",
@@ -118,7 +121,7 @@ function LoginForm() {
                 disabled={isDisabled}
                 className={`disabled:opacity-50 disabled:cursor-not-allowed w-full h-11  flex justify-center items-center gap-2 px-4 border border-transparent rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all cursor-pointer shadow-md`}
               >
-                Sign In <ArrowRight className="h-4 w-4" />
+                {signInBtn} <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </form>
