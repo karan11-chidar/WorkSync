@@ -32,7 +32,7 @@ function LoginForm() {
   }
   const handleSubmit = async(e) => {
     e.preventDefault();
-    let res;
+  let userCredential;
     const formErrors = validateLoginForm(formData);
     if (!formErrors.isValid) {
       console.log('Validation UnSuccessful');
@@ -43,23 +43,25 @@ function LoginForm() {
     try {
       setIsDisabled(true);
       setSignInBtn('Signing');
-         res = await login(formData);
-    } catch (err) {
-      console.log(err);
+      userCredential = await login(formData);
+    } catch (error) {
+     alert('❌ Login Failed :'+ error.message)
     }
     finally {
       setIsDisabled(false);
       setSignInBtn('Sign In');
     }
-     setFormData({
-       email: "",
-       password: "",
-     });
-    setErrors({
-      email: '',
-      password:''
-    })
-        if (res) navigate("/admin/dashboard");
+    if (userCredential) {
+          setFormData({
+            email: "",
+            password: "",
+          });
+          setErrors({
+            email: "",
+            password: "",
+          });
+      navigate("/admin/dashboard");
+      } ;
   }
     return (
       <div className=" sm:mx-auto sm:w-full mt-5 w-full max-w-md mx-auto">

@@ -12,8 +12,8 @@ function Footer({ headerTitle }) {
       setSignOutBtn('Signing Out')
       await logout();
       navigate("/");
-    } catch (err) {
-      console.log(err)
+    } catch (error) {
+      alert("❌ Logout Failed :"+error.message)
     } finally {
       setIsDisabled(false);
       setSignOutBtn('Sign Out');
