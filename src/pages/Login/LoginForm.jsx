@@ -12,7 +12,8 @@ function LoginForm() {
     password:'',
   })
   const navigate = useNavigate();
-  let [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [signInBtn, setSignInBtn] = useState('Sign In');
   const validateLoginForm = ({email,password}) => {
     const errors = {
       email: '',
@@ -31,7 +32,7 @@ function LoginForm() {
   }
   const handleSubmit = async(e) => {
     e.preventDefault();
-    let res;
+  let userCredential;
     const formErrors = validateLoginForm(formData);
     if (!formErrors.isValid) {
       console.log('Validation UnSuccessful');
@@ -40,23 +41,27 @@ function LoginForm() {
     }
     console.log("Validation Successful");
     try {
-    setIsDisabled(true);
-         res = await login(formData);
-    } catch (err) {
-      console.log(err);
+      setIsDisabled(true);
+      setSignInBtn('Signing');
+      userCredential = await login(formData);
+    } catch (error) {
+     alert('❌ Login Failed :'+ error.message)
     }
     finally {
-    setIsDisabled(false);
+      setIsDisabled(false);
+      setSignInBtn('Sign In');
     }
-     setFormData({
-       email: "",
-       password: "",
-     });
-    setErrors({
-      email: '',
-      password:''
-    })
-        if (res) navigate("/admin/dashboard");
+    if (userCredential) {
+          setFormData({
+            email: "",
+            password: "",
+          });
+          setErrors({
+            email: "",
+            password: "",
+          });
+      navigate("/admin/dashboard");
+      } ;
   }
     return (
       <div className=" sm:mx-auto sm:w-full mt-5 w-full max-w-md mx-auto">
@@ -118,7 +123,7 @@ function LoginForm() {
                 disabled={isDisabled}
                 className={`disabled:opacity-50 disabled:cursor-not-allowed w-full h-11  flex justify-center items-center gap-2 px-4 border border-transparent rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all cursor-pointer shadow-md`}
               >
-                Sign In <ArrowRight className="h-4 w-4" />
+                {signInBtn} <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           </form>
