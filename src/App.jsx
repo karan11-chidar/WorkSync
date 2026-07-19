@@ -1,11 +1,11 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
-
+import AuthProvider from '../src/features/auth/AuthProvider'
 // Pages Imports
 function App() {
   return (
-    <AppRoutes/>
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }
 

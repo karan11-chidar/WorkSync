@@ -3,11 +3,13 @@ import React, {  useEffect,useState } from 'react'
 import { auth } from '../../firebase/firebaseConfig';
 import AuthContext from './AuthContext';
 
-function AuthProvider({ children }) {
+export default function AuthProvider({ children }) {
+  console.log('Running authprovider function');
      const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
-      const unSubscribe =  onAuthStateChanged(auth,(user) => {
+      const unSubscribe = onAuthStateChanged(auth, (user) => {
+        console.log('user details', user);
             setUser(user);
             setLoading(false)
       })
@@ -20,5 +22,3 @@ function AuthProvider({ children }) {
     </AuthContext.Provider>
   )
 }
-
-export default AuthProvider
