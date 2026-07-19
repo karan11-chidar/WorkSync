@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { login } from '../../features/auth/authService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../features/auth/AuthContext';
 function LoginForm() {
+  const {showLoader, hideLoader} = useAuth();
   const [formData,setFormData ] = useState({
     email: '',
     password: '',
@@ -43,6 +45,7 @@ function LoginForm() {
     try {
       setIsDisabled(true);
       setSignInBtn('Signing');
+      showLoader('login');
       userCredential = await login(formData);
     } catch (error) {
      alert('❌ Login Failed :'+ error.message)
@@ -50,6 +53,7 @@ function LoginForm() {
     finally {
       setIsDisabled(false);
       setSignInBtn('Sign In');
+      hideLoader();
     }
     if (userCredential) {
           setFormData({

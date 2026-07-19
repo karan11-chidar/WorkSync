@@ -1,11 +1,13 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
-
+import AuthProvider from "../src/features/auth/AuthProvider";
+import PremiumLoader from "./components/Animations/PremiumLoader";
 // Pages Imports
 function App() {
   return (
-    <AppRoutes/>
+    <AuthProvider>
+      <PremiumLoader />
+      <AppRoutes />
+    </AuthProvider>
   );
 }
 
