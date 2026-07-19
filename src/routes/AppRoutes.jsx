@@ -38,8 +38,8 @@ function AppRoutes() {
         {/* 🎬 Login Entrance */}
         <Route path="/" element={<Login />} />
 
-        {/* 👑 Admin Portal Layout Wrapper */}
-        <Route element={<ProtectedRoute/>}>
+        <Route element={<ProtectedRoute allowedRoles={['admin']}  />}>
+          {/* 👑 Admin Portal Layout Wrapper */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashBoard />} />
             <Route path="departments" element={<Departments />} />
@@ -49,8 +49,10 @@ function AppRoutes() {
             <Route path="employees" element={<EmployeeDirectory />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
+        </Route>
 
-          {/* 🧑‍💻 Employee Portal Layout Wrapper */}
+        {/* 🧑‍💻 Employee Portal Layout Wrapper */}
+        <Route element={<ProtectedRoute allowedRoles={['employee']}/>}>
           <Route path="/employee" element={<EmployeeLayout />}>
             <Route path="dashboard" element={<EmployeeDashBoard />} />
             <Route path="leaves" element={<LeaveDashboardView />} />
