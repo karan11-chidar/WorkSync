@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { login } from '../../features/auth/authService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 function LoginForm() {
-  const {showLoader, hideLoader} = useAuth();
+  const {showLoader, hideLoader,user} = useAuth();
   const [formData,setFormData ] = useState({
     email: '',
     password: '',
@@ -34,7 +34,6 @@ function LoginForm() {
   }
   const handleSubmit = async(e) => {
     e.preventDefault();
-  let userCredential;
     const formErrors = validateLoginForm(formData);
     if (!formErrors.isValid) {
       console.log('Validation UnSuccessful');
@@ -46,7 +45,7 @@ function LoginForm() {
       setIsDisabled(true);
       setSignInBtn('Signing');
       showLoader('login');
-      userCredential = await login(formData);
+      await login(formData);
     } catch (error) {
      alert('❌ Login Failed :'+ error.message)
     }
@@ -55,18 +54,26 @@ function LoginForm() {
       setSignInBtn('Sign In');
       hideLoader();
     }
-    if (userCredential) {
-          setFormData({
-            email: "",
-            password: "",
-          });
-          setErrors({
-            email: "",
-            password: "",
-          });
-      navigate("/admin/dashboard");
-      } ;
   }
+ useEffect(() => {
+   if (!user) return;
+setFormData({
+  email: "",
+  password: "",
+});
+setErrors({
+  email: "",
+  password: "",
+});
+   if (user.role === "admin") {
+     navigate("/admin/dashboard");
+   }
+
+   if (user.role === "employee") {
+     navigate("/employee/dashboard");
+   }
+ }, [user,navigate]);
+  
     return (
       <div className=" sm:mx-auto sm:w-full mt-5 w-full max-w-md mx-auto">
         <div className="bg-slate-800 py-8 px-6 shadow-xl rounded-3xl border border-slate-700/60 sm:px-10">
