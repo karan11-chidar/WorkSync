@@ -17,6 +17,7 @@ import EmployeeTaskList from "./../pages/Employee/Tasks/AssignedTasksPortal.jsx"
 import EmployeeProfile from "./../pages/Employee/Profile/EmployeeProfileView.jsx";
 import NotFoundPage from "./../pages/NotFoundPage.jsx";
 import LinearProgressStream from '../components/Animations/LinearProgressStream.jsx';
+import ProtectedRoute from '../features/auth/ProtectedRoute.jsx';
 function AppRoutes() {
   const [isLoading, setIsLoading] = useState(false);
   const MIN_ROUTE_LOADER_TIME = 1000;
@@ -32,32 +33,35 @@ function AppRoutes() {
   }, [location.pathname]);
   return (
     <>
-      <LinearProgressStream isLoading={isLoading}/>
+      <LinearProgressStream isLoading={isLoading} />
       <Routes>
         {/* 🎬 Login Entrance */}
         <Route path="/" element={<Login />} />
 
         {/* 👑 Admin Portal Layout Wrapper */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<AdminDashBoard />} />
-          <Route path="departments" element={<Departments />} />
-          <Route path="tasks" element={<TaskBoard />} />
-          <Route path="attendance" element={<TodayAttendance />} />
-          <Route path="leaves" element={<LeaveLedger />} />
-          <Route path="employees" element={<EmployeeDirectory />} />
-          <Route path="*" element={<NotFoundPage />} />
+        <Route element={<ProtectedRoute/>}>
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashBoard />} />
+            <Route path="departments" element={<Departments />} />
+            <Route path="tasks" element={<TaskBoard />} />
+            <Route path="attendance" element={<TodayAttendance />} />
+            <Route path="leaves" element={<LeaveLedger />} />
+            <Route path="employees" element={<EmployeeDirectory />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+
+          {/* 🧑‍💻 Employee Portal Layout Wrapper */}
+          <Route path="/employee" element={<EmployeeLayout />}>
+            <Route path="dashboard" element={<EmployeeDashBoard />} />
+            <Route path="leaves" element={<LeaveDashboardView />} />
+            <Route path="attendance" element={<EmployeeAttendance />} />
+            <Route path="tasks" element={<EmployeeTaskList />} />
+            <Route path="profile" element={<EmployeeProfile />} />
+            <Route path="profile/:employeeId" element={<EmployeeProfile />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
         </Route>
 
-        {/* 🧑‍💻 Employee Portal Layout Wrapper */}
-        <Route path="/employee" element={<EmployeeLayout />}>
-          <Route path="dashboard" element={<EmployeeDashBoard />} />
-          <Route path="leaves" element={<LeaveDashboardView />} />
-          <Route path="attendance" element={<EmployeeAttendance />} />
-          <Route path="tasks" element={<EmployeeTaskList />} />
-          <Route path="profile" element={<EmployeeProfile />} />
-          <Route path="profile/:employeeId" element={<EmployeeProfile />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

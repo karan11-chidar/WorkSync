@@ -2,14 +2,17 @@ import {useState} from 'react'
 import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../../features/auth/authService';
+import { useAuth } from '../../features/auth/AuthContext';
 function Footer({ headerTitle }) {
   const navigate = useNavigate();
+  const { showLoader,hideLoader } = useAuth();
   const [isDisabled, setIsDisabled] = useState(false);
     const [signOutBtn, setSignOutBtn] = useState('Sign Out');
   const handleLogout = async () => {
     try {
       setIsDisabled(true);
       setSignOutBtn('Signing Out')
+      showLoader('logout');
       await logout();
       navigate("/");
     } catch (error) {
@@ -17,6 +20,7 @@ function Footer({ headerTitle }) {
     } finally {
       setIsDisabled(false);
       setSignOutBtn('Sign Out');
+      hideLoader();
     }
   }
   return (
