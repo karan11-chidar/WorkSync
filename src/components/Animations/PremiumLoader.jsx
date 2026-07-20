@@ -14,8 +14,8 @@ export default function PremiumLoader() {
       heading: "AUTHORIZING ACCOUNT",
       status: "Verifying credentials on secure cluster...",
       icon: <Lock className="h-9 w-9 text-emerald-400 animate-pulse" />,
-      increment: 8, // तेज़ बढ़ेगा
-      intervalTime: 60,
+      increment: 5, // तेज़ बढ़ेगा
+      intervalTime: 80,
     },
     logout: {
       badge: "Account Provisioning Node",
