@@ -47,12 +47,12 @@ function LoginForm() {
       showLoader('login');
       await login(formData);
     } catch (error) {
-     alert('❌ Login Failed :'+ error.message)
+      alert('❌ Login Failed :' + error.message)
+      hideLoader();
     }
     finally {
       setIsDisabled(false);
       setSignInBtn('Sign In');
-      hideLoader();
     }
   }
  useEffect(() => {
