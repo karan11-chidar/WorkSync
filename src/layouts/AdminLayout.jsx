@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Outlet } from 'react-router-dom';
 import SideBar from '../components/Sidebar/SideBar';
 import MobileHeader from '../components/MobileHeader';
@@ -11,7 +11,12 @@ import {
   CalendarClock,
 } from "lucide-react";
 import LinearProgressStream from '../components/Animations/LinearProgressStream';
+import { useAuth } from '../features/auth/AuthContext';
 function AdminLayout() {
+  const { hideLoader } = useAuth();
+  useEffect(() => {
+    hideLoader();
+  }, []);
   // 🔥 ADMIN NAVIGATION MATRIX (100% Lowercase & Space-Free IDs)
   const navItemsAdmin = [
     { id: "dashboard", label: "Company Overview", icon: LayoutDashboard },

@@ -4,7 +4,12 @@ import SideBar from '../components/Sidebar/SideBar';
 import MobileHeader from '../components/MobileHeader';
 import LinearProgressStream from '../components/Animations/LinearProgressStream';
 import { Home, CalendarCheck, FileText, CheckSquare, User } from "lucide-react";
+import { useAuth } from '../features/auth/AuthContext';
 function EmployeeLayout() {
+  const { hideLoader } = useAuth();
+  useEffect(() => {
+    hideLoader();
+  }, []);
   // 🔥 EMPLOYEE NAVIGATION MATRIX (Clean CamelCase & Symbol-Free IDs)
   const navItemsEmployee = [
     { id: "dashboard", label: "Home", icon: Home },
