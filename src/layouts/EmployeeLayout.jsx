@@ -1,10 +1,10 @@
-import {useState} from 'react'
-import { Outlet } from 'react-router-dom';
+import {useEffect, useState} from 'react'
+import { Form, Outlet } from 'react-router-dom';
 import SideBar from '../components/Sidebar/SideBar';
 import MobileHeader from '../components/MobileHeader';
 import LinearProgressStream from '../components/Animations/LinearProgressStream';
 import { Home, CalendarCheck, FileText, CheckSquare, User } from "lucide-react";
-import { useAuth } from '../features/auth/AuthContext';
+import { useAuth, } from '../features/auth/AuthContext';
 function EmployeeLayout() {
   const { hideLoader } = useAuth();
   useEffect(() => {
