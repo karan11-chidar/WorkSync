@@ -18,7 +18,11 @@ export default function AuthProvider({ children }) {
     });
   }
 
-  const hideLoader = ()=> {
+  const hideLoader = () => {
+    console.log("hideLoader called", {
+      pathname: window.location.pathname,
+      time: performance.now(),
+    });
     setLoaderState({
       active: false,
       mode: null,
@@ -47,7 +51,6 @@ export default function AuthProvider({ children }) {
         };
         setUser(currentUser);
         setLoading(false);
-        hideLoader();
       } catch (error) {
          console.error(error);
          setUser(null);
