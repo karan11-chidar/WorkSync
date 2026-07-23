@@ -2,10 +2,11 @@ import {useState} from 'react'
 import DepartmentHeader from '../components/DepartmentHeader';
 import CreateDepartment from '../components/CreateDepartment';
 import DepartmentCards from '../components/DepartmentsCards';
+import DepartmentProvider from '../context/DepartmentProvider';
 function Departments() {
-  const [isDeptOpen, setIsDeptOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(null);
-  const [isDelete, setIsDelete] = useState(false);
+  const [openEditingModal, setOpenEditingModal] = useState(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState(null);
   const employees = [
     { id: "EMP-001", firstName: "Rahul", lastName: "Sharma" },
     { id: "EMP-002", firstName: "Priya", lastName: "Verma" },
@@ -71,17 +72,22 @@ function Departments() {
   }
   return (
     <div className="space-y-6">
-      <DepartmentHeader setIsDeptOpen={setIsDeptOpen} />
-      <DepartmentCards departments={departments} setIsEditing={setIsEditing}onDelete={onDelete} />
-      <CreateDepartment
-        editingDept={isEditing}
-        setEditingDept={setIsEditing}
-        isDeptOpen={isDeptOpen}
-        setIsDeptOpen={setIsDeptOpen}
-        availableDepts={availableDepts}
-        setAvailableDepts={setAvailableDepts}
-        employees={employees} // एम्प्लॉइज़ लिस्ट पास कर दी
-      />
+      <DepartmentProvider>
+        <DepartmentHeader setOpenCreateModal={setOpenCreateModal} />
+        <DepartmentCards
+          departments={departments}
+          setOpenEditingModal={setOpenEditingModal}
+          setEditingDepartment={setEditingDepartment}
+          onDelete={onDelete}
+        />
+        <CreateDepartment
+          openEditingModal={openEditingModal}
+          setOpenEditingModal={setOpenEditingModal}
+          openCreateModal={openCreateModal}
+          setIsOpenCreateModal={setOpenCreateModal}
+          employees={employees}
+        />
+      </DepartmentProvider>
     </div>
   );
 }
