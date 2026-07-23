@@ -1,6 +1,6 @@
 import AppRoutes from "./routes/AppRoutes";
-import AuthProvider from "../src/features/auth/AuthProvider";
-import PremiumLoader from "./components/Animations/PremiumLoader";
+import AuthProvider from "../features/auth/context/AuthProvider";
+import PremiumLoader from "../shared/components/Animations/PremiumLoader";
 // Pages Imports
 function App() {
   return (

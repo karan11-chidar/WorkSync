@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Cpu, Loader2, Lock, LogOutIcon, RefreshCw,  } from "lucide-react";
-import { useAuth } from "../../features/auth/AuthContext";
+import { useAuth } from "../../../features/auth/context/AuthContext";
 
 export default function PremiumLoader() {
   const { loaderState } = useAuth();

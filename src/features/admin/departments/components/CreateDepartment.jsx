@@ -8,8 +8,6 @@ import {
   MapPin,
   FileText,
 } from "lucide-react";
-
-// थीम कलर का कॉन्फ़िगरेशन मैप जो आपके डिज़ाइन से मैच करता है
 const COLOR_MAP = {
   emerald: {
     bg: "bg-emerald-50",
@@ -31,117 +29,7 @@ const COLOR_MAP = {
   },
 };
 
-function CreateDepartment({
-  isDeptOpen, // नया विभाग क्रिएट करने के लिए ट्रिगर (boolean)
-  setIsDeptOpen, // क्रिएट विंडो बंद करने का फ़ंक्शन
-  editingDept, // एडिट करने के लिए चुना गया विभाग (object या null)
-  setEditingDept, // एडिट विंडो बंद करने का फ़ंक्शन
-  availableDepts, // विभागों की स्टेट लिस्ट एरे
-  setAvailableDepts, // विभागों की लिस्ट अपडेट करने का फ़ंक्शन
-  employees, // एम्प्लॉइज़ की लिस्ट मैनेजर्स ड्रॉपडाउन के लिए
-}) {
-  // लोकल फॉर्म स्टेट्स
-  const [name, setName] = useState("");
-  const [location, setLocation] = useState("");
-  const [description, setDescription] = useState("");
-  const [manager, setManager] = useState("");
-  const [budget, setBudget] = useState(100000);
-  const [color, setColor] = useState("sky");
-  const [formError, setFormError] = useState(null);
-
-  // फॉर्म में पुरानी वैल्यू भरने या रिसेट करने का इफ़ेक्ट
-  useEffect(() => {
-    if (editingDept) {
-      setName(editingDept.name || "");
-      setLocation(editingDept.location || "");
-      setDescription(editingDept.description || "");
-      setManager(editingDept.manager || "");
-      setBudget(editingDept.budget || 0);
-      setColor(editingDept.color || "sky");
-    } else {
-      setName("");
-      setLocation("");
-      setDescription("");
-      setManager("");
-      setBudget(100000);
-      setColor("sky");
-    }
-    setFormError(null);
-  }, [editingDept, isDeptOpen]);
-
-  if (!isDeptOpen && !editingDept) return null;
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    setFormError(null);
-
-    const trimmedName = name.trim();
-    const trimmedLocation = location.trim();
-
-    if (!trimmedName) {
-      setFormError("Department name is required.");
-      return;
-    }
-    if (!trimmedLocation) {
-      setFormError("Location / Hub area is required.");
-      return;
-    }
-
-    // डुप्लीकेट नाम चेक (खुद को छोड़कर बाकी लिस्ट में)
-    const isDuplicate = availableDepts.some(
-      (d) =>
-        d.name.toLowerCase() === trimmedName.toLowerCase() &&
-        (!editingDept || d.id !== editingDept.id),
-    );
-
-    if (isDuplicate) {
-      setFormError("A department with this name already exists.");
-      return;
-    }
-
-    if (editingDept) {
-      // 1. पूरा कार्ड एडिट/अपडेट करने का लॉजिक
-      const updatedDepts = availableDepts.map((d) => {
-        if (d.id === editingDept.id) {
-          return {
-            ...d,
-            name: trimmedName,
-            location: trimmedLocation,
-            description,
-            manager: manager || "No Manager Assigned",
-            budget: Number(budget) || 0,
-            color,
-          };
-        }
-        return d;
-      });
-      setAvailableDepts(updatedDepts);
-      setEditingDept(null);
-    } else {
-      // 2. नया विभाग ऑब्जेक्ट जोड़ने का लॉजिक
-      const newDeptObj = {
-        id: trimmedName.toLowerCase().replace(/\s+/g, "-"),
-        name: trimmedName,
-        location: trimmedLocation,
-        description,
-        manager: manager || "No Manager Assigned",
-        count: 0,
-        avgSalary: 0,
-        budget: Number(budget) || 0,
-        color,
-        topPerformer: null,
-      };
-      setAvailableDepts([...availableDepts, newDeptObj]);
-      setIsDeptOpen(false);
-    }
-  };
-
-  const handleClose = () => {
-    setFormError(null);
-    setIsDeptOpen(false);
-    setEditingDept(null);
-  };
-
+ const  CreateDepartment = () => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
@@ -187,8 +75,6 @@ function CreateDepartment({
                 type="text"
                 required
                 placeholder="e.g. Sales, Operations"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium"
               />
             </div>
@@ -201,8 +87,6 @@ function CreateDepartment({
                 type="text"
                 required
                 placeholder="e.g. Block A, SF Hub or Remote"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium"
               />
             </div>
@@ -215,8 +99,6 @@ function CreateDepartment({
                 Manager / Leader *
               </label>
               <select
-                value={manager}
-                onChange={(e) => setManager(e.target.value)}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600 outline-none"
               >
                 <option value="">-- Choose a Leader --</option>
@@ -244,8 +126,6 @@ function CreateDepartment({
                 required
                 min="0"
                 placeholder="e.g. 150000"
-                value={budget}
-                onChange={(e) => setBudget(Number(e.target.value) || 0)}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-semibold"
               />
             </div>
@@ -289,8 +169,6 @@ function CreateDepartment({
               rows={3}
               required
               placeholder="Describe the department's operational mandate and core deliverables..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
               className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none resize-none bg-white font-medium"
             />
           </div>
@@ -299,7 +177,6 @@ function CreateDepartment({
           <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
             <button
               type="button"
-              onClick={handleClose}
               className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95"
             >
               Cancel
