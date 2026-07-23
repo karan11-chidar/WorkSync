@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../assets/c-logo.png";
+import logo from "../../../assets/c-logo.png";
 
 function Header() {
   return (

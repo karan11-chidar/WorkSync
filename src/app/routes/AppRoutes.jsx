@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 // Pages Imports
-import AdminLayout from '../layouts/AdminLayout';
-import EmployeeLayout from '../layouts/EmployeeLayout';
-import AdminDashBoard from "./../pages/Admin/Dashboard/DashBoard.jsx";
-import EmployeeDirectory from "./../pages/Admin/EmployeeDirectory/EmployeeDirectory.jsx";
-import TaskBoard from "./../pages/Admin/TaskBoard/TaskBoard.jsx";
-import Departments from "./../pages/Admin/Departments/Departments.jsx";
-import TodayAttendance from "./../pages/Admin/Attendance/TodayAttendance.jsx";
-import LeaveLedger from "./../pages/Admin/LeaveLedger/LeaveLedger.jsx";
-import EmployeeDashBoard from "./../pages/Employee/DashBoard/DashBoard.jsx";
-import Login from "./../pages/Login/Login.jsx";
-import EmployeeAttendance from "./../pages/Employee/Attendance/EmployeeAttendance.jsx";
-import LeaveDashboardView from "./../pages/Employee/Leaves/LeaveDashboardView.jsx";
-import EmployeeTaskList from "./../pages/Employee/Tasks/AssignedTasksPortal.jsx";
-import EmployeeProfile from "./../pages/Employee/Profile/EmployeeProfileView.jsx";
-import NotFoundPage from "./../pages/NotFoundPage.jsx";
-import LinearProgressStream from '../components/Animations/LinearProgressStream.jsx';
-import ProtectedRoute from '../features/auth/ProtectedRoute.jsx';
+import AdminLayout from "../../layouts/AdminLayout.jsx";
+import EmployeeLayout from "../../layouts/EmployeeLayout.jsx";
+import AdminDashBoard from "../../pages/Admin/Dashboard/DashBoard.jsx";
+import EmployeeDirectory from "../../pages/Admin/EmployeeDirectory/EmployeeDirectory.jsx";
+import TaskBoard from "../../pages/Admin/TaskBoard/TaskBoard.jsx";
+import Departments from "../../features/admin/departments/pages/Departments.jsx";
+import TodayAttendance from "../../pages/Admin/Attendance/TodayAttendance.jsx";
+import LeaveLedger from "../../pages/Admin/LeaveLedger/LeaveLedger.jsx";
+import EmployeeDashBoard from "../../pages/Employee/DashBoard/DashBoard.jsx";
+import Login from "../../features/auth/pages/Login.jsx";
+import EmployeeAttendance from "../../pages/Employee/Attendance/EmployeeAttendance.jsx";
+import LeaveDashboardView from "../../pages/Employee/Leaves/LeaveDashboardView.jsx";
+import EmployeeTaskList from "../../pages/Employee/Tasks/AssignedTasksPortal.jsx";
+import EmployeeProfile from "../../pages/Employee/Profile/EmployeeProfileView.jsx";
+import NotFoundPage from "../../shared/pages/NotFoundPage.jsx";
+import LinearProgressStream from "../../shared/components/Animations/LinearProgressStream.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 function AppRoutes() {
   const [isLoading, setIsLoading] = useState(false);
   const MIN_ROUTE_LOADER_TIME = 1000;
@@ -38,7 +38,7 @@ function AppRoutes() {
         {/* 🎬 Login Entrance */}
         <Route path="/" element={<Login />} />
 
-        <Route element={<ProtectedRoute allowedRoles={['admin']}  />}>
+        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           {/* 👑 Admin Portal Layout Wrapper */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashBoard />} />
@@ -52,7 +52,7 @@ function AppRoutes() {
         </Route>
 
         {/* 🧑‍💻 Employee Portal Layout Wrapper */}
-        <Route element={<ProtectedRoute allowedRoles={['employee']}/>}>
+        <Route element={<ProtectedRoute allowedRoles={["employee"]} />}>
           <Route path="/employee" element={<EmployeeLayout />}>
             <Route path="dashboard" element={<EmployeeDashBoard />} />
             <Route path="leaves" element={<LeaveDashboardView />} />
@@ -70,4 +70,4 @@ function AppRoutes() {
   );
 }
 
-export default AppRoutes
+export default AppRoutes;

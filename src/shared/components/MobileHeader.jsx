@@ -1,9 +1,10 @@
-import React from "react";
+import React from 'react'
 import logo from "../../assets/c-logo.png";
 import { Menu } from "lucide-react";
-function Header({headerTitle}) {
+import SideBar from './Sidebar/SideBar';
+function MobileHeader({headerTitle,setOpenSidebar}) {
   return (
-    <div className="h-16 flex items-center justify-between border-b border-slate-800 px-4">
+    <div className="md:hidden lg:hidden h-16 flex items-center bg-slate-900 justify-between border-b border-slate-800 px-4">
       <div className="flex items-center gap-2">
         <img
           src={logo}
@@ -26,8 +27,16 @@ function Header({headerTitle}) {
           </span>
         </div>
       </div>
+
+      <button
+        onClick={() => {
+          setOpenSidebar(true);
+         }}
+        className="md:hidden p-1.5 text-slate-400 hover:text-white">
+        <Menu className="h-5 w-5" />
+      </button>
     </div>
   );
 }
 
-export default Header;
+export default MobileHeader

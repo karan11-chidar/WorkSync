@@ -1,7 +1,7 @@
 import {useState} from 'react'
-import DepartmentHeader from './DepartmentHeader';
-import CreateDepartment from './CreateDepartment';
-import DepartmentCards from './DepartmentsCards';
+import DepartmentHeader from '../components/DepartmentHeader';
+import CreateDepartment from '../components/CreateDepartment';
+import DepartmentCards from '../components/DepartmentsCards';
 function Departments() {
   const [isDeptOpen, setIsDeptOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(null);

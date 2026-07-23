@@ -1,22 +1,22 @@
-import { onAuthStateChanged } from 'firebase/auth';
-import React, {  useEffect,useState } from 'react'
-import { auth } from '../../firebase/firebaseConfig';
-import AuthContext from './AuthContext';
-import getUserProfile from './profileService';
+import { onAuthStateChanged } from "firebase/auth";
+import React, { useEffect, useState } from "react";
+import { auth } from "../../../firebase/firebaseConfig";
+import AuthContext from "./AuthContext";
+import getUserProfile from "../services/profileService";
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-      const [loaderState, setLoaderState] = useState({
-              active: false,
-              mode: null,
-      });
-  const  showLoader = (mode)=> {
+  const [loaderState, setLoaderState] = useState({
+    active: false,
+    mode: null,
+  });
+  const showLoader = (mode) => {
     setLoaderState({
       active: true,
-      mode:mode,
+      mode: mode,
     });
-  }
+  };
 
   const hideLoader = () => {
     console.log("hideLoader called", {
@@ -27,9 +27,9 @@ export default function AuthProvider({ children }) {
       active: false,
       mode: null,
     });
-  }
+  };
   useEffect(() => {
-    showLoader('refresh');
+    showLoader("refresh");
     const unSubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       try {
         if (!firebaseUser) {
@@ -52,19 +52,19 @@ export default function AuthProvider({ children }) {
         setUser(currentUser);
         setLoading(false);
       } catch (error) {
-         console.error(error);
-         setUser(null);
-         setLoading(false);
+        console.error(error);
+        setUser(null);
+        setLoading(false);
         hideLoader();
-         alert(`Firebase authentication error: ${error.message}`);
+        alert(`Firebase authentication error: ${error.message}`);
       }
-      })
-        return () => unSubscribe();
-    }, [])
-    
+    });
+    return () => unSubscribe();
+  }, []);
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, loaderState, showLoader,hideLoader }}
+      value={{ user, loading, loaderState, showLoader, hideLoader }}
     >
       {children}
     </AuthContext.Provider>

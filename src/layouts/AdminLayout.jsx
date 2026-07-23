@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react'
-import { Outlet } from 'react-router-dom';
-import SideBar from '../components/Sidebar/SideBar';
-import MobileHeader from '../components/MobileHeader';
+import React, { useState, useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import SideBar from "../shared/components/Sidebar/SideBar";
+import MobileHeader from "../shared/components/MobileHeader";
 import {
   LayoutDashboard,
   Users,
@@ -10,12 +10,15 @@ import {
   Clock,
   CalendarClock,
 } from "lucide-react";
-import LinearProgressStream from '../components/Animations/LinearProgressStream';
-import { useAuth } from '../features/auth/AuthContext';
+import LinearProgressStream from "../shared/components/Animations/LinearProgressStream";
+import { useAuth } from "../features/auth/context/AuthContext";
+import { toastSuccess } from "../shared/services/toastService";
 function AdminLayout() {
   const { hideLoader } = useAuth();
   useEffect(() => {
     hideLoader();
+          toastSuccess("login successfully ");
+
   }, []);
   // 🔥 ADMIN NAVIGATION MATRIX (100% Lowercase & Space-Free IDs)
   const navItemsAdmin = [
@@ -32,11 +35,19 @@ function AdminLayout() {
       <LinearProgressStream />
       {/* Mobile Header */}
       <div className="md:hidden">
-        <MobileHeader headerTitle="Admin Portal" setOpenSidebar={setOpenSidebar} />
+        <MobileHeader
+          headerTitle="Admin Portal"
+          setOpenSidebar={setOpenSidebar}
+        />
       </div>
       {/* Desktop Layout */}
       <div className="flex h-full w-full">
-        <SideBar navItems={navItemsAdmin} headerTitle="Admin Portal" openSidebar={openSidebar} setOpenSidebar={setOpenSidebar} />
+        <SideBar
+          navItems={navItemsAdmin}
+          headerTitle="Admin Portal"
+          openSidebar={openSidebar}
+          setOpenSidebar={setOpenSidebar}
+        />
         <main className="flex-1 md:overflow-y-auto bg-slate-50 p-4 md:p-6 lg:p-8">
           <Outlet />
         </main>
@@ -45,4 +56,4 @@ function AdminLayout() {
   );
 }
 
-export default AdminLayout
+export default AdminLayout;

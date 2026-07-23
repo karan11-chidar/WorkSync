@@ -1,8 +1,8 @@
 import {useState} from 'react'
 import { LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../features/auth/authService';
-import { useAuth } from '../../features/auth/AuthContext';
+import { logout } from '../../../features/auth/services/authService';
+import { useAuth } from '../../../features/auth/context/AuthContext';
 function Footer({ headerTitle }) {
   const navigate = useNavigate();
   const { showLoader,hideLoader } = useAuth();

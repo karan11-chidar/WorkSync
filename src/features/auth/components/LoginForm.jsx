@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Mail, Lock, ArrowRight } from 'lucide-react';
-import { login } from '../../features/auth/authService';
+import { login } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../features/auth/AuthContext';
+import { useAuth } from '../context/AuthContext';
 function LoginForm() {
   const {showLoader, hideLoader,user} = useAuth();
   const [formData,setFormData ] = useState({
