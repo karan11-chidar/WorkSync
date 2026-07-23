@@ -29,7 +29,13 @@ const COLOR_MAP = {
   },
 };
 
- const  CreateDepartment = () => {
+const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,setOpenEditingModal,employees}) => {
+  const [formError, setFormError] = useState({
+    departmentName: '',
+  });
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+  }
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
@@ -40,13 +46,13 @@ const COLOR_MAP = {
         <div className="flex items-center justify-between p-5 border-b border-slate-100">
           <h2 className="flex items-center gap-2 text-md font-bold text-indigo-600">
             <Building2 className="h-5 w-5" />
-            {editingDept
+            {openEditingModal
               ? `Edit Department: ${editingDept.name}`
               : "Add Custom Department"}
           </h2>
           <button
             type="button"
-            onClick={handleClose}
+            // onClick={handleClose}
             className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer active:scale-95"
           >
             <X className="h-5 w-5" />

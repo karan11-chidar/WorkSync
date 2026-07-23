@@ -14,7 +14,7 @@ export default function PremiumUniversalLoader({ variant = "list", rows = 3 }) {
             className="p-4 sm:p-5 rounded-2xl border border-slate-100 bg-slate-50/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden"
           >
             {/* Shimmer Effect Wave Indicator */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-200/40 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+            <div className="absolute inset-0 bg-linear-to-r from-transparent via-slate-200/40 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
 
             <div className="space-y-2.5 flex-1 min-w-0">
               <div className="flex items-center gap-2">
