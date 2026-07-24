@@ -1,28 +1,19 @@
 import React, { useState } from 'react'
 import { DepartmentContext } from './DepartmentContext'
 
- export const createDepartment = (formData) => {
-    
-}
-export const deleteDepartment = (departmentId) => {
-    
-}
-export const updateDepartment = () => {
-    
-}
-export const getDepartments = () => {
-    
-}
-
 function DepartmentProvider({ children }) {
-
+  const [departments, setDepartments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [error, setError] = useState(null); // optional but recommended
+   const createDepartment = (formData) => {};
+   const deleteDepartment = (departmentId) => {};
+   const updateDepartment = () => {};
+   const getDepartments = () => {};
   return (
-    <DepartmentContext.Provider value={isLoading} >
+    <DepartmentContext.Provider value={isLoading}>
       {children}
-      </DepartmentContext.Provider>
-  )
+    </DepartmentContext.Provider>
+  );
 }
 
 export default DepartmentProvider

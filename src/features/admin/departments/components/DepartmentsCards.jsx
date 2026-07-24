@@ -9,7 +9,7 @@ import {
   Star,
 } from "lucide-react";
 
-function DepartmentCards({ departments, setOpenEditingModal,setEditingDepartment, onDelete }) {
+function DepartmentCards({ departments, handleEditOpen, onDelete }) {
   const totalBudget = departments.reduce((sum, d) => sum + d.budget, 0);
 
   return (
@@ -81,10 +81,7 @@ function DepartmentCards({ departments, setOpenEditingModal,setEditingDepartment
                 {/* EDIT BUTTON - इस पर क्लिक करते ही पूरा कार्ड एडिट मोड में जाएगा */}
                 <button
                   type="button"
-                  onClick={() => {
-                    setOpenEditingModal(true)
-                    setEditingDepartment(dept);
-                  }}
+                  onClick={()=>handleEditOpen(dept)}
                   className="text-indigo-600 hover:bg-indigo-100 p-1 rounded-lg cursor-pointer transition-colors"
                 >
                   <Edit3 size={15} />

@@ -29,14 +29,27 @@ const COLOR_MAP = {
   },
 };
 
-const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,setOpenEditingModal,employees}) => {
+const DepartmentForm = ({editingDept , employees,handleClose, }) => {
+  const [department, setDepartment] = useState({
+    departmentName: '',
+    location: '',
+    budget: '',
+    manager: '',
+    description: '',
+    themeColor:'',
+  })
   const [formError, setFormError] = useState({
     departmentName: '',
   });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+  }
   const handleFormSubmit = (e) => {
     e.preventDefault();
   }
   return (
+
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
       id="dept-modal-overlay"
@@ -46,13 +59,13 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
         <div className="flex items-center justify-between p-5 border-b border-slate-100">
           <h2 className="flex items-center gap-2 text-md font-bold text-indigo-600">
             <Building2 className="h-5 w-5" />
-            {openEditingModal
+            {editingDept
               ? `Edit Department: ${editingDept.name}`
               : "Add Custom Department"}
           </h2>
           <button
             type="button"
-            // onClick={handleClose}
+            onClick={handleClose}
             className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer active:scale-95"
           >
             <X className="h-5 w-5" />
@@ -78,6 +91,9 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
                 Department Name *
               </label>
               <input
+                name="departmentName"
+                value={department.departmentName}
+                onChange={handleChange}
                 type="text"
                 required
                 placeholder="e.g. Sales, Operations"
@@ -90,6 +106,9 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
                 <MapPin size={12} className="text-slate-400" /> Location / Hub *
               </label>
               <input
+                name="location"
+                value={department.location}
+                onChange={handleChange}
                 type="text"
                 required
                 placeholder="e.g. Block A, SF Hub or Remote"
@@ -128,6 +147,9 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
                 Budget Allocation (INR) *
               </label>
               <input
+                name="budget"
+                value={department.budget}
+                onChange={handleChange}
                 type="number"
                 required
                 min="0"
@@ -148,7 +170,8 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
                   <button
                     key={colorKey}
                     type="button"
-                    onClick={() => setColor(colorKey)}
+                    name="themeColor"
+                    onClick={handleChange}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-95 ${
                       isActive
                         ? `${config.bg} ${config.text} ${config.border} ring-2 ring-indigo-500/30 scale-105`
@@ -172,6 +195,9 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
               Focus Areas *
             </label>
             <textarea
+              name="description"
+              value={department.description}
+              onChange={handleChange}
               rows={3}
               required
               placeholder="Describe the department's operational mandate and core deliverables..."
@@ -182,13 +208,13 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
           {/* Actions Footer */}
           <div className="pt-4 border-t border-slate-100 flex justify-end gap-3">
             <button
+              onClick={handleClose}
               type="button"
               className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95"
             >
               Cancel
             </button>
             <button
-              type="submit"
               className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5"
             >
               <Save size={14} />
@@ -201,4 +227,4 @@ const CreateDepartment = ({openCreateModal,setOpenCreateModal,openEditingModal,s
   );
 }
 
-export default CreateDepartment;
+export default DepartmentForm;
