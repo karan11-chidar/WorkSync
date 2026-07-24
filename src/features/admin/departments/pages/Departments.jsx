@@ -1,12 +1,11 @@
 import {useState} from 'react'
 import DepartmentHeader from '../components/DepartmentHeader';
-import CreateDepartment from '../components/CreateDepartment';
+import CreateDepartment from '../components/DepartmentForm';
 import DepartmentCards from '../components/DepartmentsCards';
 import DepartmentProvider from '../context/DepartmentProvider';
 function Departments() {
-  const [openEditingModal, setOpenEditingModal] = useState(false);
-  const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [editingDepartment, setEditingDepartment] = useState(null);
+  const [editingDept, setEditingDept] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const employees = [
     { id: "EMP-001", firstName: "Rahul", lastName: "Sharma" },
     { id: "EMP-002", firstName: "Priya", lastName: "Verma" },
@@ -67,26 +66,37 @@ function Departments() {
     { name: "Design", head: "Priya Verma" },
     { name: "HR", head: "No Head Assigned" },
   ]);
+  const handleEditOpen = (dept) => {
+    setEditingDept(dept);
+    setModalOpen(true);
+  };
+  const handleOpenDept = () => {
+    setEditingDept(null)
+    setModalOpen(true);
+  }
+  const handleClose = () => {
+    setEditingDept(null);
+    setModalOpen(false)
+  };
   const onDelete = (dep) => {
     console.log('Delete Dep')
   }
   return (
     <div className="space-y-6">
       <DepartmentProvider>
-        <DepartmentHeader setOpenCreateModal={setOpenCreateModal} />
+        <DepartmentHeader handleOpenDept={handleOpenDept} />
         <DepartmentCards
           departments={departments}
-          setOpenEditingModal={setOpenEditingModal}
-          setEditingDepartment={setEditingDepartment}
+          handleEditOpen={handleEditOpen}
           onDelete={onDelete}
         />
-        <CreateDepartment
-          openEditingModal={openEditingModal}
-          setOpenEditingModal={setOpenEditingModal}
-          openCreateModal={openCreateModal}
-          setIsOpenCreateModal={setOpenCreateModal}
-          employees={employees}
-        />
+        { modalOpen &&
+          <CreateDepartment
+            editingDept={editingDept}
+            handleClose={handleClose}
+            employees={employees}
+          />
+        }
       </DepartmentProvider>
     </div>
   );

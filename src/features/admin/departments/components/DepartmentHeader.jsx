@@ -1,7 +1,7 @@
 import React from "react";
 import { CreditCard, Briefcase, IndianRupee ,Plus} from "lucide-react";
 
-function DepartmentHeader({setOpenCreateModal}) {
+function DepartmentHeader({handleOpenDept}) {
   return (
     <div
       className="
@@ -50,7 +50,7 @@ function DepartmentHeader({setOpenCreateModal}) {
         </p>
       </div>
       <button
-        onClick={() => setOpenCreateModal(true)}
+        onClick={handleOpenDept}
         className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all h-11.5 "
       >
         <Plus className="h-4 w-4" /> Add Department
