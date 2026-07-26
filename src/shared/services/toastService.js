@@ -3,9 +3,9 @@ import { toast } from "sonner"
 export const toastSuccess = (message) => {
    return toast.success(message, {
      style: {
-       background: "#1E293B",
+       background: "green",
        color: "#FFFFFF",
-       border: "1px solid #22C55E",
+       border: "1px solid black",
      },
    });
 }

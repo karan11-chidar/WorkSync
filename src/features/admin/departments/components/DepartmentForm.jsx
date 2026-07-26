@@ -8,6 +8,7 @@ import {
   MapPin,
   FileText,
 } from "lucide-react";
+import { departmentFormValidation } from "../validations/departmentValidation";
 const COLOR_MAP = {
   emerald: {
     bg: "bg-emerald-50",
@@ -39,7 +40,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
     themeColor:'',
   })
   const [formError, setFormError] = useState({
-    departmentName: "k",
+    departmentName: "",
     location: "",
     budget: "",
     manager: "",
@@ -49,9 +50,18 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setDepartment({ ...department, [name]: value });
+    setFormError({ ...formError, [name]: '' });
   }
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    const validationResult= departmentFormValidation(department);
+    if (!validationResult.isValid) {
+      console.log('validation unsuccessfull.');
+      setFormError(validationResult.formError);
+      return
+    }
+    console.log(department);
+    handleClose();
   }
   useEffect(() => {
     if (editingDept) {
@@ -103,12 +113,12 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
           onSubmit={handleFormSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-4 text-xs font-medium text-slate-600"
         >
-          {false || (
+          {/* {false || (
             <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-2">
               <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
               <span>Something went wrong</span>
             </div>
-          )}
+          )} */}
 
           {/* Name & Location Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -125,7 +135,11 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 placeholder="e.g. Sales, Operations"
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium"
               />
-              {formError.departmentName && (<span className="text-rose-700">{formError.departmentName }</span>)}
+              {formError.departmentName && (
+                <span className="text-rose-700">
+                  {formError.departmentName}
+                </span>
+              )}
             </div>
 
             <div className="space-y-1">
@@ -141,7 +155,9 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 placeholder="e.g. Block A, SF Hub or Remote"
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium"
               />
-              {formError.location && (<span className="text-rose-700">{formError.location}</span>)}
+              {formError.location && (
+                <span className="text-rose-700">{formError.location}</span>
+              )}
             </div>
           </div>
 
@@ -170,7 +186,9 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                   );
                 })}
               </select>{" "}
-             {formError.manager && (<span className="text-rose-700">department name error</span>)}
+              {formError.manager && (
+                <span className="text-rose-700">{formError.manager}</span>
+              )}
             </div>
 
             <div className="space-y-1">
@@ -188,7 +206,9 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 placeholder="e.g. 150000"
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-semibold"
               />
-              {formError.budget && (<span className="text-rose-700">{formError.budget }</span>)}
+              {formError.budget && (
+                <span className="text-rose-700">{formError.budget}</span>
+              )}
             </div>
           </div>
 
@@ -204,22 +224,30 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                     key={colorKey}
                     type="button"
                     name="themeColor"
-                    onClick={() =>
-                      setDepartment({ ...department, ["themeColor"]: colorKey })
-                    }
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-95 ${
-                      isActive
-                        ? `${config.bg} ${config.text} ${config.border} ring-2 ring-indigo-500/30 scale-105`
-                        : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
-                    }`}
-                  >
-                    <span
-                      className={`h-2.5 w-2.5 rounded-full ${config.dot}`}
-                    />
-                    {colorKey}
-                  </button>
+                    onClick={() => {
+                      setDepartment({
+                        ...department,
+                        ["themeColor"]: colorKey,
+                      })
+                      setFormError({ ...formError, ['themeColor']: '' });
+                    }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-95 ${
+                        isActive
+                          ? `${config.bg} ${config.text} ${config.border} ring-2 ring-indigo-500/30 scale-105`
+                          : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span
+                        className={`h-2.5 w-2.5 rounded-full ${config.dot}`}
+                      />
+                      {colorKey}
+                    </button>
+                 
                 );
               })}
+              {formError.themeColor && (
+                <span className="text-rose-700">{formError.themeColor}</span>
+              )}
             </div>
           </div>
 
@@ -238,7 +266,9 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
               placeholder="Describe the department's operational mandate and core deliverables..."
               className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none resize-none bg-white font-medium"
             />
-            {formError.description && (<span className="text-rose-700">{ formError.description}</span>)}
+            {formError.description && (
+              <span className="text-rose-700">{formError.description}</span>
+            )}
           </div>
 
           {/* Actions Footer */}
@@ -250,7 +280,10 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
             >
               Cancel
             </button>
-            <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5">
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5"
+            >
               <Save size={14} />
               {editingDept ? "Save Profile Changes" : "Create Department"}
             </button>
