@@ -39,17 +39,43 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
     themeColor:'',
   })
   const [formError, setFormError] = useState({
-    departmentName: '',
+    departmentName: "k",
+    location: "",
+    budget: "",
+    manager: "",
+    description: "",
+    themeColor: "",
   });
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    setDepartment({ ...department, [name]: value });
   }
   const handleFormSubmit = (e) => {
     e.preventDefault();
   }
+  useEffect(() => {
+    if (editingDept) {
+      setDepartment({
+        departmentName: editingDept.departmentName,
+        location: editingDept.location,
+        budget: editingDept.budget,
+        manager: editingDept.manager,
+        description: editingDept.description,
+        themeColor: editingDept.themeColor,
+      });
+    }else {
+    setDepartment({
+      departmentName: "",
+      location: "",
+      budget: "",
+      manager: "",
+      description: "",
+      themeColor: "",
+    });
+      }
+      
+  },[editingDept])
   return (
-
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
       id="dept-modal-overlay"
@@ -60,7 +86,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
           <h2 className="flex items-center gap-2 text-md font-bold text-indigo-600">
             <Building2 className="h-5 w-5" />
             {editingDept
-              ? `Edit Department: ${editingDept.name}`
+              ? `Edit Department: ${editingDept.departmentName}`
               : "Add Custom Department"}
           </h2>
           <button
@@ -77,10 +103,10 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
           onSubmit={handleFormSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-4 text-xs font-medium text-slate-600"
         >
-          {formError && (
+          {false || (
             <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-2">
               <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{formError}</span>
+              <span>Something went wrong</span>
             </div>
           )}
 
@@ -99,6 +125,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 placeholder="e.g. Sales, Operations"
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium"
               />
+              {formError.departmentName && (<span className="text-rose-700">{formError.departmentName }</span>)}
             </div>
 
             <div className="space-y-1">
@@ -114,6 +141,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 placeholder="e.g. Block A, SF Hub or Remote"
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium"
               />
+              {formError.location && (<span className="text-rose-700">{formError.location}</span>)}
             </div>
           </div>
 
@@ -124,6 +152,9 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 Manager / Leader *
               </label>
               <select
+                name="manager"
+                onChange={handleChange}
+                value={department.manager}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600 outline-none"
               >
                 <option value="">-- Choose a Leader --</option>
@@ -138,7 +169,8 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                     </option>
                   );
                 })}
-              </select>
+              </select>{" "}
+             {formError.manager && (<span className="text-rose-700">department name error</span>)}
             </div>
 
             <div className="space-y-1">
@@ -156,6 +188,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                 placeholder="e.g. 150000"
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-semibold"
               />
+              {formError.budget && (<span className="text-rose-700">{formError.budget }</span>)}
             </div>
           </div>
 
@@ -164,14 +197,16 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
             <label className="font-semibold text-slate-600">Theme Color</label>
             <div className="flex flex-wrap gap-2.5 pt-1.5">
               {Object.keys(COLOR_MAP).map((colorKey) => {
-                const isActive = color === colorKey;
+                const isActive = department.themeColor === colorKey;
                 const config = COLOR_MAP[colorKey];
                 return (
                   <button
                     key={colorKey}
                     type="button"
                     name="themeColor"
-                    onClick={handleChange}
+                    onClick={() =>
+                      setDepartment({ ...department, ["themeColor"]: colorKey })
+                    }
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-95 ${
                       isActive
                         ? `${config.bg} ${config.text} ${config.border} ring-2 ring-indigo-500/30 scale-105`
@@ -203,6 +238,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
               placeholder="Describe the department's operational mandate and core deliverables..."
               className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none resize-none bg-white font-medium"
             />
+            {formError.description && (<span className="text-rose-700">{ formError.description}</span>)}
           </div>
 
           {/* Actions Footer */}
@@ -214,9 +250,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
             >
               Cancel
             </button>
-            <button
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5"
-            >
+            <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5">
               <Save size={14} />
               {editingDept ? "Save Profile Changes" : "Create Department"}
             </button>

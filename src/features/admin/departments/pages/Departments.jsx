@@ -13,7 +13,7 @@ function Departments() {
   const departments = [
     {
       id: "engineering",
-      name: "Engineering",
+      departmentName: "Engineering",
       location: "Block A",
       description:
         "Responsible for product development, backend systems and technical operations.",
@@ -21,7 +21,7 @@ function Departments() {
       count: 45,
       avgSalary: 850000,
       budget: 5000000,
-      color: "emerald",
+      themeColor: "emerald",
       topPerformer: {
         name: "Aman Singh",
         rating: 5,
