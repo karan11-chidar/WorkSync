@@ -57,7 +57,7 @@ export default function PremiumUniversalLoader({
   // 🌟 Premium Shimmer Effect Overlay
   const ShimmerOverlay = () => (
     <div className="absolute inset-0 overflow-hidden pointer-events-none rounded-[inherit]">
-      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-slate-200/60 via-30% to-transparent animate-[shimmer_1.6s_infinite]" />
+      <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-slate-200/60 via-30% to-transparent animate-[shimmer_1.6s_infinite]" />
     </div>
   );
 
