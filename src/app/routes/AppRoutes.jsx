@@ -18,6 +18,7 @@ import EmployeeProfile from "../../pages/Employee/Profile/EmployeeProfileView.js
 import NotFoundPage from "../../shared/pages/NotFoundPage.jsx";
 import LinearProgressStream from "../../shared/components/Animations/LinearProgressStream.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import DepartmentProvider from '../../features/admin/departments/context/DepartmentProvider.jsx'
 function AppRoutes() {
   const [isLoading, setIsLoading] = useState(false);
   const MIN_ROUTE_LOADER_TIME = 1000;
@@ -42,7 +43,16 @@ function AppRoutes() {
           {/* 👑 Admin Portal Layout Wrapper */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashBoard />} />
-            <Route path="departments" element={<Departments />} />
+            <Route
+              path="departments"
+              element={
+                <>
+                  <DepartmentProvider>
+                    <Departments />
+                  </DepartmentProvider>
+                </>
+              }
+            />
             <Route path="tasks" element={<TaskBoard />} />
             <Route path="attendance" element={<TodayAttendance />} />
             <Route path="leaves" element={<LeaveLedger />} />

@@ -1,50 +1,17 @@
-import React from "react";
 import { CreditCard, Briefcase, IndianRupee ,Plus} from "lucide-react";
-
-function DepartmentHeader({handleOpenDept}) {
+import { useDepartment } from "../context/DepartmentContext";
+import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
+function DepartmentHeader({ handleOpenDept }) {
+  const { departments, loading } = useDepartment();
   return (
-    <div
-      className="
-      bg-white
-      p-4
-      sm:p-6
-      rounded-2xl
-      border
-      border-slate-100
-      shadow-xs
-      flex
-      flex-col
-      lg:flex-row
-      lg:items-center
-      justify-between
-      gap-4
-      "
-    >
+    <div className=" bg-white p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4 ">
       {/* Left Content */}
-
       <div>
-        <h1
-          className="
-          text-base
-          sm:text-lg
-          lg:text-xl
-          font-bold
-          text-slate-900
-          "
-        >
+        <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900">
           Department Directories
         </h1>
 
-        <p
-          className="
-          text-[11px]
-          sm:text-xs
-          text-slate-400
-          mt-1
-          max-w-xl
-          leading-relaxed
-          "
-        >
+        <p className=" text-[11px] sm:text-xs text-slate-400 mt-1 max-w-xl leading-relaxed ">
           Manage departmental hubs, staff count weights, and financial budget
           distributions.
         </p>
@@ -55,47 +22,30 @@ function DepartmentHeader({handleOpenDept}) {
       >
         <Plus className="h-4 w-4" /> Add Department
       </button>
-
       {/* Stats */}
-
-      <div
-        className="
-        grid
-        grid-cols-2
-        gap-3
-        w-full
-        lg:w-auto
-        "
-      >
-        {/* Department Card */}
-
-        <div
-          className="
-          bg-slate-50
-          border
-          border-slate-100
-          rounded-xl
-          p-3
-          flex
-          items-center
-          gap-3
-          "
-        >
-          <div
-            className="
-            p-2
+      {loading ? (
+        <PremiumUniversalLoader
+          variant="grid"
+          gridCount={2}
+        />
+      ) : (
+        <div className="grid grid-cols-2 gap-3 w-full lg:w-auto ">
+          {/* Department Card */}
+          <div className=" bg-slate-50 border border-slate-100 rounded-xl p-3 flex items-center gap-3 ">
+            <div
+              className=" p-2
             bg-indigo-50
             text-indigo-600
             rounded-lg
             shrink-0
             "
-          >
-            <Briefcase className="h-4 w-4" />
-          </div>
+            >
+              <Briefcase className="h-4 w-4" />
+            </div>
 
-          <div className="min-w-0">
-            <span
-              className="
+            <div className="min-w-0">
+              <span
+                className="
               text-[9px]
               sm:text-[10px]
               font-bold
@@ -105,26 +55,24 @@ function DepartmentHeader({handleOpenDept}) {
               block
               truncate
               "
-            >
-              Departments
-            </span>
+              >
+                Departments
+              </span>
 
-            <span
-              className="
+              <span
+                className="
               text-sm
               font-bold
               text-slate-800
               "
-            >
-              0
-            </span>
+              >
+                {departments.length}
+              </span>
+            </div>
           </div>
-        </div>
-
-        {/* Budget Card */}
-
-        <div
-          className="
+          {/* Budget Card */}
+          <div
+            className="
           bg-slate-50
           border
           border-slate-100
@@ -134,22 +82,22 @@ function DepartmentHeader({handleOpenDept}) {
           items-center
           gap-3
           "
-        >
-          <div
-            className="
+          >
+            <div
+              className="
             p-2
             bg-emerald-50
             text-emerald-600
             rounded-lg
             shrink-0
             "
-          >
-            <CreditCard className="h-4 w-4" />
-          </div>
+            >
+              <CreditCard className="h-4 w-4" />
+            </div>
 
-          <div className="min-w-0">
-            <span
-              className="
+            <div className="min-w-0">
+              <span
+                className="
               text-[9px]
               sm:text-[10px]
               font-bold
@@ -159,23 +107,27 @@ function DepartmentHeader({handleOpenDept}) {
               block
               truncate
               "
-            >
-              Total Budget
-            </span>
+              >
+                Total Budget
+              </span>
 
-            <span
-              className="
+              <span
+                className="
               text-sm
               font-bold
               text-slate-800
               flex items-center justify-center gap-1.5
               "
-            >
-              <IndianRupee strokeWidth={2} className="h-3 w-3" />0
-            </span>
+              >
+                <IndianRupee strokeWidth={2} className="h-3 w-3" />
+                {departments.reduce((total, dep) => {
+                  return total + Number(dep.budget);
+                }, 0)}
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

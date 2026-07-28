@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Users,
   Briefcase,
@@ -8,10 +8,19 @@ import {
   Trash2,
   Star,
 } from "lucide-react";
+import { useDepartment } from "../context/DepartmentContext";
+import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
+import EmptyState from "../../../../shared/components/EmptyState";
 
-function DepartmentCards({ departments, handleEditOpen, onDelete }) {
+function DepartmentCards({ handleEditOpen, onDelete }) {
+  const {departments,loading} = useDepartment();
   const totalBudget = departments.reduce((sum, d) => sum + d.budget, 0);
-
+  if (loading) {
+      return <PremiumUniversalLoader isLoading={true} variant="card" rows={6} gridCount={6}  />
+  }
+  if (departments.length === 0) {
+    return <EmptyState/>
+  }
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-2">
       {departments.map((dept) => {
@@ -22,9 +31,9 @@ function DepartmentCards({ departments, handleEditOpen, onDelete }) {
           <div
             key={dept.id}
             className={`bg-white rounded-2xl border border-slate-100 border-l-4 ${
-              dept.color === "emerald"
+              dept.themeColor === "emerald"
                 ? "border-l-emerald-500"
-                : dept.color === "rose"
+                : dept.themeColor === "rose"
                   ? "border-l-rose-500"
                   : "border-l-sky-500"
             } shadow-sm p-5 space-y-5 hover:-translate-y-1 transition-all duration-300`}
@@ -33,7 +42,7 @@ function DepartmentCards({ departments, handleEditOpen, onDelete }) {
             <div>
               <div className="flex items-center justify-between gap-3">
                 <h3 className="text-sm font-bold text-slate-900">
-                  {dept.name}
+                  {dept.departmentName}
                 </h3>
                 <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded-md">
                   {dept.location}
@@ -78,7 +87,6 @@ function DepartmentCards({ departments, handleEditOpen, onDelete }) {
                 <span className="text-xs font-semibold text-slate-500 flex gap-1 items-center">
                   <Percent size={13} /> Budget
                 </span>
-                {/* EDIT BUTTON - इस पर क्लिक करते ही पूरा कार्ड एडिट मोड में जाएगा */}
                 <button
                   type="button"
                   onClick={()=>handleEditOpen(dept)}
@@ -123,7 +131,10 @@ function DepartmentCards({ departments, handleEditOpen, onDelete }) {
               {/* DELETE BUTTON */}
               <button
                 type="button"
-                onClick={() => onDelete && onDelete(dept.id, dept.name)}
+                onClick={() => {
+                  onDelete(dept.id, dept.departmentName);
+                  console.log("id dept"+dept.departmentName);
+                }}
                 className="text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg cursor-pointer transition-colors"
               >
                 <Trash2 size={15} />
