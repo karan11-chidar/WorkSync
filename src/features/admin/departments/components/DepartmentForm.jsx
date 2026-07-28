@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,} from "react";
 import {
   X,
   Building2,
@@ -9,6 +9,9 @@ import {
   FileText,
 } from "lucide-react";
 import { departmentFormValidation } from "../validations/departmentValidation";
+import { toastError,toastSuccess,toastLoading } from "../../../../shared/services/toastService";
+import { useDepartment } from "../context/DepartmentContext";
+import { toast } from "sonner";
 const COLOR_MAP = {
   emerald: {
     bg: "bg-emerald-50",
@@ -29,15 +32,17 @@ const COLOR_MAP = {
     dot: "bg-sky-500",
   },
 };
-
-const DepartmentForm = ({editingDept , employees,handleClose, }) => {
+const DepartmentForm = ({ editingDept, employees, handleClose, }) => {
+  const { createDepartment,updateDepartment } = useDepartment();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [department, setDepartment] = useState({
     departmentName: '',
     location: '',
     budget: '',
     manager: '',
     description: '',
-    themeColor:'',
+    themeColor: '',
   })
   const [formError, setFormError] = useState({
     departmentName: "",
@@ -47,21 +52,46 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
     description: "",
     themeColor: "",
   });
+  const [globalError, setGlobalError] = useState(''); 
+  let toastId;
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDepartment({ ...department, [name]: value });
-    setFormError({ ...formError, [name]: '' });
+    setDepartment(prev => ({ ...prev, [name]: value }));
+    setFormError(prev=>({ ...prev, [name]: '' }));
   }
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async(e) => {
     e.preventDefault();
     const validationResult= departmentFormValidation(department);
     if (!validationResult.isValid) {
-      console.log('validation unsuccessfull.');
       setFormError(validationResult.formError);
       return
     }
-    console.log(department);
-    handleClose();
+    try {
+      setIsLoading(true);
+      setIsDisabled(true);
+       toastId = toastLoading("Processing payment...");
+      if (editingDept === null) {
+        await createDepartment(department);
+        toastSuccess(
+          `Department Created!`, `New ${department.departmentName} unit added successfully .`
+        );
+      } else {
+        await updateDepartment(editingDept.id, department);
+         toastSuccess(
+           `Department Editing!`,
+           `New ${department.departmentName} unit added successfully .`,
+         );
+      }
+      handleClose();
+    } catch (error) {
+      setGlobalError(error.message);
+      toastError(`Firebase Error: + ${error.message}`);
+    } finally {
+      setIsLoading(false);
+      setIsDisabled(false);
+      toast.dismiss(toastId);
+    }
   }
   useEffect(() => {
     if (editingDept) {
@@ -113,12 +143,12 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
           onSubmit={handleFormSubmit}
           className="flex-1 overflow-y-auto p-6 space-y-4 text-xs font-medium text-slate-600"
         >
-          {/* {false || (
+          {globalError && (
             <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-2">
               <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>Something went wrong</span>
+              <span>{globalError}</span>
             </div>
-          )} */}
+          )}
 
           {/* Name & Location Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -185,7 +215,7 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                     </option>
                   );
                 })}
-              </select>{" "}
+              </select>
               {formError.manager && (
                 <span className="text-rose-700">{formError.manager}</span>
               )}
@@ -228,21 +258,20 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
                       setDepartment({
                         ...department,
                         ["themeColor"]: colorKey,
-                      })
-                      setFormError({ ...formError, ['themeColor']: '' });
+                      });
+                      setFormError({ ...formError, ["themeColor"]: "" });
                     }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-95 ${
-                        isActive
-                          ? `${config.bg} ${config.text} ${config.border} ring-2 ring-indigo-500/30 scale-105`
-                          : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
-                      }`}
-                    >
-                      <span
-                        className={`h-2.5 w-2.5 rounded-full ${config.dot}`}
-                      />
-                      {colorKey}
-                    </button>
-                 
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] uppercase font-bold tracking-wider transition-all cursor-pointer active:scale-95 ${
+                      isActive
+                        ? `${config.bg} ${config.text} ${config.border} ring-2 ring-indigo-500/30 scale-105`
+                        : "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full ${config.dot}`}
+                    />
+                    {colorKey}
+                  </button>
                 );
               })}
               {formError.themeColor && (
@@ -282,10 +311,17 @@ const DepartmentForm = ({editingDept , employees,handleClose, }) => {
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95 flex items-center gap-1.5"
+              disabled={isDisabled}
+              className={`disabled:opacity-50 disabled:cursor-not-allowed w-full h-11  flex justify-center items-center gap-2 px-4 border border-transparent rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 transition-all cursor-pointer shadow-md`}
             >
               <Save size={14} />
-              {editingDept ? "Save Profile Changes" : "Create Department"}
+              {editingDept
+                ? isLoading
+                  ? "Updating..."
+                  : "Save Profile Changes"
+                : isLoading
+                  ? "Creating..."
+                  : "Create Department"}
             </button>
           </div>
         </form>
