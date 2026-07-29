@@ -3,6 +3,8 @@ import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { login } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
+import { toastError,toastLoading,toastSuccess} from '../../../shared/services/toastService';
 function LoginForm() {
   const {showLoader, hideLoader,user} = useAuth();
   const [formData,setFormData ] = useState({
@@ -36,23 +38,33 @@ function LoginForm() {
     e.preventDefault();
     const formErrors = validateLoginForm(formData);
     if (!formErrors.isValid) {
-      console.log('Validation UnSuccessful');
+      console.log("Validation UnSuccessful");
       setErrors(formErrors.errors);
       return;
     }
     console.log("Validation Successful");
+    let toastId = null; // 👈 FIX 2: Local Scope Variable
     try {
       setIsDisabled(true);
-      setSignInBtn('Signing');
-      showLoader('login');
+      setSignInBtn("Signing");
+      showLoader("login");
+      // Loading Toast Trigger & Store ID
+      toastId = toastLoading("Saving Login details...");
       await login(formData);
+      toastSuccess(
+        `Login Successfully.!`,
+        `New ${formData.email} Login successfully.`,
+      );
     } catch (error) {
-      alert('❌ Login Failed :' + error.message)
+      toastError(`Firebase Error: ${error.message}`);
       hideLoader();
-    }
-    finally {
+    } finally {
       setIsDisabled(false);
-      setSignInBtn('Sign In');
+      setSignInBtn("Sign In");
+      // 👈 FIX 3: Safe Toast Dismiss Check
+      if (toastId) {
+        toast.dismiss(toastId);
+      }
     }
   }
  useEffect(() => {
