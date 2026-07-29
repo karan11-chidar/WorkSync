@@ -17,9 +17,7 @@ function AdminLayout() {
   const { hideLoader } = useAuth();
   useEffect(() => {
     hideLoader();
-          toastSuccess("login successfully ");
-
-  }, []);
+    }, []);
   // 🔥 ADMIN NAVIGATION MATRIX (100% Lowercase & Space-Free IDs)
   const navItemsAdmin = [
     { id: "dashboard", label: "Company Overview", icon: LayoutDashboard },

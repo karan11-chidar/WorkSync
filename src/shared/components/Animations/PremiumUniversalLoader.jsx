@@ -162,7 +162,7 @@ export default function PremiumUniversalLoader({
 
       {/* ==================== 3. AUTO-COLOR GRID VARIANT ==================== */}
       {variant === "grid" && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full lg:w-auto">
           {gridItems.map((_, idx) => {
             const theme = colorPalette[idx % colorPalette.length];
 
