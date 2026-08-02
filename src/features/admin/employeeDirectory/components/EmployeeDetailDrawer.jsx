@@ -8,13 +8,12 @@ import {
   Star,
   FileText,
 } from "lucide-react";
-export function EmployeeDetailDrawer(props) {
-const {
+export function EmployeeDetailDrawer({
   selectedEmployee,
   setSelectedEmployee,
   handleEditEmployee,
-  onDeleteEmployee,
-  } = props;
+  handleDeleteEmployee,
+}) {
   if (!selectedEmployee) return null;
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -61,6 +60,7 @@ const {
             <button
               onClick={() => {
                 handleEditEmployee(selectedEmployee);
+                console.log("Edit Employee:", selectedEmployee);
                 setSelectedEmployee(null);
               }}
               className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors active:scale-95"
@@ -74,7 +74,7 @@ const {
                     `Are you absolutely sure you want to remove ${selectedEmployee.firstName}?`,
                   )
                 ) {
-                  onDeleteEmployee && onDeleteEmployee(selectedEmployee.id);
+                 handleDeleteEmployee(selectedEmployee.id);
                   setSelectedEmployee(null);
                 }
               }}

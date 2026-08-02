@@ -1,69 +1,7 @@
 import { Star, Eye } from "lucide-react";
 import { useState } from "react";
 function DesktopEmployeeTable(props) {
-  const employees = [
-    {
-      id: "EMP-001",
-      firstName: "Rahul",
-      lastName: "Sharma",
-      email: "rahul@company.com",
-      role: "Frontend Developer",
-      department: "Engineering",
-      status: "Active",
-      performanceRating: 5,
-      salary: 850000,
-      avatarColor: "from-blue-500 to-cyan-500",
-    },
-    {
-      id: "EMP-002",
-      firstName: "Priya",
-      lastName: "Verma",
-      email: "priya@company.com",
-      role: "UI/UX Designer",
-      department: "Design",
-      status: "On Leave",
-      performanceRating: 4,
-      salary: 720000,
-      avatarColor: "from-pink-500 to-rose-500",
-    },
-    {
-      id: "EMP-003",
-      firstName: "Aman",
-      lastName: "Singh",
-      email: "aman@company.com",
-      role: "Backend Developer",
-      department: "Engineering",
-      status: "Active",
-      performanceRating: 5,
-      salary: 980000,
-      avatarColor: "from-violet-500 to-indigo-500",
-    },
-    {
-      id: "EMP-004",
-      firstName: "Neha",
-      lastName: "Patel",
-      email: "neha@company.com",
-      role: "HR Executive",
-      department: "Human Resource",
-      status: "Inactive",
-      performanceRating: 3,
-      salary: 560000,
-      avatarColor: "from-emerald-500 to-green-500",
-    },
-    {
-      id: "EMP-005",
-      firstName: "Rohit",
-      lastName: "Gupta",
-      email: "rohit@company.com",
-      role: "Financial Analyst",
-      department: "Finance",
-      status: "Active",
-      performanceRating: 4,
-      salary: 910000,
-      avatarColor: "from-orange-500 to-red-500",
-    },
-  ];
-
+  const { employees } = props;
   const renderStatus = (status) => {
     switch (status) {
       case "Active":
