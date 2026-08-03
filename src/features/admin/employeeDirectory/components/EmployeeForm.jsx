@@ -40,7 +40,7 @@
  * ============================================================================
  */
 // Importing react hooks
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
 // Import components and icons
 import {
@@ -64,38 +64,38 @@ function AddEmployeeForm({
   // Temporarily Placeholder for form submission handler
   const availableDepts = ["Engineering", "HR", "Finance", "Design"];
 
+  const INITIAL_FORM_STATE = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    department: "",
+    jobRole: "",
+    salary: "",
+    employmentStatus: "",
+    gender: "",
+    performanceRating: "",
+    address: "",
+    privateNotes: "",
+  };
+
   //----------------------------------------------------------
   // Local Component State
   //----------------------------------------------------------
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    department: "",
-    jobRole: "",
-    salary: "",
-    employmentStatus: "",
-    gender: "",
-    performanceRating: "",
-    address: "",
-    privateNotes: "",
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+
   // State to manage form validation errors
-  const [formError, setFormError] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    department: "",
-    jobRole: "",
-    salary: "",
-    employmentStatus: "",
-    gender: "",
-    performanceRating: "",
-    address: "",
-    privateNotes: "",
-  });
+  const [formError, setFormError] = useState(INITIAL_FORM_STATE);
+
+  //----------------------------------------------------------
+  // Derived State
+  //----------------------------------------------------------
+  const activeFormErrors = Object.values(formError).filter(Boolean);
+  //----------------------------------------------------------
+
+  //----------------------------------------------------------
+  // Event Handlers
+  //--------------------------------------------------
 
   /**
    * Handles changes in form inputs and updates the formData state accordingly.
@@ -108,10 +108,13 @@ function AddEmployeeForm({
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value, // Update the specific field in formData with the new value
+    }));
+    setFormError((prevErrors) => ({
+      ...prevErrors,
+      [name]: "", // Clear the error for the field being updated
     }));
   };
-
 
   /**
    * Handles employee form submission.
@@ -127,16 +130,14 @@ function AddEmployeeForm({
   const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission logic here
-    const validationErrors = employeeValidation(formData);  // Validate form data using the employeeValidation function
+    const validationErrors = employeeValidation(formData); // Validate form data using the employeeValidation function
     if (!validationErrors.isValid) {
-      setFormError(validationErrors.errors);  // Set form errors if validation fails
-      return;  // Stop submission if validation fails
+      setFormError(validationErrors.errors); // Set form errors if validation fails
+      return; // Stop submission if validation fails
     }
     // Close the modal after submission
     handleCloseModal();
   };
-
-
 
   /**
    * Handles side effects when the component mounts or updates.
@@ -153,22 +154,29 @@ function AddEmployeeForm({
     if (editingEmployee) {
       setFormData(editingEmployee);
     } else {
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        department: "",
-        jobRole: "",
-        salary: "",
-        employmentStatus: "",
-        gender: "",
-        performanceRating: "",
-        address: "",
-        privateNotes: "",
-      });
+      setFormData(INITIAL_FORM_STATE);
     }
   }, [editingEmployee]);
+
+
+  /**
+   * Returns the appropriate CSS class for an input field based on its validation state.
+   *
+   * @param {string} fieldName - The name of the input field to check for errors.
+   * @returns {string} - The CSS class string for the input field.
+   *
+   * Workflow:
+   * 1. Check if there is a validation error for the given fieldName in formError state.
+   * 2. If there is an error, return a class string that applies error styling (red border and focus ring).
+   * 3. If there is no error, return a class string that applies normal styling (gray border and focus ring).
+   */
+   const getInputClass = (fieldName) =>
+     `w-full p-2.5 rounded-lg border text-xs outline-none bg-white transition-shadow duration-150 ${
+       formError[fieldName]
+         ? "border-rose-500 focus:ring-2 focus:ring-rose-100"
+         : "border-slate-200 focus:ring-1 focus:ring-indigo-600"
+    }`;
+  
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
       {/* Modal Container - Removed motion.div and used normal div with smooth styling */}
@@ -198,14 +206,27 @@ function AddEmployeeForm({
           onSubmit={handleEmployeeSubmit}
           className="flex-1 overflow-y-auto py-4 space-y-4 text-xs"
         >
-          {/* // Show Global Form Error Message if present
-            {formError && (
-              // Error Message Display
-              <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-2">
-                <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
-                <span>{formError}</span>
+          {activeFormErrors.length > 0 && (
+            <div
+              className="rounded-2xl border border-rose-100 bg-rose-50/95 p-4 shadow-sm text-rose-900"
+              role="alert"
+              aria-live="assertive"
+            >
+              <div className="flex items-start gap-3">
+                <ShieldAlert className="h-5 w-5 text-rose-600 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold">
+                    Please fix {activeFormErrors.length} validation issue
+                    {activeFormErrors.length > 1 ? "s" : ""}.
+                  </p>
+                  <p className="text-[11px] text-rose-700/90">
+                    Required fields are marked and inline messages display
+                    details.
+                  </p>
+                </div>
               </div>
-            )} */}
+            </div>
+          )}
 
           {/* Name fields */}
           <div className="grid grid-cols-2 gap-3">
@@ -220,8 +241,11 @@ function AddEmployeeForm({
                 type="text"
                 required
                 placeholder="e.g. Alexis"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+                className={getInputClass("firstName")}
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.firstName}
+              </span>
             </div>
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -234,8 +258,11 @@ function AddEmployeeForm({
                 type="text"
                 required
                 placeholder="e.g. Vance"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+                className={getInputClass("lastName")}
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.lastName}
+              </span>
             </div>
           </div>
 
@@ -252,8 +279,11 @@ function AddEmployeeForm({
                 type="email"
                 required
                 placeholder="alexis.v@company.com"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+                className={getInputClass("email")}
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.email}
+              </span>
             </div>
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -265,8 +295,11 @@ function AddEmployeeForm({
                 name="phone"
                 type="text"
                 placeholder="+91 9876543210"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+                className={getInputClass("phone")}
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.phone}
+              </span>
             </div>
           </div>
 
@@ -278,14 +311,18 @@ function AddEmployeeForm({
                 value={formData.department}
                 onChange={handleChange}
                 name="department"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600 outline-none"
+                className={getInputClass("department")+" text-slate-600 text-ellipsis"}
               >
+                <option value="">Select Department</option>
                 {availableDepts.map((d) => (
                   <option key={d} value={d}>
                     {d}
                   </option>
                 ))}
               </select>
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.department}
+              </span>
             </div>
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -298,8 +335,11 @@ function AddEmployeeForm({
                 type="text"
                 required
                 placeholder="e.g. Lead Dev Ops"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+                className={getInputClass("jobRole")}
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.jobRole}
+              </span>
             </div>
           </div>
 
@@ -307,21 +347,24 @@ function AddEmployeeForm({
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
-                Annual Salary (USD) <span className="text-rose-500">*</span>
+                Annual Salary (INR) <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <IndianRupee className="absolute left-2.5 top-3 h-3.5 w-3.5 text-slate-400" />
+                <IndianRupee className="absolute left-1 top-3 h-3.5 w-3.5 text-slate-400 " />
                 <input
                   value={formData.salary}
                   onChange={handleChange}
                   name="salary"
                   type="number"
                   required
-                  min="20000"
-                  placeholder="75000"
-                  className="w-full pl-8 pr-2.5 py-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+                  min="1"
+                  placeholder="  75000"
+                  className={getInputClass("salary")+"space-x-2 pl-6 text-slate-600"}
                 />
               </div>
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.salary}
+              </span>
             </div>
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -331,13 +374,20 @@ function AddEmployeeForm({
                 value={formData.employmentStatus}
                 onChange={handleChange}
                 name="employmentStatus"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600 outline-none"
+                className={
+                  getInputClass("employmentStatus") +
+                  " text-slate-600 text-ellipsis"
+                }
               >
+                <option value="">Select Employment Status</option>
                 <option value="Active">Active</option>
                 <option value="On Leave">On Leave</option>
                 <option value="Suspended">Suspended</option>
                 <option value="Terminated">Terminated</option>
               </select>
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.employmentStatus}
+              </span>
             </div>
           </div>
 
@@ -351,13 +401,19 @@ function AddEmployeeForm({
                 value={formData.gender}
                 onChange={handleChange}
                 name="gender"
-                className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600 outline-none"
+                className={
+                  getInputClass("gender") + " text-slate-600 text-ellipsis"
+                }
               >
+                <option value="">Select Gender</option>
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
                 <option value="Non-binary">Non-binary</option>
                 <option value="Prefer not to say">Prefer not to say</option>
               </select>
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.gender}
+              </span>
             </div>
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -373,6 +429,9 @@ function AddEmployeeForm({
                 name="performanceRating"
                 className="w-full mt-2 h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formError.performanceRating}
+              </span>
               <div className="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
                 <span>1 (Improvement Needed)</span>
                 <span className="text-indigo-600 font-bold">
@@ -394,8 +453,11 @@ function AddEmployeeForm({
               name="address"
               type="text"
               placeholder="123 Pinecrest Road, City, ST Zip"
-              className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white"
+              className={getInputClass("address")}
             />
+            <span className="text-rose-500 text-[10px] font-semibold">
+              {formError.address}
+            </span>
           </div>
 
           {/* Private Notes */}
@@ -409,8 +471,11 @@ function AddEmployeeForm({
               name="privateNotes"
               rows={2.5}
               placeholder="Provide any context about professional progress, disciplinary compliance or special requirements..."
-              className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none resize-none bg-white"
+              className={getInputClass("privateNotes")}
             />
+            <span className="text-rose-500 text-[10px] font-semibold">
+              {formError.privateNotes}
+            </span>
           </div>
 
           {/* Actions Footer */}
