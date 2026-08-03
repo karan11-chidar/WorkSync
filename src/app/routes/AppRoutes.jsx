@@ -4,7 +4,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout.jsx";
 import EmployeeLayout from "../../layouts/EmployeeLayout.jsx";
 import AdminDashBoard from "../../pages/Admin/Dashboard/DashBoard.jsx";
-import EmployeeDirectory from "../../pages/Admin/EmployeeDirectory/EmployeeDirectory.jsx";
+import EmployeeDirectory from "../../features/admin/employeeDirectory/pages/EmployeeDirectory.jsx";
 import TaskBoard from "../../pages/Admin/TaskBoard/TaskBoard.jsx";
 import Departments from "../../features/admin/departments/pages/Departments.jsx";
 import TodayAttendance from "../../pages/Admin/Attendance/TodayAttendance.jsx";
