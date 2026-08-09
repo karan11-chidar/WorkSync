@@ -90,7 +90,6 @@ const employeeValidation = ({
   privateNotes,
 }) => {
 
-    
   const errors = {
     firstName: "",
     lastName: "",
