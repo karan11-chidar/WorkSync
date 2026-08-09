@@ -40,11 +40,10 @@
  * ============================================================================
  */
 // Importing react hooks
-import { useState, useEffect } from "react";
+import { useEffect, useReducer } from "react";
 
 // Import components and icons
 import {
-  NotebookPen,
   UserPlus,
   X,
   ShieldAlert,
@@ -54,6 +53,89 @@ import {
 // Importing validation schema for employee form
 import employeeValidation from "../validations/employeeFormValidation";
 
+// Initial form state for employee form
+const INITIAL_FORM_STATE = {
+  formData:{
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  department: "",
+  jobRole: "",
+  salary: "",
+  employmentStatus: "",
+  gender: "",
+  performanceRating: "",
+  address: "",
+  privateNotes: "",
+  },
+  formError: {},
+};
+
+/*
+ * Handle form state updates using a reducer function.
+ *
+ * workflow:
+ * 1. The formReducer function takes the current state and an action.
+ * 2. It checks the action type and updates the state accordingly.
+ * 3. Currently, it only handles updating individual form fields.
+ * 4. The updated state is returned, which triggers a re-render of the component.
+ * 5. This approach allows for a more organized and scalable way to manage form state, especially as the form grows in complexity.
+ *
+ */
+const formReducer = (state,action) => {
+  switch (action.type) {
+    case "UPDATE_FIELD":
+      return {
+        // Return a new state object with the updated formData field
+        ...state,
+        formData: {
+          // Spread the existing formData to retain other fields
+          ...state.formData,
+          [action.fieldName]: action.value,
+        },
+      };
+    case "EDIT_FORM":
+      return {
+        formData: {
+          ...INITIAL_FORM_STATE.formData,
+          ...action.formData
+        },
+        formError: {},
+      };
+
+    case "SET_FORM_ERROR":
+      return {
+        ...state,
+        formError: {
+          ...action.formError,
+        },
+      };
+    case "CLEAR_FIELD_ERROR":
+      return {
+        ...state,
+        formError: {
+          ...state.formError,
+          [action.fieldName]: "",
+        },
+      };
+    case "RESET_FORM":
+      return {
+        ...state,
+        formData: {
+          ...INITIAL_FORM_STATE.formData,
+        },
+        formError: {},
+      };
+    default:
+      return state;
+  }
+}
+
+// Temporarily Placeholder for form submission handler
+const availableDepts = ["Engineering", "HR", "Finance", "Design"];
+  
+ 
 function AddEmployeeForm({
   isAdding,
   editingEmployee,
@@ -61,36 +143,17 @@ function AddEmployeeForm({
   setEditingEmployee,
   handleCloseModal,
 }) {
-  // Temporarily Placeholder for form submission handler
-  const availableDepts = ["Engineering", "HR", "Finance", "Design"];
-
-  const INITIAL_FORM_STATE = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    department: "",
-    jobRole: "",
-    salary: "",
-    employmentStatus: "",
-    gender: "",
-    performanceRating: "",
-    address: "",
-    privateNotes: "",
-  };
 
   //----------------------------------------------------------
-  // Local Component State
+  // Local Component States
   //----------------------------------------------------------
-  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
-
-  // State to manage form validation errors
-  const [formError, setFormError] = useState(INITIAL_FORM_STATE);
+  const [formStates, dispatch] = useReducer(formReducer, INITIAL_FORM_STATE);
+  
 
   //----------------------------------------------------------
   // Derived State
   //----------------------------------------------------------
-  const activeFormErrors = Object.values(formError).filter(Boolean);
+  const activeFormErrors = Object.values(formStates.formError).filter(Boolean);
   //----------------------------------------------------------
 
   //----------------------------------------------------------
@@ -106,14 +169,15 @@ function AddEmployeeForm({
    */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value, // Update the specific field in formData with the new value
-    }));
-    setFormError((prevErrors) => ({
-      ...prevErrors,
-      [name]: "", // Clear the error for the field being updated
-    }));
+    dispatch({
+      type: "UPDATE_FIELD",
+      fieldName: name,
+      value: value,
+    });    
+    dispatch({
+      type: "CLEAR_FIELD_ERROR",
+      fieldName:name,
+    });
   };
 
   /**
@@ -129,14 +193,19 @@ function AddEmployeeForm({
    */
   const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    const validationErrors = employeeValidation(formData); // Validate form data using the employeeValidation function
-    if (!validationErrors.isValid) {
-      setFormError(validationErrors.errors); // Set form errors if validation fails
+   // Handle form submission logic here
+    const {isValid,errors} = employeeValidation(formStates.formData); // Validate form data using the employeeValidation function
+    if (!isValid) {
+      dispatch({
+        // Set form errors if validation fails
+        type: "SET_FORM_ERROR",
+        formError:errors,
+      }); 
       return; // Stop submission if validation fails
     }
     // Close the modal after submission
     handleCloseModal();
+    console.log(formStates);
   };
 
   /**
@@ -152,9 +221,14 @@ function AddEmployeeForm({
    */
   useEffect(() => {
     if (editingEmployee) {
-      setFormData(editingEmployee);
+      dispatch({
+        type: 'EDIT_FORM',
+        formData: editingEmployee,
+        })
     } else {
-      setFormData(INITIAL_FORM_STATE);
+      dispatch({
+        type: "RESET_FORM",
+      });
     }
   }, [editingEmployee]);
 
@@ -172,7 +246,7 @@ function AddEmployeeForm({
    */
    const getInputClass = (fieldName) =>
      `w-full p-2.5 rounded-lg border text-xs outline-none bg-white transition-shadow duration-150 ${
-       formError[fieldName]
+       formStates.formError[fieldName]
          ? "border-rose-500 focus:ring-2 focus:ring-rose-100"
          : "border-slate-200 focus:ring-1 focus:ring-indigo-600"
     }`;
@@ -235,7 +309,7 @@ function AddEmployeeForm({
                 First Name <span className="text-rose-500">*</span>
               </label>
               <input
-                value={formData.firstName}
+                value={formStates.formData.firstName}
                 onChange={handleChange}
                 name="firstName"
                 type="text"
@@ -244,7 +318,7 @@ function AddEmployeeForm({
                 className={getInputClass("firstName")}
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.firstName}
+                {formStates.formError.firstName}
               </span>
             </div>
             <div className="space-y-1">
@@ -252,7 +326,7 @@ function AddEmployeeForm({
                 Last Name <span className="text-rose-500">*</span>
               </label>
               <input
-                value={formData.lastName}
+                value={formStates.formData.lastName}
                 onChange={handleChange}
                 name="lastName"
                 type="text"
@@ -261,7 +335,7 @@ function AddEmployeeForm({
                 className={getInputClass("lastName")}
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.lastName}
+                {formStates.formError.lastName}
               </span>
             </div>
           </div>
@@ -273,7 +347,7 @@ function AddEmployeeForm({
                 Email Address <span className="text-rose-500">*</span>
               </label>
               <input
-                value={formData.email}
+                value={formStates.formData.email}
                 onChange={handleChange}
                 name="email"
                 type="email"
@@ -282,7 +356,7 @@ function AddEmployeeForm({
                 className={getInputClass("email")}
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.email}
+                {formStates.formError.email}
               </span>
             </div>
             <div className="space-y-1">
@@ -290,7 +364,7 @@ function AddEmployeeForm({
                 Phone Number
               </label>
               <input
-                value={formData.phone}
+                value={formStates.formData.phone}
                 onChange={handleChange}
                 name="phone"
                 type="text"
@@ -298,7 +372,7 @@ function AddEmployeeForm({
                 className={getInputClass("phone")}
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.phone}
+                {formStates.formError.phone}
               </span>
             </div>
           </div>
@@ -308,7 +382,7 @@ function AddEmployeeForm({
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">Department</label>
               <select
-                value={formData.department}
+                value={formStates.formData.department}
                 onChange={handleChange}
                 name="department"
                 className={getInputClass("department")+" text-slate-600 text-ellipsis"}
@@ -321,7 +395,7 @@ function AddEmployeeForm({
                 ))}
               </select>
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.department}
+                {formStates.formError.department}
               </span>
             </div>
             <div className="space-y-1">
@@ -329,7 +403,7 @@ function AddEmployeeForm({
                 Job Role/Title <span className="text-rose-500">*</span>
               </label>
               <input
-                value={formData.jobRole}
+                value={formStates.formData.jobRole}
                 onChange={handleChange}
                 name="jobRole"
                 type="text"
@@ -338,7 +412,7 @@ function AddEmployeeForm({
                 className={getInputClass("jobRole")}
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.jobRole}
+                {formStates.formError.jobRole}
               </span>
             </div>
           </div>
@@ -352,7 +426,7 @@ function AddEmployeeForm({
               <div className="relative">
                 <IndianRupee className="absolute left-1 top-3 h-3.5 w-3.5 text-slate-400 " />
                 <input
-                  value={formData.salary}
+                  value={formStates.formData.salary}
                   onChange={handleChange}
                   name="salary"
                   type="number"
@@ -363,7 +437,7 @@ function AddEmployeeForm({
                 />
               </div>
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.salary}
+                {formStates.formError.salary}
               </span>
             </div>
             <div className="space-y-1">
@@ -371,7 +445,7 @@ function AddEmployeeForm({
                 Employment Status
               </label>
               <select
-                value={formData.employmentStatus}
+                value={formStates.formData.employmentStatus}
                 onChange={handleChange}
                 name="employmentStatus"
                 className={
@@ -386,7 +460,7 @@ function AddEmployeeForm({
                 <option value="Terminated">Terminated</option>
               </select>
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.employmentStatus}
+                {formStates.formError.employmentStatus}
               </span>
             </div>
           </div>
@@ -398,7 +472,7 @@ function AddEmployeeForm({
                 Gender Identity
               </label>
               <select
-                value={formData.gender}
+                value={formStates.formData.gender}
                 onChange={handleChange}
                 name="gender"
                 className={
@@ -412,7 +486,7 @@ function AddEmployeeForm({
                 <option value="Prefer not to say">Prefer not to say</option>
               </select>
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.gender}
+                {formStates.formError.gender}
               </span>
             </div>
             <div className="space-y-1">
@@ -424,18 +498,18 @@ function AddEmployeeForm({
                 min="1"
                 max="5"
                 step="1"
-                value={formData.performanceRating}
+                value={formStates.formData.performanceRating}
                 onChange={handleChange}
                 name="performanceRating"
                 className="w-full mt-2 h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formError.performanceRating}
+                {formStates.formError.performanceRating}
               </span>
               <div className="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
                 <span>1 (Improvement Needed)</span>
                 <span className="text-indigo-600 font-bold">
-                  {formData.performanceRating} Stars
+                  {formStates.formData.performanceRating} Stars
                 </span>
                 <span>5 (Exceptional)</span>
               </div>
@@ -448,7 +522,7 @@ function AddEmployeeForm({
               Primary Home Address
             </label>
             <input
-              value={formData.address}
+              value={formStates.formData.address}
               onChange={handleChange}
               name="address"
               type="text"
@@ -456,7 +530,7 @@ function AddEmployeeForm({
               className={getInputClass("address")}
             />
             <span className="text-rose-500 text-[10px] font-semibold">
-              {formError.address}
+              {formStates.formError.address}
             </span>
           </div>
 
@@ -466,7 +540,7 @@ function AddEmployeeForm({
               HR Confidential Comments
             </label>
             <textarea
-              value={formData.privateNotes}
+              value={formStates.formData.privateNotes}
               onChange={handleChange}
               name="privateNotes"
               rows={2.5}
@@ -474,7 +548,7 @@ function AddEmployeeForm({
               className={getInputClass("privateNotes")}
             />
             <span className="text-rose-500 text-[10px] font-semibold">
-              {formError.privateNotes}
+              {formStates.formError.privateNotes}
             </span>
           </div>
 
