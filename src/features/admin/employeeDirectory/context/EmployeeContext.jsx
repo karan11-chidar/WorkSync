@@ -38,8 +38,8 @@
 
 import { createContext, useContext } from "react";
 
-export const employeeContext = createContext(/** @type {EmployeesContextValue | null} */ (null));
-employeeContext.displayName = "employeeContext";
+export const EmployeeContext = createContext(/** @type {EmployeesContextValue | null} */ (null));
+EmployeeContext.displayName = "employeeContext";
 
 /**
  * Hook: useEmployees
@@ -48,7 +48,7 @@ employeeContext.displayName = "employeeContext";
  * @throws {Error} if no Provider is found in the component tree
  */
 export function useEmployees() {
-    const ctx = useContext(employeeContext);
+    const ctx = useContext(EmployeeContext);
     if (ctx === null) {
         throw new Error("useEmployees must be used within an employeeContext.Provider");
     }

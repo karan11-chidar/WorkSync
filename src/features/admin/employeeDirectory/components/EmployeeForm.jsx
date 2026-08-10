@@ -40,14 +40,19 @@
  * ============================================================================
  */
 // Importing react hooks
-import { useEffect, useReducer, useState } from "react";
+import {  useEffect, useReducer, useState } from "react";
 
 // Import components and icons
 import { UserPlus, X, ShieldAlert, IndianRupee } from "lucide-react";
 
 // Importing validation schema for employee form
 import employeeValidation from "../validations/employeeFormValidation";
-import { toastError } from "../../../../shared/services/toastService";
+
+// Import toasts show messages users
+import { toastError,toastSuccess } from "../../../../shared/services/toastService";
+
+// Import 
+
 
 // Initial form state for employee form
 const INITIAL_FORM_STATE = {
@@ -207,6 +212,7 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
       // Close the modal after submission
       handleCloseModal();
     } catch (error) {
+      console.log(error.message);
       toastError(error?.message || "Something went wrong");
     } finally {
       setIsLoading(false);

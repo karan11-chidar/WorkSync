@@ -32,8 +32,10 @@
  * ============================================================================
  */
 
-import React, { useState } from "react";
+import React, { Children, useState } from "react";
 import { useAuth } from "../../../auth/context/AuthContext";
+import { toastError } from "../../../../shared/services/toastService";
+import { createEmployeeService } from "../services/employeeService";
 
 /**
  * EmployeeProvider
@@ -44,7 +46,7 @@ import { useAuth } from "../../../auth/context/AuthContext";
  *
  * @returns {JSX.Element} A provider component for employee management.
  */
-function EmployeeProvider() {
+function EmployeeProvider({children}) {
   const { user } = useAuth();
   const [employeeList, setEmployeeList] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,8 +60,16 @@ function EmployeeProvider() {
    * @param {Object} user - The authenticated admin user context.
    * @returns {void}
    */
-  const createEmployee = (employeeData, user) => {
-    
+  const createEmployee = async(employeeData) => {
+    try {
+      setLoading(true);
+      const employeeData = await createEmployeeService(employeeData, user);
+      setEmployeeList((prev) => ([...prev, employeeData]));
+    } catch (error) {
+      toastError('Firebase Error' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   /**
@@ -92,7 +102,11 @@ function EmployeeProvider() {
    */
   const getEmployees = () => {};
 
-  return <div></div>;
+  return (
+    <EmployeeContext.Provider value={loading,employeeList,createEmployee}>
+      {children}
+    </EmployeeContext.Provider>
+  );
 }
 
 export default EmployeeProvider;
