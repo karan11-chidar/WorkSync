@@ -40,34 +40,30 @@
  * ============================================================================
  */
 // Importing react hooks
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 // Import components and icons
-import {
-  UserPlus,
-  X,
-  ShieldAlert,
-  IndianRupee,
-} from "lucide-react";
+import { UserPlus, X, ShieldAlert, IndianRupee } from "lucide-react";
 
 // Importing validation schema for employee form
 import employeeValidation from "../validations/employeeFormValidation";
+import { toastError } from "../../../../shared/services/toastService";
 
 // Initial form state for employee form
 const INITIAL_FORM_STATE = {
-  formData:{
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  department: "",
-  jobRole: "",
-  salary: "",
-  employmentStatus: "",
-  gender: "",
-  performanceRating: "",
-  address: "",
-  privateNotes: "",
+  formData: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    department: "",
+    jobRole: "",
+    salary: "",
+    employmentStatus: "",
+    gender: "",
+    performanceRating: "1",
+    address: "",
+    privateNotes: "",
   },
   formError: {},
 };
@@ -83,7 +79,7 @@ const INITIAL_FORM_STATE = {
  * 5. This approach allows for a more organized and scalable way to manage form state, especially as the form grows in complexity.
  *
  */
-const formReducer = (state,action) => {
+const formReducer = (state, action) => {
   switch (action.type) {
     case "UPDATE_FIELD":
       return {
@@ -94,12 +90,16 @@ const formReducer = (state,action) => {
           ...state.formData,
           [action.fieldName]: action.value,
         },
+        formError: {
+          ...state.formError,
+          [action.fieldName]: "", // Clear the error for the updated field
+        },
       };
     case "EDIT_FORM":
       return {
         formData: {
           ...INITIAL_FORM_STATE.formData,
-          ...action.formData
+          ...action.formData,
         },
         formError: {},
       };
@@ -109,14 +109,6 @@ const formReducer = (state,action) => {
         ...state,
         formError: {
           ...action.formError,
-        },
-      };
-    case "CLEAR_FIELD_ERROR":
-      return {
-        ...state,
-        formError: {
-          ...state.formError,
-          [action.fieldName]: "",
         },
       };
     case "RESET_FORM":
@@ -130,25 +122,22 @@ const formReducer = (state,action) => {
     default:
       return state;
   }
-}
+};
 
 // Temporarily Placeholder for form submission handler
 const availableDepts = ["Engineering", "HR", "Finance", "Design"];
-  
- 
-function AddEmployeeForm({
-  isAdding,
-  editingEmployee,
-  setIsAdding,
-  setEditingEmployee,
-  handleCloseModal,
-}) {
 
+function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
   //----------------------------------------------------------
   // Local Component States
   //----------------------------------------------------------
   const [formStates, dispatch] = useReducer(formReducer, INITIAL_FORM_STATE);
-  
+
+  // Loading state to indicate form submission in progress
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Disabled state to control form input interactivity
+  const [disabled, setDisabled] = useState(false);
 
   //----------------------------------------------------------
   // Derived State
@@ -172,11 +161,7 @@ function AddEmployeeForm({
     dispatch({
       type: "UPDATE_FIELD",
       fieldName: name,
-      value: value,
-    });    
-    dispatch({
-      type: "CLEAR_FIELD_ERROR",
-      fieldName:name,
+      value,
     });
   };
 
@@ -193,19 +178,40 @@ function AddEmployeeForm({
    */
   const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
-   // Handle form submission logic here
-    const {isValid,errors} = employeeValidation(formStates.formData); // Validate form data using the employeeValidation function
+    // Handle form submission logic here
+    const { isValid, errors } = employeeValidation(formStates.formData); // Validate form data using the employeeValidation function
     if (!isValid) {
       dispatch({
         // Set form errors if validation fails
         type: "SET_FORM_ERROR",
-        formError:errors,
-      }); 
+        formError: errors,
+      });
       return; // Stop submission if validation fails
     }
-    // Close the modal after submission
-    handleCloseModal();
-    console.log(formStates);
+    try {
+      setDisabled(true);
+      setIsLoading(true);
+      if (editingEmployee === null) {
+        await createEmployee(formStates.formData);
+        toastSuccess(
+          `Employee Created!`,
+          `New ${formStates.formData.firstName} added successfully .`,
+        );
+      } else {
+        await updateEmployee(editingEmployee.id,formStates.formData);
+        toastSuccess(
+          `Employee Editing!`,
+          `New ${formStates.formData.firstName} updating successfully .`,
+        );
+      }
+      // Close the modal after submission
+      handleCloseModal();
+    } catch (error) {
+      toastError(error?.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+      setDisabled(false);
+    }
   };
 
   /**
@@ -222,16 +228,15 @@ function AddEmployeeForm({
   useEffect(() => {
     if (editingEmployee) {
       dispatch({
-        type: 'EDIT_FORM',
+        type: "EDIT_FORM",
         formData: editingEmployee,
-        })
+      });
     } else {
       dispatch({
         type: "RESET_FORM",
       });
     }
   }, [editingEmployee]);
-
 
   /**
    * Returns the appropriate CSS class for an input field based on its validation state.
@@ -244,13 +249,13 @@ function AddEmployeeForm({
    * 2. If there is an error, return a class string that applies error styling (red border and focus ring).
    * 3. If there is no error, return a class string that applies normal styling (gray border and focus ring).
    */
-   const getInputClass = (fieldName) =>
-     `w-full p-2.5 rounded-lg border text-xs outline-none bg-white transition-shadow duration-150 ${
-       formStates.formError[fieldName]
-         ? "border-rose-500 focus:ring-2 focus:ring-rose-100"
-         : "border-slate-200 focus:ring-1 focus:ring-indigo-600"
+  const getInputClass = (fieldName) =>
+    `w-full p-2.5 rounded-lg border text-xs outline-none bg-white transition-shadow duration-150 ${
+      formStates.formError[fieldName]
+        ? "border-rose-500 focus:ring-2 focus:ring-rose-100"
+        : "border-slate-200 focus:ring-1 focus:ring-indigo-600"
     }`;
-  
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300">
       {/* Modal Container - Removed motion.div and used normal div with smooth styling */}
@@ -385,7 +390,9 @@ function AddEmployeeForm({
                 value={formStates.formData.department}
                 onChange={handleChange}
                 name="department"
-                className={getInputClass("department")+" text-slate-600 text-ellipsis"}
+                className={
+                  getInputClass("department") + " text-slate-600 text-ellipsis"
+                }
               >
                 <option value="">Select Department</option>
                 {availableDepts.map((d) => (
@@ -433,7 +440,9 @@ function AddEmployeeForm({
                   required
                   min="1"
                   placeholder="  75000"
-                  className={getInputClass("salary")+"space-x-2 pl-6 text-slate-600"}
+                  className={
+                    getInputClass("salary") + "space-x-2 pl-6 text-slate-600"
+                  }
                 />
               </div>
               <span className="text-rose-500 text-[10px] font-semibold">
@@ -561,10 +570,17 @@ function AddEmployeeForm({
             >
               Cancel
             </button>
-            <button className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-sm transition-colors cursor-pointer text-xs active:scale-95">
+            <button
+              disabled={disabled}
+              className="disabled:opacity-50 disabled:cursor-not-allowed px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-sm transition-colors cursor-pointer text-xs active:scale-95"
+            >
               {editingEmployee === null
-                ? "Onboard Member"
-                : "Save Profile Changes"}
+                ? isLoading
+                  ? "Onboarding..."
+                  : "Onboard Member"
+                : isLoading
+                  ? "Saving..."
+                  : "Save Profile Changes"}
             </button>
           </div>
         </form>
