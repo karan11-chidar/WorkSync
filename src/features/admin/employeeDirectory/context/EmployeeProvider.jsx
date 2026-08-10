@@ -58,7 +58,9 @@ function EmployeeProvider() {
    * @param {Object} user - The authenticated admin user context.
    * @returns {void}
    */
-  const createEmployee = (employeeData, user) => {};
+  const createEmployee = (employeeData, user) => {
+    
+  };
 
   /**
    * updateEmployee

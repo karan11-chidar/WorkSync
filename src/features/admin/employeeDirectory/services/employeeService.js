@@ -26,7 +26,7 @@
 
 // Firebase Backend Api's 
 
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 
 
@@ -73,6 +73,14 @@ const createEmployeeService = async (employeeData, currentUser) => {
  */
 const updateEmployeeService = async (employeeId, updateData) => {
   try {
+    const updateFirebaseData = {
+      ...updateData,
+      updatedAt: serverTimestamp(),
+    }
+    const collectionRef = collection(db, 'employeesList');
+    const docRef = doc(collectionRef, employeeId);
+    await updateDoc(docRef, updateFirebaseData);
+    return updateFirebaseData;
   } catch (error) {
     throw error;
   }
@@ -89,6 +97,8 @@ const updateEmployeeService = async (employeeId, updateData) => {
  */
 const deleteEmployeeService = async (employeeId) => {
   try {
+    const docRef = doc(db, 'employeesList', employeeId);
+    await deleteDoc(docRef);
   } catch (error) {
     throw error;
   }
@@ -104,6 +114,14 @@ const deleteEmployeeService = async (employeeId) => {
  */
 const getEmployeeListService = async () => {
   try {
+    const collectionRef = collection(db, 'employeesList');
+    const employeesData = await getDocs(collectionRef);
+    return employeesData.docs.map((doc) => {
+      return {
+        id: doc.id,
+        ...doc.data(),
+      }
+    })
   } catch (error) {
     throw error;
   }
