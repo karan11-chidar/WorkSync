@@ -74,7 +74,7 @@ export function EmployeeDetailDrawer({
                     `Are you absolutely sure you want to remove ${selectedEmployee.firstName}?`,
                   )
                 ) {
-                 handleDeleteEmployee(selectedEmployee.id);
+                  handleDeleteEmployee(selectedEmployee.id);
                   setSelectedEmployee(null);
                 }
               }}
@@ -92,7 +92,7 @@ export function EmployeeDetailDrawer({
               {selectedEmployee.firstName} {selectedEmployee.lastName}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {selectedEmployee.role} •{" "}
+              {selectedEmployee.jobRole}
               <span className="font-semibold text-slate-700">
                 {selectedEmployee.department}
               </span>
@@ -106,7 +106,7 @@ export function EmployeeDetailDrawer({
                 Employee ID
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                {selectedEmployee.id}
+                {selectedEmployee.employeeId}
               </div>
             </div>
             <div>
@@ -220,7 +220,7 @@ export function EmployeeDetailDrawer({
             </h4>
             <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100 italic">
               "
-              {selectedEmployee.notes ||
+              {selectedEmployee.privateNotes ||
                 "No private notes have been written for this employee yet."}
               "
             </p>

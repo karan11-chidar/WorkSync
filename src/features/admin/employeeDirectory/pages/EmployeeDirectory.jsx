@@ -1,9 +1,33 @@
-import { useState } from "react";
+/**
+ * EmployeeDirectory.jsx
+ *
+ * Page component for the admin employee directory section.
+ * This component orchestrates the employee list, filtering, add/edit
+ * workflow, and employee detail drawer.
+ *
+ * Responsibilities:
+ * - Fetch and display the employee directory
+ * - Manage the add/edit modal state
+ * - Handle employee selection and deletion actions
+ */
+import { useEffect, useState } from "react";
 import FilterBar from "../components/FilterBar";
 import EmployeesLists from "../components/EmployeesLists";
 import AddEmployeeForm from "../components/EmployeeForm";
 import EmployeeDetailDrawer from "../components/EmployeeDetailDrawer";
+import { useEmployee } from "../context/EmployeeContext";
+import {
+  toastError,
+  toastSuccess,
+} from "../../../../shared/services/toastService";
+
+/**
+ * EmployeeDirectory
+ *
+ * @returns {JSX.Element}
+ */
 function EmployeeDirectory() {
+  const { getEmployees, deleteEmployee } = useEmployee();
   const [isAdding, setIsAdding] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -20,10 +44,18 @@ function EmployeeDirectory() {
   const handleSelectEmployee = (employee) => {
     setSelectedEmployee(employee);
   };
-  const handleDeleteEmployee = (employeeId) => {
+
+  const handleDeleteEmployee = async (employeeId) => {
     // Implement the logic to delete the employee from your data source
     console.log(`Delete employee with ID: ${employeeId}`);
+    try {
+      await deleteEmployee(employeeId);
+      toastSuccess(`Delete employee with ID: ${employeeId}`);
+    } catch (error) {
+      toastError("Firebase Error" + error.message);
+    }
   };
+
   /**
    * Closes the modal and resets the form state.
    *
@@ -35,86 +67,16 @@ function EmployeeDirectory() {
     setIsAdding(false);
     setEditingEmployee(null);
   };
-  const employees = [
-    {
-      id: "EMP-001",
-      firstName: "Rahul",
-      lastName: "Sharma",
-      phone: "9876543210",
-      email: "rahul@company.com",
-      role: "Frontend Developer",
-      department: "Engineering",
-      status: "Active",
-      performanceRating: 5,
-      salary: 850000,
-      avatarColor: "from-blue-500 to-cyan-500",
-      address: "123, Main Street, City, Country",
-    },
-    {
-      id: "EMP-002",
-      firstName: "Priya",
-      lastName: "Verma",
-      phone: "9876543211",
-      email: "priya@company.com",
-      role: "UI/UX Designer",
-      department: "Design",
-      status: "On Leave",
-      performanceRating: 4,
-      salary: 720000,
-      address: "456, Oak Avenue, Town, Country",
-      avatarColor: "from-pink-500 to-rose-500",
-    },
-    {
-      id: "EMP-003",
-      firstName: "Aman",
-      lastName: "Singh",
-      phone: "9876543212",
-      email: "aman@company.com",
-      role: "Backend Developer",
-      department: "Engineering",
-      status: "Active",
-      performanceRating: 5,
-      salary: 980000,
-      avatarColor: "from-violet-500 to-indigo-500",
-      address: "789, Pine Lane, Village, Country",
-    },
-    {
-      id: "EMP-004",
-      firstName: "Neha",
-      lastName: "Patel",
-      phone: "9876543213",
-      email: "neha@company.com",
-      role: "HR Executive",
-      department: "Human Resource",
-      status: "Inactive",
-      performanceRating: 3,
-      salary: 560000,
-      avatarColor: "from-emerald-500 to-green-500",
-      address: "321, Cedar Road, Suburb, Country",
-    },
-    {
-      id: "EMP-005",
-      firstName: "Rohit",
-      lastName: "Gupta",
-      phone: "9876543214",
-      email: "rohit@company.com",
-      role: "Financial Analyst",
-      department: "Finance",
-      status: "Active",
-      performanceRating: 4,
-      salary: 910000,
-      avatarColor: "from-orange-500 to-red-500",
-      address: "654, Birch Street, Metropolis, Country",
-    },
-  ];
 
+  useEffect(() => {
+    getEmployees();
+  }, []);
   return (
     <div className="space-y-6">
       <FilterBar handleAddEmployee={handleAddEmployee} />
       <EmployeesLists
         handleEditEmployee={handleEditEmployee}
         handleSelectEmployee={handleSelectEmployee}
-        employees={employees}
       />
       {isAdding && (
         <AddEmployeeForm

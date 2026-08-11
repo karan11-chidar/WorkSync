@@ -51,12 +51,17 @@ import employeeValidation from "../validations/employeeFormValidation";
 // Import toasts show messages users
 import { toastError,toastSuccess } from "../../../../shared/services/toastService";
 
-// Import 
+// Import Providers service
+import { useEmployee } from "../context/EmployeeContext";
+
+// Import generate employee id
+import generateId from "../../../../shared/utils/idGenerator";
 
 
 // Initial form state for employee form
 const INITIAL_FORM_STATE = {
   formData: {
+    employeeId:`EMP-${generateId()}`,
     firstName: "",
     lastName: "",
     email: "",
@@ -133,6 +138,8 @@ const formReducer = (state, action) => {
 const availableDepts = ["Engineering", "HR", "Finance", "Design"];
 
 function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
+  const { createEmployee,updateEmployee } = useEmployee();
+
   //----------------------------------------------------------
   // Local Component States
   //----------------------------------------------------------

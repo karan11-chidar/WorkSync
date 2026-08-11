@@ -47,7 +47,7 @@ EmployeeContext.displayName = "employeeContext";
  * @returns {EmployeesContextValue}
  * @throws {Error} if no Provider is found in the component tree
  */
-export function useEmployees() {
+export function useEmployee() {
     const ctx = useContext(EmployeeContext);
     if (ctx === null) {
         throw new Error("useEmployees must be used within an employeeContext.Provider");

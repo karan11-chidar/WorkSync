@@ -1,7 +1,6 @@
 import { Star, Eye } from "lucide-react";
 import { useState } from "react";
-function DesktopEmployeeTable(props) {
-  const { employees } = props;
+function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
   const renderStatus = (status) => {
     switch (status) {
       case "Active":
@@ -66,9 +65,8 @@ function DesktopEmployeeTable(props) {
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <button
-                        onClick={() => props.handleSelectEmployee(emp)}
-                        className={`h-10 w-10 rounded-full bg-linear-to-br ${emp.avatarColor}
-flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white hover:ring-indigo-500 transition-all hover:scale-105`}
+                        onClick={() =>handleSelectEmployee(emp)}
+                        className={`h-10 w-10 rounded-full bg-linear-to-br ${emp.avatarColor}flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white hover:ring-indigo-500 transition-all hover:scale-105`}
                       >
                         {initials}
                       </button>
@@ -93,14 +91,14 @@ flex items-center justify-center text-white font-bold shadow-md ring-2 ring-whit
                   {/* Employee ID */}
 
                   <td className="px-6 py-5 font-mono text-xs tracking-wide text-slate-500">
-                    {emp.id}
+                    {emp.employeeId}
                   </td>
 
                   {/* Department */}
 
                   <td className="px-6 py-5">
                     <h4 className="text-sm font-semibold text-slate-900">
-                      {emp.role}
+                      {emp.jobRole}
                     </h4>
 
                     <p className="text-[11px] text-slate-500 mt-1">
@@ -110,7 +108,7 @@ flex items-center justify-center text-white font-bold shadow-md ring-2 ring-whit
 
                   {/* Status */}
 
-                  <td className="px-6 py-5">{renderStatus(emp.status)}</td>
+                  <td className="px-6 py-5">{renderStatus(emp.employmentStatus)}</td>
 
                   {/* Rating */}
 
@@ -143,7 +141,7 @@ flex items-center justify-center text-white font-bold shadow-md ring-2 ring-whit
 
                   <td className="px-6 py-5 text-center">
                     <button
-                      onClick={() => props.handleSelectEmployee(emp)}
+                      onClick={() =>handleSelectEmployee(emp)}
                       className="
                         inline-flex
                         items-center

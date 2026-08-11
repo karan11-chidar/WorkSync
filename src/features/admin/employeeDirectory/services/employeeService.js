@@ -45,7 +45,6 @@ const createEmployeeService = async (employeeData, currentUser) => {
     try {
         const firebaseData = { 
             ...employeeData,
-            status:'active',
             createdBy: currentUser.uid,
             createdAt: serverTimestamp(),
             updatedAt:serverTimestamp(),

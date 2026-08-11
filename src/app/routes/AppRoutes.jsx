@@ -19,6 +19,7 @@ import NotFoundPage from "../../shared/pages/NotFoundPage.jsx";
 import LinearProgressStream from "../../shared/components/Animations/LinearProgressStream.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import DepartmentProvider from '../../features/admin/departments/context/DepartmentProvider.jsx'
+import EmployeeProvider from "../../features/admin/employeeDirectory/context/EmployeeProvider.jsx";
 function AppRoutes() {
   const [isLoading, setIsLoading] = useState(false);
   const MIN_ROUTE_LOADER_TIME = 1000;
@@ -53,10 +54,20 @@ function AppRoutes() {
                 </>
               }
             />
+            <Route
+              path="employees"
+              element={
+                <>
+                  <EmployeeProvider>
+                    <EmployeeDirectory />
+                  </EmployeeProvider>
+                </>
+              }
+            />
             <Route path="tasks" element={<TaskBoard />} />
             <Route path="attendance" element={<TodayAttendance />} />
             <Route path="leaves" element={<LeaveLedger />} />
-            <Route path="employees" element={<EmployeeDirectory />} />
+
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>

@@ -32,10 +32,20 @@
  * ============================================================================
  */
 
-import React, { Children, useState } from "react";
+// React 
+import React, { useState } from "react";
+
+// Authentication
 import { useAuth } from "../../../auth/context/AuthContext";
+
+// Shared Service
 import { toastError } from "../../../../shared/services/toastService";
-import { createEmployeeService } from "../services/employeeService";
+
+// Employee Services
+import { createEmployeeService, deleteEmployeeService, getEmployeeListService, updateEmployeeService } from "../services/employeeService";
+
+// Employee Context
+import { EmployeeContext } from "./EmployeeContext";
 
 /**
  * EmployeeProvider
@@ -49,7 +59,7 @@ import { createEmployeeService } from "../services/employeeService";
 function EmployeeProvider({children}) {
   const { user } = useAuth();
   const [employeeList, setEmployeeList] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   /**
    * createEmployee
@@ -62,13 +72,13 @@ function EmployeeProvider({children}) {
    */
   const createEmployee = async(employeeData) => {
     try {
-      setLoading(true);
-      const employeeData = await createEmployeeService(employeeData, user);
-      setEmployeeList((prev) => ([...prev, employeeData]));
+      setIsLoading(true);
+      const createdEmployee = await createEmployeeService(employeeData, user);
+      setEmployeeList((prev) => ([...prev, createdEmployee]));
     } catch (error) {
       toastError('Firebase Error' + error.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -81,7 +91,21 @@ function EmployeeProvider({children}) {
    * @param {Object} updatedData - The partial employee data to update.
    * @returns {void}
    */
-  const updateEmployee = (employeeId, updatedData) => {};
+  const updateEmployee = async(employeeId, updatedData) => {
+    try {
+      setIsLoading(true);
+      const updatedEmployee = await updateEmployeeService(employeeId, updatedData);
+      setEmployeeList(prev => prev.map(emp => {
+          return (emp.id === employeeId)
+            ? { ...emp, ...updatedEmployee }
+            : emp
+        }));
+    } catch (error) {
+          toastError('Firebase Error' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   /**
    * deleteEmployee
@@ -91,7 +115,17 @@ function EmployeeProvider({children}) {
    * @param {string|number} employeeId - Identifier of the employee to remove.
    * @returns {void}
    */
-  const deleteEmployee = (employeeId) => {};
+  const deleteEmployee = async(employeeId) => {
+     try {
+       setIsLoading(true);
+       await deleteEmployeeService(employeeId);
+       setEmployeeList(prev => prev.filter(emp => emp.id !== employeeId));
+     } catch (error) {
+          toastError('Firebase Error' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   /**
    * getEmployees
@@ -100,10 +134,20 @@ function EmployeeProvider({children}) {
    *
    * @returns {void}
    */
-  const getEmployees = () => {};
+  const getEmployees = async() => {
+     try {
+       setIsLoading(true);
+       const employeesData = await getEmployeeListService();
+       setEmployeeList(employeesData);
+    } catch (error) {
+      toastError('Firebase Error' + error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <EmployeeContext.Provider value={loading,employeeList,createEmployee}>
+    <EmployeeContext.Provider value={{isLoading,employeeList,createEmployee,updateEmployee,deleteEmployee,getEmployees}}>
       {children}
     </EmployeeContext.Provider>
   );
