@@ -7,6 +7,7 @@ import {
   MapPin,
   Star,
   FileText,
+  IndianRupee,
 } from "lucide-react";
 export function EmployeeDetailDrawer({
   selectedEmployee,
@@ -60,7 +61,6 @@ export function EmployeeDetailDrawer({
             <button
               onClick={() => {
                 handleEditEmployee(selectedEmployee);
-                console.log("Edit Employee:", selectedEmployee);
                 setSelectedEmployee(null);
               }}
               className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors active:scale-95"
@@ -74,7 +74,7 @@ export function EmployeeDetailDrawer({
                     `Are you absolutely sure you want to remove ${selectedEmployee.firstName}?`,
                   )
                 ) {
-                 handleDeleteEmployee(selectedEmployee.id);
+                  handleDeleteEmployee(selectedEmployee.id);
                   setSelectedEmployee(null);
                 }
               }}
@@ -92,7 +92,7 @@ export function EmployeeDetailDrawer({
               {selectedEmployee.firstName} {selectedEmployee.lastName}
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              {selectedEmployee.role} •{" "}
+              {selectedEmployee.jobRole}
               <span className="font-semibold text-slate-700">
                 {selectedEmployee.department}
               </span>
@@ -106,7 +106,7 @@ export function EmployeeDetailDrawer({
                 Employee ID
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                {selectedEmployee.id}
+                {selectedEmployee.employeeId}
               </div>
             </div>
             <div>
@@ -125,7 +125,7 @@ export function EmployeeDetailDrawer({
                           : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {selectedEmployee.status || "Active"}
+                  {selectedEmployee.employmentStatus || "Active"}
                 </span>
               </div>
             </div>
@@ -133,8 +133,9 @@ export function EmployeeDetailDrawer({
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                 Base Salary
               </span>
-              <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                ${selectedEmployee.salary?.toLocaleString()}/yr
+              <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5 flex items-center">
+                <IndianRupee width={13} />
+                {selectedEmployee.salary?.toLocaleString()}/yr
               </div>
             </div>
             <div>
@@ -142,7 +143,7 @@ export function EmployeeDetailDrawer({
                 Joining Date
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                {selectedEmployee.dateJoined}
+                {selectedEmployee.joiningDate?.toDate().toLocaleDateString()}
               </div>
             </div>
           </div>
@@ -220,7 +221,7 @@ export function EmployeeDetailDrawer({
             </h4>
             <p className="text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100 italic">
               "
-              {selectedEmployee.notes ||
+              {selectedEmployee.privateNotes ||
                 "No private notes have been written for this employee yet."}
               "
             </p>

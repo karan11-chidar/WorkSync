@@ -1,202 +1,143 @@
-# 🚀 Workforce Management System
+# WorkSync
 
-A modern and responsive Workforce Management System built with React.js and Tailwind CSS. This application helps organizations manage employees, attendance, departments, leave requests, and workplace operations through a clean and intuitive dashboard.
+## Overview
 
----
+WorkSync is a workforce management application built with React and Tailwind CSS. It provides a modern, responsive interface for managing employees, attendance, departments, leave requests, and administrative workflows.
 
-## 📌 Features
+The application is designed for administrators and employees, offering distinct dashboards and tools for both roles.
 
-### 👨‍💼 Employee Management
-- Add new employees
-- Update employee information
-- Delete employees
-- Employee directory with search and filtering
-- Employee status tracking
+## Key Features
 
-### 🏢 Department Management
-- Manage multiple departments
-- Department budget tracking
-- Employee allocation by department
-- Department performance overview
+- Employee directory with search, filtering, and profile management
+- Department management and budget overview
+- Attendance tracking with daily status reporting
+- Leave request submission and approval workflow
+- Dashboard analytics for workforce performance
+- Responsive UI for desktop and mobile devices
 
-### ⏰ Attendance Management
-- Daily attendance tracking
-- Mark Present, Absent, and On Leave
-- Attendance statistics
-- Workforce monitoring
+## Built With
 
-### 📝 Leave Management
-- Apply leave requests
-- Approve or reject leave applications
-- Leave history tracking
-- Employee leave records
-
-### 📊 Dashboard Analytics
-- Total employees overview
-- Attendance summary
-- Leave request statistics
-- Department insights
-- Workforce performance metrics
-
-### ⚙️ Settings & Backup
-- Export application data
-- Import backup files
-- Restore default records
-- LocalStorage persistence
-
-### 📱 Responsive Design
-- Desktop sidebar navigation
-- Mobile-friendly layout
-- Modern UI components
-- Fully responsive experience
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-- React.js
-- JavaScript (ES6+)
+- React 19
+- Vite
 - Tailwind CSS
+- React Router DOM
 - Lucide React Icons
+- Firebase (configuration present)
+- Sonner for toast notifications
 
-### State Management
-- React Hooks
-  - useState
-  - useEffect
+## Project Architecture
 
-### Storage
-- Browser LocalStorage
+The application follows a modular structure to keep domain logic organized and maintainable.
 
-### Routing
-- React Router DOM (Planned / Integration Ready)
+- `src/app/routes` - routing and protected route handling
+- `src/app/layouts` - application layouts for admin and employee views
+- `src/features` - feature-specific modules for admin, auth, and employee workflows
+- `src/pages` - page-level components and views
+- `src/shared` - common components, utilities, and shared services
+- `src/firebase` - Firebase configuration and initialization
 
----
+## Directory Structure
 
-## 📂 Project Structure
-
-```bash
+```text
 src/
-│
-├── assets/
-│
-├── components/
-│   ├── Header.jsx
-│   ├── Sidebar.jsx
-│   ├── Navbar.jsx
-│   ├── LoginForm.jsx
-│
-├── pages/
-│   ├── Dashboard.jsx
-│   ├── Employees.jsx
-│   ├── Departments.jsx
-│   ├── Attendance.jsx
-│   ├── Leaves.jsx
-│   └── Settings.jsx
-│
-├── context/
-│
-├── data/
-│
-├── App.jsx
-└── main.jsx
+  app/
+    routes/
+      AppRoutes.jsx
+      ProtectedRoute.jsx
+    layouts/
+      AdminLayout.jsx
+      EmployeeLayout.jsx
+  features/
+    admin/
+      dashboard/
+      departments/
+      employeeDirectory/
+      ...
+    auth/
+      components/
+      context/
+      pages/
+      services/
+    employee/
+  shared/
+    components/
+    services/
+    utils/
+  firebase/
+    firebaseConfig.js
+  main.jsx
+  index.css
 ```
 
----
+## Getting Started
 
-## 🎯 Core Functionalities
+### Prerequisites
 
-### Admin Features
+- Node.js 18+ or compatible LTS version
+- npm 10+ or pnpm/yarn if preferred
 
-✔ Employee Management
-
-✔ Attendance Tracking
-
-✔ Leave Approval System
-
-✔ Department Management
-
-✔ Data Backup & Restore
-
-✔ Workforce Analytics
-
----
-
-### Employee Features
-
-✔ View Personal Information
-
-✔ Mark Attendance
-
-✔ Apply Leave Requests
-
-✔ Track Leave Status
-
----
-
-## 🔒 Authentication
-
-The system supports:
-
-- Admin Login
-- Employee Login
-- Session Persistence using LocalStorage
-
----
-
-## 📈 Future Improvements
-
-- Backend Integration (Node.js + Express)
-- MongoDB Database
-- JWT Authentication
-- Role-Based Access Control (RBAC)
-- Email Notifications
-- Payroll Management
-- Performance Tracking
-- Real-Time Updates using WebSockets
-- File Upload Support
-- Report Generation (PDF / Excel)
-
----
-
-## 🚀 Installation
-
-Clone the repository
+### Installation
 
 ```bash
 git clone https://github.com/karan11-chidar/WorkSync.git
-```
-
-Move into project directory
-
-```bash
-cd workforce-management-system
-```
-
-Install dependencies
-
-```bash
+cd WorkSync
 npm install
 ```
 
-Start development server
+### Run Locally
 
 ```bash
 npm run dev
 ```
 
----
+Open the local development server URL shown in the terminal.
 
-## 📸 Screenshots
+### Build for Production
 
-Add screenshots of:
+```bash
+npm run build
+```
 
-- Login Page
-- Dashboard
-- Employee Directory
-- Attendance Panel
-- Leave Management
-- Settings Page
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Available Scripts
+
+- `npm run dev` - start the Vite development server
+- `npm run build` - build the production bundle
+- `npm run preview` - preview the production build locally
+- `npm run lint` - run ESLint across the project
+
+## Development Notes
+
+- Authentication state is managed through `src/features/auth/context`.
+- Admin and employee routes are separated by layout and route guards.
+- UI components are kept reusable under `src/shared/components`.
+- Feature-specific business logic, services, and validations are colocated with related pages.
+
+## Future Enhancements
+
+- Backend integration with REST API and persistent database
+- Role-based access control and permissions
+- JWT authentication and secure session handling
+- Real-time updates and notifications
+- File uploads and export reports
+- Analytics dashboards and payroll capabilities
+
+## Contributing
+
+1. Fork the repository
+2. Create a topic branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m "Add feature"`)
+4. Push to your branch (`git push origin feature/your-feature`)
+5. Open a pull request
+
+## License
+
+This project is currently private. Update this section with a license when the project is open sourced.
 
 ---
 

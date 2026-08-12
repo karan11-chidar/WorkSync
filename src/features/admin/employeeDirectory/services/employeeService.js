@@ -24,38 +24,97 @@
  * ============================================================================
  */
 
-// Firebase Backend Api's 
 
-import { addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, updateDoc } from "firebase/firestore";
+// Generate random color function
+import getRandomColor from "../constants/employeeColorTheme";
+
+
+// Firebase Backend Api's
+
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  runTransaction,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
-
-
 
 /**
  * createEmployeeService
  *
- * Persists a new employee record for the authenticated admin workflow.
+ * Creates a new employee record with a sequential employee ID.
  *
- * @param {Object} employeeData - The payload containing employee fields.
- * @param {Object} user - The current authenticated admin user.
- * @returns {Promise<void>} Resolves when the employee record is created.
- * @throws {Error} When persistence fails.
+ * The employee ID counter and employee document are updated inside
+ * the same Firestore transaction. This makes the employee creation
+ * process atomic and prevents duplicate employee IDs when multiple
+ * employees are created concurrently.
+ *
+ * Workflow:
+ * 1. Creates a reference for the new employee document.
+ * 2. Reads the global employee ID counter inside a transaction.
+ * 3. Calculates the next sequential employee ID.
+ * 4. Updates the counter with the new value.
+ * 5. Creates the employee document with the generated employee ID.
+ * 6. Commits both operations together.
+ *
+ * If any operation fails, Firestore rolls back the transaction so
+ * the counter and employee document remain consistent.
+ *
+ * @param {Object} employeeData - Employee information provided by the admin.
+ * @param {Object} currentUser - Currently authenticated admin user.
+ *
+ * @returns {Promise<Object>} The newly created employee object.
+ *
+ * @throws {Error} When employee creation or the transaction fails.
  */
 const createEmployeeService = async (employeeData, currentUser) => {
-    try {
-        const firebaseData = { 
-            ...employeeData,
-            status:'active',
-            createdBy: currentUser.uid,
-            createdAt: serverTimestamp(),
-            updatedAt:serverTimestamp(),
-        }
-        const collectionRef = collection(db, 'employeesList'); 
-        const docRef = await addDoc(collectionRef, firebaseData);
-        return {
-            id: docRef.id,
-            ...firebaseData,
-        }
+  try {
+    const avatarColor = getRandomColor();
+    const employeeRef = doc(collection(db, "employeesList"));
+    const counterRef = doc(db, "counters", "employeeIdCounter");
+
+    const employeeId = await runTransaction(db, async (transaction) => {
+      const counterSnapshot = await transaction.get(counterRef);
+
+      let nextValue;
+
+      if (!counterSnapshot.exists()) {
+        nextValue = 1;
+
+        transaction.set(counterRef, {
+          currentValue: nextValue,
+        });
+      } else {
+        const counterData = counterSnapshot.data();
+        nextValue = counterData.currentValue + 1;
+
+        transaction.update(counterRef, {
+          currentValue: nextValue,
+        });
+      }
+      transaction.set(employeeRef, {
+        ...employeeData,
+        employeeId: `EMP-${String(nextValue).padStart(3, "0")}`,
+        createdBy: currentUser.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        avatarColor,
+        joiningDate: serverTimestamp(),
+      });
+
+      return `EMP-${String(nextValue).padStart(3, "0")}`;
+    });
+
+    return {
+      id: employeeRef.id,
+      employeeId,
+      avatarColor,
+      ...employeeData,
+      joiningDate: new Date(),
+    };
   } catch (error) {
     throw error;
   }
@@ -76,8 +135,8 @@ const updateEmployeeService = async (employeeId, updateData) => {
     const updateFirebaseData = {
       ...updateData,
       updatedAt: serverTimestamp(),
-    }
-    const collectionRef = collection(db, 'employeesList');
+    };
+    const collectionRef = collection(db, "employeesList");
     const docRef = doc(collectionRef, employeeId);
     await updateDoc(docRef, updateFirebaseData);
     return updateFirebaseData;
@@ -97,7 +156,7 @@ const updateEmployeeService = async (employeeId, updateData) => {
  */
 const deleteEmployeeService = async (employeeId) => {
   try {
-    const docRef = doc(db, 'employeesList', employeeId);
+    const docRef = doc(db, "employeesList", employeeId);
     await deleteDoc(docRef);
   } catch (error) {
     throw error;
@@ -114,19 +173,18 @@ const deleteEmployeeService = async (employeeId) => {
  */
 const getEmployeeListService = async () => {
   try {
-    const collectionRef = collection(db, 'employeesList');
+    const collectionRef = collection(db, "employeesList");
     const employeesData = await getDocs(collectionRef);
     return employeesData.docs.map((doc) => {
       return {
         id: doc.id,
         ...doc.data(),
-      }
-    })
+      };
+    });
   } catch (error) {
     throw error;
   }
 };
-
 export {
   createEmployeeService,
   updateEmployeeService,

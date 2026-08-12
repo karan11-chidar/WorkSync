@@ -1,7 +1,6 @@
 import {useState} from "react";
 import { Eye, Star, Building2, IndianRupee } from "lucide-react";
-function MobileEmployeeCards(props) {
-  const { handleEditEmployee, handleSelectEmployee, employees } = props;
+function MobileEmployeeCards({ handleSelectEmployee, employees }) {
   const statusBadge = (status) => {
     switch (status) {
       case "Active":
@@ -49,9 +48,7 @@ function MobileEmployeeCards(props) {
 
             <div className="flex items-center gap-3">
               <button
-                onClick={() =>
-                  handleSelectEmployee(emp)
-                }
+                onClick={() => handleSelectEmployee(emp)}
                 className={`h-12 w-12 rounded-full bg-linear-to-br ${emp.avatarColor}
                 flex items-center justify-center text-white font-bold`}
               >
@@ -63,7 +60,7 @@ function MobileEmployeeCards(props) {
                   {emp.firstName} {emp.lastName}
                 </h2>
 
-                <p className="text-xs text-slate-500 truncate">{emp.role}</p>
+                <p className="text-xs text-slate-500 truncate">{emp.jobRole}</p>
 
                 <p className="text-[11px] text-slate-400 truncate">
                   <a
@@ -75,7 +72,7 @@ function MobileEmployeeCards(props) {
                 </p>
               </div>
 
-              {statusBadge(emp.status)}
+              {statusBadge(emp.employmentStatus)}
             </div>
 
             {/* Details */}
@@ -94,11 +91,17 @@ function MobileEmployeeCards(props) {
               </div>
 
               <div className="text-right">
-                <div className="flex items-center justify-end gap-1 text-amber-500">
-                  <Star className="fill-amber-400 h-4 w-4" />
-                  <span className="text-sm font-semibold text-slate-700">
-                    {emp.performanceRating}.0
-                  </span>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star
+                      key={index}
+                      className={`h-3.5 w-3.5 ${
+                        index < emp.performanceRating
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-slate-300"
+                      }`}
+                    />
+                  ))}
                 </div>
 
                 <p className="text-[11px] text-slate-400 mt-1">{emp.id}</p>
