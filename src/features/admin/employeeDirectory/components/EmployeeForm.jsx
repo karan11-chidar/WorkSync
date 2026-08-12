@@ -54,14 +54,9 @@ import { toastError,toastSuccess } from "../../../../shared/services/toastServic
 // Import Providers service
 import { useEmployee } from "../context/EmployeeContext";
 
-// Import generate employee id
-import generateId from "../../../../shared/utils/idGenerator";
-
-
 // Initial form state for employee form
 const INITIAL_FORM_STATE = {
   formData: {
-    employeeId:`EMP-${generateId()}`,
     firstName: "",
     lastName: "",
     email: "",

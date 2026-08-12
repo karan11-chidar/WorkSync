@@ -7,6 +7,7 @@ import {
   MapPin,
   Star,
   FileText,
+  IndianRupee,
 } from "lucide-react";
 export function EmployeeDetailDrawer({
   selectedEmployee,
@@ -60,7 +61,6 @@ export function EmployeeDetailDrawer({
             <button
               onClick={() => {
                 handleEditEmployee(selectedEmployee);
-                console.log("Edit Employee:", selectedEmployee);
                 setSelectedEmployee(null);
               }}
               className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors active:scale-95"
@@ -125,7 +125,7 @@ export function EmployeeDetailDrawer({
                           : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {selectedEmployee.status || "Active"}
+                  {selectedEmployee.employmentStatus || "Active"}
                 </span>
               </div>
             </div>
@@ -133,8 +133,9 @@ export function EmployeeDetailDrawer({
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
                 Base Salary
               </span>
-              <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                ${selectedEmployee.salary?.toLocaleString()}/yr
+              <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5 flex items-center">
+                <IndianRupee width={13} />
+                {selectedEmployee.salary?.toLocaleString()}/yr
               </div>
             </div>
             <div>
@@ -142,7 +143,7 @@ export function EmployeeDetailDrawer({
                 Joining Date
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                {selectedEmployee.dateJoined}
+                {selectedEmployee.joiningDate?.toDate().toLocaleDateString()}
               </div>
             </div>
           </div>

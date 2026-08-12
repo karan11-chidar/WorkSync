@@ -39,7 +39,7 @@ function EmployeesLists({ handleSelectEmployee }) {
   if (isEmpty) {
     return (
       <EmptyState
-        title="No employees found"
+        title="No Employees found"
         description="There are no Employees available yet. Add staff to populate the directory."
       />
     );
