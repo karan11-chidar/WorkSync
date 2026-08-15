@@ -1,17 +1,56 @@
-import React from 'react'
+/**
+ * Imports for DepartmentFilter Component
+ *
+ * - React: Core React library with hooks
+ * - PropTypes: Runtime type checking for props
+ */
 
-function DepartmentFilter() {
-    const [deptFilter, setDeptFilter] = React.useState('All');
-    const availableDepts = ['HR', 'Engineering', 'Sales', 'Marketing', 'Finance', 'Operations'];
+import React from "react";
+
+/**
+ * Available departments list
+ * Contains all department options that can be filtered
+ *
+ * @type {string[]}
+ */
+const availableDepts = [
+  "HR",
+  "Engineering",
+  "Sales",
+  "Marketing",
+  "Finance",
+  "Operations",
+];
+
+function DepartmentFilter({ filterState, setFilterState }) {
+  /**
+   * Handle department selection change
+   * Updates the filter state with selected department
+   *
+   * @param {Event} e - Change event from select element
+   */
+  const handleChange = (e) => {
+    const { value } = e.target;
+    setFilterState((prev) => ({ ...prev, department: value }));
+  };
+
   return (
+    // Container with spacing between label and select
     <div className="space-y-1">
+      {/* Filter label */}
       <label className="text-xs font-semibold text-slate-500">Department</label>
+
+      {/* Department select dropdown */}
       <select
-        value={deptFilter}
-        onChange={(e) => setDeptFilter(e.target.value)}
+        value={filterState.department}
+        onChange={handleChange}
         className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600"
+        id="filter-department-select"
       >
-        <option value="All">All Departments</option>
+        {/* Default option showing all departments */}
+        <option value="all departments">All Departments</option>
+
+        {/* Map through available departments */}
         {availableDepts.map((d) => (
           <option key={d} value={d}>
             {d}
@@ -22,4 +61,6 @@ function DepartmentFilter() {
   );
 }
 
-export default DepartmentFilter
+
+
+export default DepartmentFilter;

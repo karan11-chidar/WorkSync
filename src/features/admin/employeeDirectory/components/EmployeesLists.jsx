@@ -31,7 +31,7 @@ import PremiumUniversalLoader from "../../../../shared/components/Animations/Pre
  * @returns {JSX.Element}
  */
 function EmployeesLists({ handleSelectEmployee }) {
-  const { isLoading, employeeList } = useEmployee();
+  const { isLoading, displayEmployeeList,employeeList } = useEmployee();
   const isEmpty = !employeeList || employeeList.length === 0;
   if (isLoading) {
     return <PremiumUniversalLoader variant="list" rows={6} />;
@@ -43,6 +43,13 @@ function EmployeesLists({ handleSelectEmployee }) {
         description="There are no Employees available yet. Add staff to populate the directory."
       />
     );
+  } if (employeeList.length > 0 && displayEmployeeList.length === 0) {
+    return (
+      <EmptyState
+        title=" No employees match your filters"
+        description="There are no Employees available filters."
+      />
+    );
   }
 
   return (
@@ -52,7 +59,7 @@ function EmployeesLists({ handleSelectEmployee }) {
       <div className="hidden lg:block">
         <DesktopEmployeeTable
           handleSelectEmployee={handleSelectEmployee}
-          employees={employeeList}
+          employees={ displayEmployeeList}
         />
       </div>
 
@@ -61,7 +68,7 @@ function EmployeesLists({ handleSelectEmployee }) {
       <div className="lg:hidden">
         <MobileEmployeeCards
           handleSelectEmployee={handleSelectEmployee}
-          employees={employeeList}
+          employees={ displayEmployeeList}
         />
       </div>
     </div>
