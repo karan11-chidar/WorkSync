@@ -1,28 +1,36 @@
 /**
  * Imports for DepartmentFilter Component
  *
- * - React: Core React library with hooks
- * - PropTypes: Runtime type checking for props
+ * - React: Core React library with hooks for component state and side effects
+ * - useEffect: Hook for managing side effects like data fetching
+ * - useEmployee: Custom hook to access employee context data and methods
  */
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useEmployee } from "../context/EmployeeContext";
 
 /**
- * Available departments list
- * Contains all department options that can be filtered
+ * DepartmentFilter Component
  *
- * @type {string[]}
+ * A filter component that provides department selection functionality
+ * for employee directory filtering. Displays a dropdown with all available
+ * departments fetched from the employee context.
+ *
+ * @component
+ * @param {Object} filterState - Current filter state object
+ * @param {string} filterState.department - Currently selected department filter
+ * @param {Function} setFilterState - Function to update the filter state
+ * @returns {React.ReactElement} Dropdown filter component for departments
  */
-const availableDepts = [
-  "HR",
-  "Engineering",
-  "Sales",
-  "Marketing",
-  "Finance",
-  "Operations",
-];
 
 function DepartmentFilter({ filterState, setFilterState }) {
+  /**
+   * Available departments list
+   * Contains all department options that can be filtered
+   *
+   * @type {string[]}
+   */
+  const { getDepartmentsLists, departmentList } = useEmployee();
   /**
    * Handle department selection change
    * Updates the filter state with selected department
@@ -34,6 +42,20 @@ function DepartmentFilter({ filterState, setFilterState }) {
     setFilterState((prev) => ({ ...prev, department: value }));
   };
 
+  /**
+   * Effect: Fetch departments list on component mount
+   *
+   * Triggers on component mount to load all available departments
+   * Used to populate the department filter dropdown options
+   *
+   * @effect Runs once on component initialization
+   * @dependency [] - Empty dependency array ensures it runs only on mount
+   */
+  useEffect(() => {
+    getDepartmentsLists();
+  }, []);
+
+  
   return (
     // Container with spacing between label and select
     <div className="space-y-1">
@@ -51,7 +73,7 @@ function DepartmentFilter({ filterState, setFilterState }) {
         <option value="all departments">All Departments</option>
 
         {/* Map through available departments */}
-        {availableDepts.map((d) => (
+        {departmentList.map((d) => (
           <option key={d} value={d}>
             {d}
           </option>
@@ -60,7 +82,5 @@ function DepartmentFilter({ filterState, setFilterState }) {
     </div>
   );
 }
-
-
 
 export default DepartmentFilter;

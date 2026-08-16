@@ -185,9 +185,28 @@ const getEmployeeListService = async () => {
     throw error;
   }
 };
+
+/**
+ * getDepartmentsList
+ *
+ * Retrieves the current directory of Departments records.
+ *
+ * @returns {Promise<Array<Object>>} Resolves with the list of departments  objects.
+ * @throws {Error} When retrieval fails.
+ */
+const getDepartmentsListService = async() => {
+  try {
+    const collectionRef = collection(db, 'departments');
+    const departmentLists = await getDocs(collectionRef);
+    return departmentLists.docs.map((dep) =>dep.data().departmentName);
+  } catch (error) {
+    throw error
+  }
+}
 export {
   createEmployeeService,
   updateEmployeeService,
   deleteEmployeeService,
   getEmployeeListService,
+  getDepartmentsListService
 };
