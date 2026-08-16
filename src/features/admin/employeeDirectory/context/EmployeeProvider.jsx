@@ -32,6 +32,18 @@
  * ============================================================================
  */
 
+/**
+ * Imports for EmployeeProvider Component
+ *
+ * - React: Core React library with hooks for state management
+ * - useState: Hook for managing component state
+ * - useEffect: Hook for side effects and filter application
+ * - useAuth: Custom hook to access authenticated user context
+ * - toastError: Service for displaying error notifications
+ * - Employee Services: CRUD operations for employee management
+ * - EmployeeContext: Context object for providing employee data
+ */
+
 // React
 import React, { useState, useEffect } from "react";
 
@@ -47,26 +59,43 @@ import {
   deleteEmployeeService,
   getEmployeeListService,
   updateEmployeeService,
+  getDepartmentsListService,
 } from "../services/employeeService";
 
 // Employee Context
 import { EmployeeContext } from "./EmployeeContext";
 
 /**
- * EmployeeProvider
+ * EmployeeProvider Component
  *
- * Provides employee directory state and actions for admin workflows.
- * This provider maintains the current employee list and loading state,
- * and exposes methods to create, update, delete, and retrieve employees.
+ * A context provider that manages the employee directory state and provides
+ * CRUD operations for administrative employee management workflows.
  *
- * @returns {JSX.Element} A provider component for employee management.
+ * Key Responsibilities:
+ * - Maintains employee list and filtered results state
+ * - Manages loading state for asynchronous operations
+ * - Provides methods to create, update, delete, and fetch employees
+ * - Applies real-time filtering based on search, department, status, and sorting criteria
+ * - Manages department list for filter dropdowns
+ *
+ * State Management:
+ * - employeeList: Full list of all employees
+ * - filteredEmployeeList: Employees matching current filter criteria
+ * - filterState: Current filter configuration (search, department, status, sort)
+ * - departmentList: Available departments for filtering
+ * - isLoading: Loading state for async operations
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to be wrapped by provider
+ * @returns {JSX.Element} Provider component wrapping EmployeeContext
  */
 function EmployeeProvider({ children }) {
   const { user } = useAuth();
   const [employeeList, setEmployeeList] = useState([]);
   const [filteredEmployeeList, setFilteredEmployeeList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [departmentList, setDepartmentList] = useState([]);
   /**
    * Filter state management
    * Tracks the current filter and search criteria
@@ -83,7 +112,6 @@ function EmployeeProvider({ children }) {
     status: "all status",
     search: "",
   });
-  console.log(filterState);
   //----------------------------------------------------------
   // Derived State
   //----------------------------------------------------------
@@ -92,7 +120,7 @@ function EmployeeProvider({ children }) {
     filterState.search !== "" ||
     filterState.department !== "all departments" ||
     filterState.status !== "all status" ||
-    filterState.sortBy !== 'select order';
+    filterState.sortBy !== "select order";
   const displayEmployeeList = isFilterActive
     ? filteredEmployeeList
     : employeeList;
@@ -199,57 +227,83 @@ function EmployeeProvider({ children }) {
     const departmentValue = filterState.department.toLowerCase();
     const statusValue = filterState.status.toLowerCase();
     const sortValue = filterState.sortBy.toLowerCase();
-    const filteredEmployee = employeeList.filter((emp) => {
-      const firstName = emp.firstName?.toLowerCase() || "";
-      const lastName = emp.lastName?.toLowerCase() || "";
-      const emailId = emp.email?.toLowerCase() || "";
-      const empId = emp.employeeId?.toLowerCase() || "";
-      const department = emp.department?.toLowerCase() || "";
-      const employeeStatus = emp.employmentStatus?.toLowerCase() || "";
-      const matchSearch =
-        firstName.includes(searchValue) ||
-        lastName.includes(searchValue) ||
-        emailId.includes(searchValue) ||
-        empId.includes(searchValue);
-      const matchDepartment =
-        departmentValue === "all departments" ||
-       department === departmentValue;
-      
-      const matchStatus =
-        statusValue === "all status" ||
-        employeeStatus === statusValue;
-      return matchSearch && matchDepartment && matchStatus;
-    }).sort((emp1, emp2) => {
-      if (sortValue === 'name-az')
-        return emp1.firstName?.localeCompare(emp2?.firstName);
-      else if (sortValue === 'name-za')
-        return emp2.firstName?.localeCompare(emp1?.firstName);
-      else if (sortValue === 'salary-desc')
-        return emp2.salary - emp1.salary;
-      else if (sortValue === 'salary-asc')
-        return emp1.salary - emp2.salary;
-      else if (sortValue === 'date-joined-new')
-        return emp2.joiningDate?.toMillis() - emp1.joiningDate?.toMillis();
-      else if (sortValue === "date-joined-old")
-        return emp1.joiningDate?.toMillis() - emp2.joiningDate?.toMillis();
-    });
+    const filteredEmployee = employeeList
+      .filter((emp) => {
+        const firstName = emp.firstName?.toLowerCase() || "";
+        const lastName = emp.lastName?.toLowerCase() || "";
+        const emailId = emp.email?.toLowerCase() || "";
+        const empId = emp.employeeId?.toLowerCase() || "";
+        const department = emp.department?.toLowerCase() || "";
+        const employeeStatus = emp.employmentStatus?.toLowerCase() || "";
+        const matchSearch =
+          firstName.includes(searchValue) ||
+          lastName.includes(searchValue) ||
+          emailId.includes(searchValue) ||
+          empId.includes(searchValue);
+        const matchDepartment =
+          departmentValue === "all departments" ||
+          department === departmentValue;
 
-    console.log(filteredEmployee);
+        const matchStatus =
+          statusValue === "all status" || employeeStatus === statusValue;
+        return matchSearch && matchDepartment && matchStatus;
+      })
+      .sort((emp1, emp2) => {
+        if (sortValue === "name-az")
+          return emp1.firstName?.localeCompare(emp2?.firstName);
+        else if (sortValue === "name-za")
+          return emp2.firstName?.localeCompare(emp1?.firstName);
+        else if (sortValue === "salary-desc") return emp2.salary - emp1.salary;
+        else if (sortValue === "salary-asc") return emp1.salary - emp2.salary;
+        else if (sortValue === "date-joined-new")
+          return emp2.joiningDate?.toMillis() - emp1.joiningDate?.toMillis();
+        else if (sortValue === "date-joined-old")
+          return emp1.joiningDate?.toMillis() - emp2.joiningDate?.toMillis();
+      });
     setFilteredEmployeeList(filteredEmployee);
+  };
+
+  /**
+   * getDepartmentsLists
+   *
+   * Fetches the complete list of available departments from the backend
+   * and updates the department list state. Used to populate department
+   * filter dropdown options in the employee directory.
+   *
+   * Error Handling:
+   * - Catches Firebase errors and displays toast notification
+   * - Continues gracefully if fetch fails
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
+  const getDepartmentsLists = async () => {
+    try {
+      const departmentData = await getDepartmentsListService();
+      setDepartmentList(departmentData);
+    } catch (error) {
+      toastError("Firebase Error" + error.message);
+    }
   };
 
   /**
    * Effect: Apply Employee Filters
    *
-   * Triggers whenever the filterState changes to immediately apply
-   * the updated filters to the employee list. This ensures the employee
-   * directory updates in real-time as users modify filter criteria
-   * (department, status, search query, sorting).
+   * Automatically applies filtering and sorting to the employee list whenever
+   * the filterState or employeeList changes. This ensures the filtered employee
+   * list stays in sync with user-selected filter criteria (department, status,
+   * search query, and sorting preference).
    *
-   * @effect
+   * Filter Operations:
+   * - Search: Matches against firstName, lastName, email, and employeeId
+   * - Department: Filters by selected department or shows all
+   * - Status: Filters by employment status or shows all
+   * - Sorting: Applies sorting by name (A-Z, Z-A), salary (asc, desc), or date joined
+   *
+   * @effect Applies filters whenever filterState or employeeList changes
    * @dependency {Object} filterState - Current filter configuration object
+   * @dependency {Array} employeeList - Complete list of employees to filter
    */
-
   useEffect(() => {
     applyEmployeeFilters();
   }, [filterState, employeeList]);
@@ -263,6 +317,8 @@ function EmployeeProvider({ children }) {
         filterState,
         setFilterState,
         displayEmployeeList,
+        departmentList,
+        getDepartmentsLists,
         createEmployee,
         updateEmployee,
         deleteEmployee,
