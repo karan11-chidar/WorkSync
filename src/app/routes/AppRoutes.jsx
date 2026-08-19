@@ -1,28 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-// Pages Imports
+
+// Portal layout shells used by the nested admin and employee route trees.
 import AdminLayout from "../../layouts/AdminLayout.jsx";
 import EmployeeLayout from "../../layouts/EmployeeLayout.jsx";
+
+// Admin portal route views.
 import AdminDashBoard from "../../pages/Admin/Dashboard/DashBoard.jsx";
 import EmployeeDirectory from "../../features/admin/employeeDirectory/pages/EmployeeDirectory.jsx";
-import TaskBoard from "../../pages/Admin/TaskBoard/TaskBoard.jsx";
+import TaskBoard from "../../features/admin/taskboard/pages/TaskBoard.jsx";
 import Departments from "../../features/admin/departments/pages/Departments.jsx";
 import TodayAttendance from "../../pages/Admin/Attendance/TodayAttendance.jsx";
 import LeaveLedger from "../../pages/Admin/LeaveLedger/LeaveLedger.jsx";
+
+// Employee portal route views and the public authentication entry point.
 import EmployeeDashBoard from "../../pages/Employee/DashBoard/DashBoard.jsx";
 import Login from "../../features/auth/pages/Login.jsx";
 import EmployeeAttendance from "../../pages/Employee/Attendance/EmployeeAttendance.jsx";
 import LeaveDashboardView from "../../pages/Employee/Leaves/LeaveDashboardView.jsx";
 import EmployeeTaskList from "../../pages/Employee/Tasks/AssignedTasksPortal.jsx";
 import EmployeeProfile from "../../pages/Employee/Profile/EmployeeProfileView.jsx";
+
+// Shared route infrastructure and feature-scoped data providers.
 import NotFoundPage from "../../shared/pages/NotFoundPage.jsx";
 import LinearProgressStream from "../../shared/components/Animations/LinearProgressStream.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import DepartmentProvider from '../../features/admin/departments/context/DepartmentProvider.jsx'
+import DepartmentProvider from "../../features/admin/departments/context/DepartmentProvider.jsx";
 import EmployeeProvider from "../../features/admin/employeeDirectory/context/EmployeeProvider.jsx";
+
+/** Minimum visible duration for the route transition indicator, in ms. */
+const MIN_ROUTE_LOADER_TIME = 1000;
+
+/**
+ * Defines the application's public and role-protected route hierarchy.
+ *
+ * Admin and employee portals are rendered through their respective layouts
+ * and guarded by `ProtectedRoute`. Feature providers are mounted at the route
+ * boundary where their state is consumed. A short loading indicator is shown
+ * whenever the pathname changes to provide consistent route-transition
+ * feedback.
+ *
+ * @returns {JSX.Element} The application route tree and transition indicator.
+ */
 function AppRoutes() {
   const [isLoading, setIsLoading] = useState(false);
-  const MIN_ROUTE_LOADER_TIME = 1000;
   const location = useLocation();
   useEffect(() => {
     setIsLoading(true);
