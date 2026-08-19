@@ -1,4 +1,4 @@
-import React, { useState, useEffect,} from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   Building2,
@@ -9,7 +9,11 @@ import {
   FileText,
 } from "lucide-react";
 import { departmentFormValidation } from "../validations/departmentValidation";
-import { toastError,toastSuccess,toastLoading } from "../../../../shared/services/toastService";
+import {
+  toastError,
+  toastSuccess,
+  toastLoading,
+} from "../../../../shared/services/toastService";
 import { useDepartment } from "../context/DepartmentContext";
 import { toast } from "sonner";
 const COLOR_MAP = {
@@ -32,56 +36,92 @@ const COLOR_MAP = {
     dot: "bg-sky-500",
   },
 };
-const DepartmentForm = ({ editingDept, employees, handleClose, }) => {
-  const { createDepartment,updateDepartment } = useDepartment();
+
+/**
+ * Renders the department create and edit modal.
+ *
+ * Form state and validation errors are managed locally. Persistence is
+ * delegated to the department context after the draft passes validation.
+ *
+ * @param {Object} props Component properties.
+ * @param {Object|null} props.editingDept Department being edited, or `null`
+ *   when creating a new department.
+ * @param {Function} props.handleClose Closes the modal after cancellation or
+ *   a successful save.
+ * @returns {JSX.Element} Department form modal.
+ */
+const DepartmentForm = ({ editingDept, handleClose }) => {
+  const { createDepartment, updateDepartment, getEmployeeList, employeeList } =
+    useDepartment();
   const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [department, setDepartment] = useState({
-    departmentName: '',
-    location: '',
-    budget: '',
-    manager: '',
-    description: '',
-    themeColor: '',
-  })
+    departmentName: "",
+    location: "",
+    budget: "",
+    manager: null,
+    description: "",
+    themeColor: "",
+  });
   const [formError, setFormError] = useState({
     departmentName: "",
     location: "",
     budget: "",
-    manager: "",
+    manager: null,
     description: "",
     themeColor: "",
   });
-  const [globalError, setGlobalError] = useState(''); 
+  const [globalError, setGlobalError] = useState("");
   let toastId;
 
+  /**
+   * Updates a draft field and clears that field's previous validation error.
+   * Empty manager selections are stored as `null` for a consistent data shape.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>} e
+   *   Change event from a controlled form field.
+   * @returns {void}
+   */
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDepartment(prev => ({ ...prev, [name]: value }));
-    setFormError(prev=>({ ...prev, [name]: '' }));
-  }
-  const handleFormSubmit = async(e) => {
+    setDepartment((prev) => ({
+      ...prev,
+      [name]: name === "manager" && value === "" ? null : value,
+    }));
+    setFormError((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  /**
+   * Validates and persists the department draft, then closes the modal when
+   * the operation succeeds.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} e Form submit event.
+   * @returns {Promise<void>} Resolves after persistence and UI cleanup finish.
+   */
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const validationResult= departmentFormValidation(department);
+    const validationResult = departmentFormValidation(department);
     if (!validationResult.isValid) {
       setFormError(validationResult.formError);
-      return
+      return;
     }
     try {
       setIsLoading(true);
       setIsDisabled(true);
-       toastId = toastLoading("Processing payment...");
-      if (editingDept === null) {
+toastId = toastLoading(
+  editingDept === null ? "Creating department..." : "Updating department...",
+);      if (editingDept === null) {
         await createDepartment(department);
         toastSuccess(
-          `Department Created!`, `New ${department.departmentName} unit added successfully .`
+          `Department Created!`,
+          `New ${department.departmentName} unit added successfully .`,
         );
       } else {
         await updateDepartment(editingDept.id, department);
-         toastSuccess(
-           `Department Editing!`,
-           `New ${department.departmentName} unit added successfully .`,
-         );
+        toastSuccess(
+          `Department Editing!`,
+          `New ${department.departmentName} unit added successfully .`,
+        );
       }
       handleClose();
     } catch (error) {
@@ -92,29 +132,34 @@ const DepartmentForm = ({ editingDept, employees, handleClose, }) => {
       setIsDisabled(false);
       toast.dismiss(toastId);
     }
-  }
+  };
   useEffect(() => {
+    // Hydrate edit mode from the selected department; otherwise start a fresh
+    // draft whenever the modal switches back to create mode.
     if (editingDept) {
       setDepartment({
         departmentName: editingDept.departmentName,
         location: editingDept.location,
         budget: editingDept.budget,
-        manager: editingDept.manager,
+        manager: editingDept.manager ?? null,
         description: editingDept.description,
         themeColor: editingDept.themeColor,
       });
-    }else {
-    setDepartment({
-      departmentName: "",
-      location: "",
-      budget: "",
-      manager: "",
-      description: "",
-      themeColor: "",
-    });
-      }
-      
-  },[editingDept])
+    } else {
+      setDepartment({
+        departmentName: "",
+        location: "",
+        budget: "",
+        manager: null,
+        description: "",
+        themeColor: "",
+      });
+    }
+  }, [editingDept]);
+  useEffect(() => {
+    // Managers are loaded when the form mounts so the select stays current.
+    getEmployeeList();
+  }, []);
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md transition-opacity duration-300"
@@ -195,26 +240,25 @@ const DepartmentForm = ({ editingDept, employees, handleClose, }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
-                Manager / Leader *
+                Manager / Leader
               </label>
               <select
                 name="manager"
+                value={department.manager || ""}
                 onChange={handleChange}
-                value={department.manager}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:ring-1 focus:ring-indigo-600 outline-none"
               >
-                <option value="">-- Choose a Leader --</option>
-                {employees?.map((emp) => {
-                  const fullName =
-                    typeof emp === "object"
-                      ? `${emp.firstName} ${emp.lastName}`
-                      : emp;
-                  return (
-                    <option key={fullName} value={fullName}>
-                      {fullName}
-                    </option>
-                  );
-                })}
+                <option value="">-- No Manager Assigned --</option>
+
+                {employeeList?.length > 0 &&
+                  employeeList.map((emp,idx) => {
+                    const fullName = `${emp.employeeId} ${emp.firstName} ${emp.lastName}`;
+                    return (
+                      <option key={emp.employeeId} value={fullName}>
+                        {fullName}
+                      </option>
+                    );
+                  })}
               </select>
               {formError.manager && (
                 <span className="text-rose-700">{formError.manager}</span>
@@ -328,6 +372,6 @@ const DepartmentForm = ({ editingDept, employees, handleClose, }) => {
       </div>
     </div>
   );
-}
+};
 
 export default DepartmentForm;

@@ -7,10 +7,6 @@ function Departments() {
   const { getDepartments,deleteDepartment } = useDepartment();
   const [editingDept, setEditingDept] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const employees = [
-    { id: "EMP-001", firstName: "Rahul", lastName: "Sharma" },
-    { id: "EMP-002", firstName: "Priya", lastName: "Verma" },
-  ];
   const handleEditOpen = (dept) => {
     setEditingDept(dept);
     setModalOpen(true);
@@ -38,7 +34,6 @@ function Departments() {
         <CreateDepartment
           editingDept={editingDept}
           handleClose={handleClose}
-          employees={employees}
         />
       )}
     </div>
