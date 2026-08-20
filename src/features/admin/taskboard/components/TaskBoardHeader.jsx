@@ -13,7 +13,7 @@ function TaskBoardHeader({ setIsOpenTask,setEditingTask }) {
           </p>
         </div>
         <button
-              onClick={() => {
+        onClick={() => {
                   setIsOpenTask(true)
                 setEditingTask(null)
               }
