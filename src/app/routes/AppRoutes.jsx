@@ -27,6 +27,7 @@ import LinearProgressStream from "../../shared/components/Animations/LinearProgr
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import DepartmentProvider from "../../features/admin/departments/context/DepartmentProvider.jsx";
 import EmployeeProvider from "../../features/admin/employeeDirectory/context/EmployeeProvider.jsx";
+import TaskBoardProvider from "../../features/admin/taskboard/contexts/TaskBoardProvider.jsx";
 
 /** Minimum visible duration for the route transition indicator, in ms. */
 const MIN_ROUTE_LOADER_TIME = 1000;
@@ -85,7 +86,14 @@ function AppRoutes() {
                 </>
               }
             />
-            <Route path="tasks" element={<TaskBoard />} />
+            <Route
+              path="tasks"
+              element={
+                <TaskBoardProvider>
+                  <TaskBoard />
+                </TaskBoardProvider>
+              }
+            />
             <Route path="attendance" element={<TodayAttendance />} />
             <Route path="leaves" element={<LeaveLedger />} />
 

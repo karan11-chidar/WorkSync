@@ -18,7 +18,7 @@ function TaskBoard() {
   // A null editing task indicates that the modal is in create mode.
   const [isOpenTask, setIsOpenTask] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-
+  
   return (
     <div className="space-y-6">
       <TaskBoardHeader setIsOpenTask={setIsOpenTask} setEditingTask={setEditingTask} />
