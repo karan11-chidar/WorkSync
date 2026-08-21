@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../../firebase/firebaseConfig";
 
 /**
@@ -50,15 +50,27 @@ export const getEmployeeService = async () => {
   }
 };
 
-export const createTaskService = async () => {
+export const createTaskService = async (user,taskData) => {
   try {
-    
+    const firebaseData = {
+      ...taskData,
+      createdAt: serverTimestamp(),
+      
+    }
+    const collectionRef = collection(db, 'tasks');
+    const docRef = await addDoc(collectionRef, firebaseData);
+    return {
+      id: docRef.id,
+      ...firebaseData,
+    }
   } catch (error) {
     throw error
   }
 }
-export const updateTaskService = async () => {
+export const updateTaskService = async (id,updatedData) => {
   try {
+    const collectionRef = collection(db, 'tasks');
+    const docRef = doc(collectionRef,)
   } catch (error) {
     throw error;
   }
