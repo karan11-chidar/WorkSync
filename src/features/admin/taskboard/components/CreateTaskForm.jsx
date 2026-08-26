@@ -19,10 +19,14 @@ import {
   Flag,
   FolderKanban,
   FileText,
+  ShieldAlert
 } from "lucide-react";
 
 // Feature-level context for employee options and task board operations.
 import { useTaskBoard } from "../contexts/TaskBoardContext";
+
+// form validation for form input data
+import formValidation from "../validations/taskBoardValidation";
 
 /**
  * Shape of the form state consumed by the task modal.
@@ -62,6 +66,27 @@ const formReducer = (state, action) => {
           [action.fieldName]: action.value,
         },
       };
+    case 'SET_FORM_ERROR':
+      return {
+        ...state,
+        formError: {
+         ...action.formError,
+        }
+      }
+    case 'RESET_FIELD':
+      return {
+        formData: {
+          taskTitle: "",
+          assignEmployee: "",
+          priority: "",
+          dueDate: "",
+          status: "",
+          description: "",
+          estimateHour: "",
+          workingProject: "",
+        },
+        formError: {},
+      };
     default:
       return state;
   }
@@ -94,6 +119,10 @@ function CreateTaskForm({
   //----------------------------------------------------------
   const [formState, dispatch] = useReducer(formReducer, INITIAL_FORM_STATE);
 
+  //----------------------------------------------------------
+  // Derived Component States
+  //----------------------------------------------------------
+  const activeFormErrors = Object.values(formState.formError).filter(Boolean);
   /**
    * Synchronizes a form control change with the reducer state.
    *
@@ -121,9 +150,16 @@ function CreateTaskForm({
    */
   const handleSubmit = (e) => {
     e.preventDefault();
+    const { isValid, errors } = formValidation(formState.formData);
     console.log(formState);
+    if (!isValid) {
+      dispatch({
+        type: "SET_FORM_ERROR",
+        formError: errors,
+      });
+      return;
+    }
   };
-
 
   // Load employee options once when the task form mounts.
   useEffect(() => {
@@ -158,6 +194,27 @@ function CreateTaskForm({
             onSubmit={handleSubmit}
             className="flex-1 space-y-4 overflow-y-auto py-4 text-xs"
           >
+            {activeFormErrors.length > 0 && (
+                        <div
+                          className="rounded-2xl border border-rose-100 bg-rose-50/95 p-4 shadow-sm text-rose-900"
+                          role="alert"
+                          aria-live="assertive"
+                        >
+                          <div className="flex items-start gap-3">
+                            <ShieldAlert className="h-5 w-5 text-rose-600 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-semibold">
+                                Please fix {activeFormErrors.length} validation issue
+                                {activeFormErrors.length > 1 ? "s" : ""}.
+                              </p>
+                              <p className="text-[11px] text-rose-700/90">
+                                Required fields are marked and inline messages display
+                                details.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
             {/* Task Title */}
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -167,11 +224,14 @@ function CreateTaskForm({
               <input
                 required
                 name="taskTitle"
-                value={formState.taskTitle}
+                value={formState.formData.taskTitle}
                 onChange={handleChange}
                 placeholder="Create Dashboard UI"
                 className="w-full p-2.5 rounded-lg border border-slate-200 focus:ring-1  focus:ring-indigo-600 outline-none"
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formState.formError.taskTitle}
+              </span>
             </div>
 
             {/* Employee + Priority */}
@@ -184,7 +244,7 @@ function CreateTaskForm({
                   <User className="absolute left-2.5 top-3 h-3.5 w-3.5 text-slate-400" />
                   <select
                     onChange={handleChange}
-                    value={formState.assignEmployee}
+                    value={formState.formData.assignEmployee}
                     name="assignEmployee"
                     className="w-full rounded-lg border border-slate-200 p-2.5 pl-8 outline-none focus:ring-1 focus:ring-indigo-600"
                   >
@@ -195,6 +255,9 @@ function CreateTaskForm({
                       >{`${emp.employeeId} ${emp.firstName} ${emp.lastName}`}</option>
                     ))}
                   </select>
+                  <span className="text-rose-500 text-[10px] font-semibold">
+                    {formState.formError.assignEmployee}
+                  </span>
                 </div>
               </div>
 
@@ -205,14 +268,18 @@ function CreateTaskForm({
 
                   <select
                     onChange={handleChange}
-                    value={formState.priority}
+                    value={formState.formData.priority}
                     name="priority"
                     className="w-full rounded-lg border border-slate-200 p-2.5 pl-8 outline-none focus:ring-1 focus:ring-indigo-600"
-                  > <option value="">-- Select a Priority --</option>
-                    <option value='high'>High 🔴</option>
-                    <option value='medium'>Medium 🟡</option>
-                    <option value='low'>Low 🟢</option>
+                  >
+                    <option value="">-- Select a Priority --</option>
+                    <option value="high">High 🔴</option>
+                    <option value="medium">Medium 🟡</option>
+                    <option value="low">Low 🟢</option>
                   </select>
+                  <span className="text-rose-500 text-[10px] font-semibold">
+                    {formState.formError.priority}
+                  </span>
                 </div>
               </div>
             </div>
@@ -228,11 +295,14 @@ function CreateTaskForm({
 
                   <input
                     name="dueDate"
-                    value={formState.dueDate }
+                    value={formState.formData.dueDate}
                     onChange={handleChange}
                     type="date"
                     className="w-full rounded-lg border border-slate-200 p-2.5 pl-8 outline-none focus:ring-1 focus:ring-indigo-600"
                   />
+                  <span className="text-rose-500 text-[10px] font-semibold">
+                    {formState.formError.dueDate}
+                  </span>
                 </div>
               </div>
 
@@ -244,12 +314,15 @@ function CreateTaskForm({
 
                   <input
                     name="estimateHour"
-                    value={formState.estimateHour}
+                    value={formState.formData.estimateHour}
                     onChange={handleChange}
                     type="number"
                     placeholder="10"
                     className="w-full rounded-lg border border-slate-200 p-2.5 pl-8 outline-none focus:ring-1 focus:ring-indigo-600"
                   />
+                  <span className="text-rose-500 text-[10px] font-semibold">
+                    {formState.formError.estimateHour}
+                  </span>
                 </div>
               </div>
             </div>
@@ -262,14 +335,18 @@ function CreateTaskForm({
 
                 <select
                   onChange={handleChange}
-                  value={formState.status}
+                  value={formState.formData.status}
                   name="status"
                   className="w-full rounded-lg border border-slate-200 p-2.5 outline-none focus:ring-1 focus:ring-indigo-600"
-                ><option value="">-- Select a Status --</option>
-                  <option value='pending'>Pending</option>
-                  <option value='progress'>In Progress</option>
-                  <option value='completed'>Completed</option>
+                >
+                  <option value="">-- Select a Status --</option>
+                  <option value="pending">Pending</option>
+                  <option value="progress">In Progress</option>
+                  <option value="completed">Completed</option>
                 </select>
+                <span className="text-rose-500 text-[10px] font-semibold">
+                  {formState.formError.status}
+                </span>
               </div>
 
               <div className="space-y-1">
@@ -280,11 +357,14 @@ function CreateTaskForm({
 
                   <input
                     name="workingProject"
-                    value={formState.workingProject}
+                    value={formState.formData.workingProject}
                     onChange={handleChange}
                     placeholder="HR Dashboard"
                     className="w-full rounded-lg border border-slate-200 p-2.5 pl-8 outline-none focus:ring-1 focus:ring-indigo-600"
                   />
+                  <span className="text-rose-500 text-[10px] font-semibold">
+                    {formState.formError.workingProject}
+                  </span>
                 </div>
               </div>
             </div>
@@ -298,12 +378,15 @@ function CreateTaskForm({
 
               <textarea
                 onChange={handleChange}
-                value={formState.description}
+                value={formState.formData.description}
                 name="description"
                 rows="3"
                 placeholder="Task details..."
                 className="w-full resize-none rounded-lg border border-slate-200 p-2.5 outline-none focus:ring-1 focus:ring-indigo-600"
               />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formState.formError.description}
+              </span>
             </div>
 
             {/* Footer */}
