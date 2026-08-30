@@ -129,8 +129,6 @@ const formReducer = (state, action) => {
   }
 };
 
-// Temporarily Placeholder for form submission handler
-const availableDepts = ["Engineering", "HR", "Finance", "Design"];
 
 function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
   const { createEmployee,updateEmployee } = useEmployee();

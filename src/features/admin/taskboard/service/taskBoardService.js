@@ -87,13 +87,13 @@ export const getEmployeeService = async () => {
  * @returns {Promise<Object>} Promise resolving to created task object with id
  * @returns {string} .id - Unique Firestore document ID for the created task
  * @throws {Error} Firebase error if creation fails
- */ export const createTaskService = async (user, taskData) => {
+ */ export const createTaskService = async (userId, taskData) => {
   try {
     const firebaseData = {
       ...taskData,
-      createdBy: user,
+      createdBy: userId,
       createdAt: serverTimestamp(),
-      assignedAt:serverTimestamp(),
+      dateAssigned: serverTimestamp(),
     };
 const collectionRef = collection(db, "tasks");
     const docRef = await addDoc(collectionRef, firebaseData);
@@ -102,6 +102,7 @@ const collectionRef = collection(db, "tasks");
       ...firebaseData,
     };
   } catch (error) {
+    console.log('service file error', error.message);
     throw error;
   }
 };

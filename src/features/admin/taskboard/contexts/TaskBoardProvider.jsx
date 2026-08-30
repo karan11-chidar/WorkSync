@@ -54,7 +54,7 @@ function TaskBoardProvider({ children }) {
   const createTask = async (formData) => {
     try {
       setIsLoading(true);
-      const taskData = await createTaskService(user, formData);
+      const taskData = await createTaskService(user.uid, formData);
       setTaskList((prev) => [...prev, taskData]);
     } catch (error) {
       toastError("Firebase Error" + error.message);

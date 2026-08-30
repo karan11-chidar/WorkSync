@@ -7,7 +7,7 @@
  */
 
 // React lifecycle and reducer primitives used by the form state machine.
-import React, { useEffect, useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 
 // Lucide icons used to visually identify form controls and actions.
 import {
@@ -27,6 +27,11 @@ import { useTaskBoard } from "../contexts/TaskBoardContext";
 
 // form validation for form input data
 import formValidation from "../validations/taskBoardValidation";
+import {
+  toastError,
+  toastSuccess,
+} from "../../../../shared/services/toastService";
+
 
 /**
  * Shape of the form state consumed by the task modal.
@@ -77,19 +82,18 @@ const formReducer = (state, action) => {
           ...action.formError,
         },
       };
-    case "RESET_FIELD":
+    case "EDIT_FORM":
       return {
+        ...state,
         formData: {
-          taskTitle: "",
-          assignEmployee: "",
-          priority: "",
-          dueDate: "",
-          status: "",
-          description: "",
-          estimateHour: "",
-          workingProject: "",
+          ...INITIAL_FORM_STATE.formData,
+          ...action.formData,
         },
-        formError: {},
+      };
+
+    case "RESET_FORM":
+      return {
+        ...INITIAL_FORM_STATE,
       };
     default:
       return state;
@@ -116,12 +120,16 @@ function CreateTaskForm({
   setIsOpenTask,
   setEditingTask,
 }) {
-  const { getEmployeeList, employeeList } = useTaskBoard();
+  const { getEmployeeList, employeeList, taskList, createTask, updateTask } =
+    useTaskBoard();
 
   //----------------------------------------------------------
   // Local Component States
   //----------------------------------------------------------
   const [formState, dispatch] = useReducer(formReducer, INITIAL_FORM_STATE);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDisable, setIsDisable] = useState(false);
 
   //----------------------------------------------------------
   // Derived Component States
@@ -131,8 +139,11 @@ function CreateTaskForm({
   /**
    * Synchronizes a form control change with the reducer state.
    *
-   * @param {React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>} event
-   *   Change event emitted by the form control.
+   * Dispatches an UPDATE_FIELD action to the reducer with the changed field name
+   * and value, simultaneously clearing any existing error for that field.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>} e
+   *   Change event emitted by the form control containing the updated field data.
    * @returns {void}
    */
   const handleChange = (e) => {
@@ -158,15 +169,19 @@ function CreateTaskForm({
   };
 
   /**
-   * Prevents the browser's default form submission behavior.
+   * Handles task form submission with validation and persistence.
    *
-   * Task persistence is intentionally delegated to the surrounding task-board
-   * workflow and will be connected here when that workflow is implemented.
+   * Validates form data against task board validation rules. On valid submission,
+   * either creates a new task or updates an existing one based on `editingTask` state.
+   * Displays success/error toast notifications and closes the modal on completion.
+   * Prevents browser default form submission behavior.
    *
-   * @param {React.FormEvent<HTMLFormElement>} event Form submission event.
-   * @returns {void}
+   * @async
+   * @param {React.FormEvent<HTMLFormElement>} e Form submission event.
+   * @returns {Promise<void>}
+   * @throws Logs error messages and displays error toast if task creation/update fails.
    */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const { isValid, errors } = formValidation(formState.formData);
     if (!isValid) {
@@ -176,19 +191,69 @@ function CreateTaskForm({
       });
       return;
     }
-    console.log(formState);
-    dispatch({ type: "RESET_FIELD" });
-    handleClose();
+    try {
+      setIsLoading(true);
+      setIsDisable(true);
+      if (editingTask === null) {
+        await createTask(formState.formData);
+        toastSuccess(
+          `Task Created!`,
+          `New ${formState.formData.taskTitle} added successfully .`,
+        );
+        console.log(formState)
+      } else {
+        await updateTask(editingTask.id, formState.formData);
+        toastSuccess(
+          `Task Editing!`,
+          `New ${formState.formData.taskTitle} updating successfully .`,
+        );
+      }
+      // Close the modal after submission
+      handleClose();
+    } catch (error) {
+      console.log(error.message);
+      toastError(error?.message || "Something went wrong");
+    } finally {
+      setIsLoading(false);
+      setIsDisable(false);
+    }
   };
 
-  // Load employee options once when the task form mounts.
+  /**
+   * Synchronizes editing task with form state.
+   *
+   * SIDE EFFECT: Watches the `editingTask` prop and populates the form with its data
+   * when a task is selected for editing. Resets the form to initial state when no task
+   * is being edited. This keeps the form data in sync with the parent's task selection.
+   *
+   * Dependencies: `editingTask` - triggers when the parent changes the selected task.
+   */
+  useEffect(() => {
+    if (editingTask) {
+      dispatch({
+        type: "EDIT_FORM",
+        formData: editingTask,
+      });
+    } else {
+      dispatch({ type: "RESET_FORM" });
+    }
+  }, [editingTask]);
+
+  /**
+   * Loads employee list on component mount.
+   *
+   * SIDE EFFECT: Fetches the employee list from the task board context once when
+   * the form component first mounts. This populates the employee dropdown options.
+   * The empty dependency array ensures this runs only once during the component lifecycle.
+   *
+   * Dependencies: Empty - executes only on mount.
+   */
   useEffect(() => {
     getEmployeeList();
   }, []);
 
-
   return (
-    (isOpenTask || editingTask) && (
+    (isOpenTask || editingTask!==null) && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-md">
         <div className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-2xl bg-white p-6 shadow-2xl">
           {/* Header */}
@@ -199,10 +264,7 @@ function CreateTaskForm({
             </h3>
 
             <button
-              onClick={() => {
-                setEditingTask(null);
-                setIsOpenTask(false);
-              }}
+              onClick={handleClose}
               aria-label="Close task form"
               className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-50 hover:text-slate-700 active:scale-95"
             >
@@ -271,10 +333,10 @@ function CreateTaskForm({
                     className="w-full rounded-lg border border-slate-200 p-2.5 pl-8 outline-none focus:ring-1 focus:ring-indigo-600"
                   >
                     <option value="">--- Select a Employee --- </option>
-                    {employeeList.map((emp, idx) => (
+                    {employeeList.map((emp) => (
                       <option
-                        value={`${emp.employeeId},${emp.firstName} ${emp.lastName}`}
-                        key={idx}
+                        value={emp.employeeId}
+                        key={emp.employeeId}
                       >{`${emp.employeeId} ${emp.firstName} ${emp.lastName}`}</option>
                     ))}
                   </select>
@@ -417,20 +479,24 @@ function CreateTaskForm({
             <div className="flex justify-end gap-2 border-t border-slate-100 pt-4">
               <button
                 type="button"
-                onClick={() => {
-                  setEditingTask(null);
-                  setIsOpenTask(false);
-                }}
+                onClick={handleClose}
                 className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs text-slate-600 transition-colors hover:bg-slate-100 active:scale-95"
               >
                 Cancel
               </button>
 
               <button
+                disabled={isDisable}
                 type="submit"
-                className="rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
+                className="disabled:opacity-50 disabled:cursor-not-allowed  rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-medium text-white transition-colors hover:bg-indigo-700 active:scale-95"
               >
-                {editingTask ? "Update Task" : "Assign Task"}
+                {editingTask === null
+                  ? isLoading
+                    ? "Creating..."
+                    : "Assign Task"
+                  : isLoading
+                    ? "Updating..."
+                    : "Update Task"}
               </button>
             </div>
           </form>
