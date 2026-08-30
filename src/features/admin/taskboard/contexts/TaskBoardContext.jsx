@@ -17,7 +17,7 @@ TaskBoardContext.displayName = "TaskBoardContext";
  *
  * @returns {*} The task board state and actions supplied by the provider.
  * @example
- * const { tasks, moveTask } = useTaskBoard();
+ * const {isLoading,employeeList,getEmployeeList,getTaskList,createTask,updateTask,deleteTask, } = useTaskBoard();
  */
 export const useTaskBoard = () => {
     return useContext(TaskBoardContext);

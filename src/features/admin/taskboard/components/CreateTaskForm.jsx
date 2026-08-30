@@ -19,7 +19,7 @@ import {
   Flag,
   FolderKanban,
   FileText,
-  ShieldAlert
+  ShieldAlert,
 } from "lucide-react";
 
 // Feature-level context for employee options and task board operations.
@@ -65,15 +65,19 @@ const formReducer = (state, action) => {
           ...state.formData,
           [action.fieldName]: action.value,
         },
+        formError: {
+          ...state.formError,
+          [action.fieldName]: "", // Clear the error for the updated field
+        },
       };
-    case 'SET_FORM_ERROR':
+    case "SET_FORM_ERROR":
       return {
         ...state,
         formError: {
-         ...action.formError,
-        }
-      }
-    case 'RESET_FIELD':
+          ...action.formError,
+        },
+      };
+    case "RESET_FIELD":
       return {
         formData: {
           taskTitle: "",
@@ -123,6 +127,7 @@ function CreateTaskForm({
   // Derived Component States
   //----------------------------------------------------------
   const activeFormErrors = Object.values(formState.formError).filter(Boolean);
+
   /**
    * Synchronizes a form control change with the reducer state.
    *
@@ -140,6 +145,19 @@ function CreateTaskForm({
   };
 
   /**
+   * Closes the task modal and clears the editing task state.
+   *
+   * Resets both the modal visibility flag and the currently selected task,
+   * returning the form to its initial closed state.
+   *
+   * @returns {void}
+   */
+  const handleClose = () => {
+    setIsOpenTask(false);
+    setEditingTask(null);
+  };
+
+  /**
    * Prevents the browser's default form submission behavior.
    *
    * Task persistence is intentionally delegated to the surrounding task-board
@@ -151,7 +169,6 @@ function CreateTaskForm({
   const handleSubmit = (e) => {
     e.preventDefault();
     const { isValid, errors } = formValidation(formState.formData);
-    console.log(formState);
     if (!isValid) {
       dispatch({
         type: "SET_FORM_ERROR",
@@ -159,12 +176,17 @@ function CreateTaskForm({
       });
       return;
     }
+    console.log(formState);
+    dispatch({ type: "RESET_FIELD" });
+    handleClose();
   };
 
   // Load employee options once when the task form mounts.
   useEffect(() => {
     getEmployeeList();
   }, []);
+
+
   return (
     (isOpenTask || editingTask) && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-md">
@@ -195,26 +217,26 @@ function CreateTaskForm({
             className="flex-1 space-y-4 overflow-y-auto py-4 text-xs"
           >
             {activeFormErrors.length > 0 && (
-                        <div
-                          className="rounded-2xl border border-rose-100 bg-rose-50/95 p-4 shadow-sm text-rose-900"
-                          role="alert"
-                          aria-live="assertive"
-                        >
-                          <div className="flex items-start gap-3">
-                            <ShieldAlert className="h-5 w-5 text-rose-600 mt-0.5" />
-                            <div>
-                              <p className="text-sm font-semibold">
-                                Please fix {activeFormErrors.length} validation issue
-                                {activeFormErrors.length > 1 ? "s" : ""}.
-                              </p>
-                              <p className="text-[11px] text-rose-700/90">
-                                Required fields are marked and inline messages display
-                                details.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+              <div
+                className="rounded-2xl border border-rose-100 bg-rose-50/95 p-4 shadow-sm text-rose-900"
+                role="alert"
+                aria-live="assertive"
+              >
+                <div className="flex items-start gap-3">
+                  <ShieldAlert className="h-5 w-5 text-rose-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold">
+                      Please fix {activeFormErrors.length} validation issue
+                      {activeFormErrors.length > 1 ? "s" : ""}.
+                    </p>
+                    <p className="text-[11px] text-rose-700/90">
+                      Required fields are marked and inline messages display
+                      details.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Task Title */}
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
@@ -251,6 +273,7 @@ function CreateTaskForm({
                     <option value="">--- Select a Employee --- </option>
                     {employeeList.map((emp, idx) => (
                       <option
+                        value={`${emp.employeeId},${emp.firstName} ${emp.lastName}`}
                         key={idx}
                       >{`${emp.employeeId} ${emp.firstName} ${emp.lastName}`}</option>
                     ))}

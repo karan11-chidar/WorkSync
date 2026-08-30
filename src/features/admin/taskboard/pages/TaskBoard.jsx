@@ -3,7 +3,7 @@ import CreateTaskForm from "../components/CreateTaskForm";
 import TaskBoardHeader from "../components/TaskBoardHeader";
 import TasksStateCards from "../components/TasksStateCards";
 import FilterBar from "../components/FilterBar";
-import TaskDashboardGrid from "../components/TaskDashboardGrid";
+import TaskDashboardGrid from "../components/TaskDashboardCardsGrid";
 
 /**
  * Coordinates the task board page and its task-management workflow.
