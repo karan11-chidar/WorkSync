@@ -1,6 +1,5 @@
 import React from "react";
-import logo from "../../../assets/c-logo.png";
-import { Menu } from "lucide-react";
+import logo from "../../../../public/icon-512.png";
 function Header({headerTitle}) {
   return (
     <div className="h-16 flex items-center justify-between border-b border-slate-800 px-4">
@@ -9,8 +8,9 @@ function Header({headerTitle}) {
           src={logo}
           alt="HR Horizon Logo"
           className="
-        h-14
-        w-14
+          rounded-xl
+        h-12
+        w-12
         object-contain
         drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]
       "

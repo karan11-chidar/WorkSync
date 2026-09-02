@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from "../../assets/c-logo.png";
+import logo from "../../../public/icon-512.png";
 import { Menu } from "lucide-react";
 import SideBar from './Sidebar/SideBar';
 function MobileHeader({headerTitle,setOpenSidebar}) {
@@ -10,8 +10,9 @@ function MobileHeader({headerTitle,setOpenSidebar}) {
           src={logo}
           alt="HR Horizon Logo"
           className="
-        h-14
-        w-14
+          rounded-xl
+        h-10
+        w-10
         object-contain
         drop-shadow-[0_0_20px_rgba(59,130,246,0.5)]
       "

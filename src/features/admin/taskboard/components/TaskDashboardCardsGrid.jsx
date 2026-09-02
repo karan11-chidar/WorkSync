@@ -40,11 +40,11 @@ import getRandomColor from "../constants/taskCardAvatarColor";
  * @returns {JSX.Element} Rendered task grid, loader, or empty state.
  */
 function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }) {
-  const { taskList, isLoading, employeeList } = useTaskBoard();
+  const { taskList, isLoading, employeeList,displayTaskList } = useTaskBoard();
   if (isLoading) {
     return <PremiumUniversalLoader variant="card" gridCount={4} />;
   }
-  if (taskList.length === 0) {
+  if (!taskList &&taskList.length === 0) {
     return (
       <EmptyState
         title=" No tasks assigned yet"
@@ -53,6 +53,13 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
       />
     );
   }
+  if (displayTaskList.length === 0 && taskList.length > 0) {
+    return <EmptyState
+      title=" No tasks match the current filters"
+      description="Try adjusting your filter criteria to see more tasks."
+    />;
+  }
+
 
   /**
    * Converts various date formats to a localized date string.
@@ -118,7 +125,7 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         id="tasks-cards-grid"
       >
-        {taskList.map((t) => {
+        {displayTaskList.map((t) => {
           const employee = employeeList.find(
             (emp) => emp.employeeId === t.assignEmployee,
           );

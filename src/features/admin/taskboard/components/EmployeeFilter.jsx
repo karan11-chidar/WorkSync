@@ -1,20 +1,17 @@
-import React from 'react'
+import { useTaskBoard } from "../contexts/TaskBoardContext";
 
-function EmployeeFilter() {
-    const activeEmployees = [
-        { id: 1, firstName: 'John', lastName: 'Doe' },
-        { id: 2, firstName: 'Jane', lastName: 'Smith' },
-        { id: 3, firstName: 'Alice', lastName: 'Johnson' },
-        { id: 4, firstName: 'Bob', lastName: 'Brown' },
-    ];
+function EmployeeFilter({ handleChange }) {
+  const { employeeList } = useTaskBoard();
   return (
     <div>
       <select
+        name="employee-filter"
+        onChange={handleChange}
         className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 max-w-50"
       >
-        <option value="All">All Employees</option>
-        {activeEmployees.map((e) => (
-          <option key={e.id} value={e.id}>
+        <option value="all">All Employees</option>
+        {employeeList.map((e) => (
+          <option key={e.employeeId} value={e.employeeId}>
             {e.firstName} {e.lastName}
           </option>
         ))}
@@ -23,4 +20,4 @@ function EmployeeFilter() {
   );
 }
 
-export default EmployeeFilter
+export default EmployeeFilter;
