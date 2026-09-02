@@ -1,15 +1,16 @@
-import React from 'react'
-
-function DateFilter() {
+function DateFilter({ handleChange, filterState }) {
   return (
-    <div>
-          <input
-              placeholder="Select Date"
+    <div 
+    >
+      <input
+        name="date-filter"
+        placeholder="Select Date"
         type="date"
+        onChange={handleChange}
         className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-1 focus:ring-indigo-500 group"
       />
     </div>
   );
 }
 
-export default DateFilter
+export default DateFilter;

@@ -1,35 +1,82 @@
-import React, { useState } from "react";
+// React hooks for state management and side effects
+import React, { useState, useEffect } from "react";
+
+// Task board context for providing state to child components
 import { TaskBoardContext } from "./TaskBoardContext";
+
+// Firebase service functions for task operations
 import {
-  getEmployeeService,
-  createTaskService,
-  updateTaskService,
-  deleteTaskService,
-  getTaskListService,
+  getEmployeeService, // Fetch list of employees
+  createTaskService, // Create a new task in Firebase
+  updateTaskService, // Update an existing task in Firebase
+  deleteTaskService, // Delete a task from Firebase
+  getTaskListService, // Fetch all tasks from Firebase
 } from "../service/taskBoardService";
+
+// Authentication context hook for getting current user
 import { useAuth } from "../../../auth/context/AuthContext";
+
+// Toast notification service for error/success messages
 import { toastError } from "../../../../shared/services/toastService";
 
 /**
+ * TaskBoardProvider Component
+ *
  * Establishes the React context boundary for the admin task board.
+ * Manages all task board state including tasks, employees, filters, and loading states.
+ * Provides context value with task CRUD operations and filter management to child components.
  *
- * Place this provider above task board components that consume
- * `useTaskBoard`. The provider currently forwards its children through the
- * context boundary; task board state and actions can be supplied through the
- * provider value as the feature implementation evolves.
+ * Place this provider above task board components that consume the `useTaskBoard` hook.
+ * The provider supplies task board state and actions through the context value.
  *
- * @param {{ children: React.ReactNode }} props Provider props.
- * @returns {JSX.Element} The task board context provider tree.
+ * @component
+ * @param {{ children: React.ReactNode }} props - Provider props
+ * @param {React.ReactNode} props.children - Child components to render within the provider
+ * @returns {JSX.Element} The task board context provider tree wrapping children
  * @example
  * <TaskBoardProvider>
  *   <TaskBoard />
  * </TaskBoardProvider>
  */
 function TaskBoardProvider({ children }) {
-  const [employeeList, setEmployeeList] = useState([]);
+  // Get current user from authentication context
   const { user } = useAuth();
+
+  //----------------------------------------------------------
+  // Local State
+  //----------------------------------------------------------
+
+  // State: List of employees available for task assignment
+  const [employeeList, setEmployeeList] = useState([]);
+
+  // State: Complete list of all tasks from Firebase
   const [taskList, setTaskList] = useState([]);
+
+  // State: Loading indicator for async operations (create, update, delete, fetch)
   const [isLoading, setIsLoading] = useState(false);
+
+  // State: Filtered task list based on current filter criteria
+  const [filteredTaskList, setFilteredTaskList] = useState([]);
+
+  // State: Current filter values for status, priority, employee, and date
+  const [filterState, setFilterState] = useState({
+    "status-filter": "all",
+    "priority-filter": "all",
+    "employee-filter": "all",
+    "date-filter": "",
+  });
+
+  //----------------------------------------------------------
+  // Derived State
+  //----------------------------------------------------------
+  const isFilterActive =
+    filterState["status-filter"] !== "all" ||
+    filterState["priority-filter"] !== "all" ||
+    filterState["employee-filter"] !== "all" ||
+    filterState["date-filter"] !== "";
+  const displayTaskList= isFilterActive
+    ? filteredTaskList
+    : taskList;
 
   /**
    * Creates a new task in the task board.
@@ -54,7 +101,7 @@ function TaskBoardProvider({ children }) {
   const createTask = async (formData) => {
     try {
       setIsLoading(true);
-      const taskData = await createTaskService(user, formData);
+      const taskData = await createTaskService(user.uid, formData);
       setTaskList((prev) => [...prev, taskData]);
     } catch (error) {
       toastError("Firebase Error" + error.message);
@@ -118,7 +165,7 @@ function TaskBoardProvider({ children }) {
     } catch (error) {
       toastError("Firebase Error" + error.message);
     } finally {
-     setIsLoading(false);
+      setIsLoading(false);
     }
   };
   /**
@@ -172,12 +219,66 @@ function TaskBoardProvider({ children }) {
       setIsLoading(false);
     }
   };
+  /**
+   * Applies current filter state to the task list.
+   *
+   * Filters tasks based on the status filter value. When status filter is "all",
+   * all tasks are included. Otherwise, only tasks matching the selected status are included.
+   *
+   * @function applyFilters
+   * @returns {void} Updates filteredTaskList state
+   */
+  const applyFilters = () => {
+    const statusFilter = filterState["status-filter"].toLowerCase();
+    const priorityFilter = filterState["priority-filter"].toLowerCase();
+    const employeeFilter = filterState["employee-filter"].toLowerCase();
+    const dateFilter = filterState["date-filter"].toLowerCase();
+    const filteredTasks = taskList.filter((task) => {
+      const statusValue = task.status?.toLowerCase() || "";
+      const priorityValue = task.priority?.toLowerCase() || "";
+      const employeeValue = task.assignEmployee?.toLowerCase() || "";
+      const dateValue = task.dueDate?.toLowerCase() || "";
+      const matchesStatus =
+        statusFilter === "all" || statusValue === statusFilter;
+      const matchesPriority =
+        priorityFilter === "all" || priorityValue === priorityFilter;
+      const matchesEmployee =
+        employeeFilter === "all" || employeeValue === employeeFilter;
+      const matchesDate =
+        dateFilter === "" || dateValue === dateFilter;
+      return (
+        matchesStatus &&
+        matchesPriority &&
+        matchesEmployee &&
+        matchesDate
+      );
+    });
+    setFilteredTaskList(filteredTasks);
+  };
+
+  /**
+   * Side Effect: Apply filters whenever filter state or task list changes
+   *
+   * Dependencies:
+   * - filterState: Re-apply filters when user changes filter selections
+   * - taskList: Re-apply filters when task list updates (create, update, delete)
+   *
+   * This ensures the filteredTaskList stays in sync with both the filter criteria
+   * and the underlying task data.
+   */
+  useEffect(() => {
+    applyFilters();
+  }, [filterState, taskList]);
   return (
     <TaskBoardContext.Provider
       value={{
         isLoading,
         employeeList,
         taskList,
+        filteredTaskList,
+        filterState,
+        displayTaskList,
+        setFilterState,
         getEmployeeList,
         getTaskList,
         createTask,

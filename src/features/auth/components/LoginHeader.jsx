@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../../assets/c-logo.png";
+import logo from "../../../../public/icon-512.png";
 
 function Header() {
   return (
@@ -9,12 +9,13 @@ function Header() {
           src={logo}
           alt="Workforce Management System Logo"
           className="
-     h-20
-w-20
+          rounded-2xl
+     h-15
+w-15
 sm:h-24
 sm:w-24
-md:h-28
-md:w-28
+md:h-20
+md:w-20
 object-contain
       drop-shadow-[0_0_25px_rgba(59,130,246,0.5)]
       hover:scale-105

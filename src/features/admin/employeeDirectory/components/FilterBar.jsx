@@ -9,7 +9,6 @@
  * - StatusFilter: Sub-component for filtering by employee status
  * - Sorting: Sub-component for sorting employees by various criteria
  */
-import React, { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import DepartmentFilter from "./DepartmentFilter";
 import StatusFilter from "./StatusFilter";
@@ -31,7 +30,7 @@ import { useEmployee } from "../context/EmployeeContext";
  * <FilterBar handleAddEmployee={handleAddNewEmployee} />
  */
 function FilterBar({ handleAddEmployee }) {
-  const {applyEmployeeFilters,filterState,setFilterState } = useEmployee();
+  const {filterState,setFilterState } = useEmployee();
   
  
   return (
