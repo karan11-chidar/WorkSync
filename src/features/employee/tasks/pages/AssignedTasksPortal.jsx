@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import TaskStatsGrid from "./TaskStatsGrid";
-import TaskItemRow from "./TaskItemRow";
-import TaskRejectModal from "./TaskRejectModal";
+import TaskStatsGrid from "../components/TaskStatsGrid";
+import TaskItemRow from "../components/TaskItemRow";
+import TaskRejectModal from "../components/TaskRejectModal";
 import { ClipboardList } from "lucide-react";
 
 export default function AssignedTasksPortal() {

@@ -1,7 +1,7 @@
 import React from "react";
-import LeaveDashboardHeader from "./LeaveDashboardHeader"; // 1. हेडर
-import ApplyLeaveForm from "./ApplyLeaveForm"; // 2. फॉर्म
-import LeaveHistoryTable from "./LeaveHistoryTable"; // 3. टेबल
+import LeaveDashboardHeader from "../components/LeaveDashboardHeader"; // 1. हेडर
+import ApplyLeaveForm from "../components/ApplyLeaveForm"; // 2. फॉर्म
+import LeaveHistoryTable from "../components/LeaveHistoryTable"; // 3. टेबल
 
 export default function LeaveDashboardView() {
   return (

@@ -6,20 +6,20 @@ import AdminLayout from "../../layouts/AdminLayout.jsx";
 import EmployeeLayout from "../../layouts/EmployeeLayout.jsx";
 
 // Admin portal route views.
-import AdminDashBoard from "../../pages/Admin/Dashboard/DashBoard.jsx";
+import AdminDashBoard from "../../features/admin/dashboard/pages/DashBoard.jsx";
 import EmployeeDirectory from "../../features/admin/employeeDirectory/pages/EmployeeDirectory.jsx";
 import TaskBoard from "../../features/admin/taskboard/pages/TaskBoard.jsx";
 import Departments from "../../features/admin/departments/pages/Departments.jsx";
-import TodayAttendance from "../../pages/Admin/Attendance/TodayAttendance.jsx";
-import LeaveLedger from "../../pages/Admin/LeaveLedger/LeaveLedger.jsx";
+import TodayAttendance from "../../features/admin/attendance/pages/TodayAttendance.jsx";
+import LeaveLedger from "../../features/admin/leaves/pages/LeaveLedger.jsx";
 
 // Employee portal route views and the public authentication entry point.
-import EmployeeDashBoard from "../../pages/Employee/DashBoard/DashBoard.jsx";
+import EmployeeDashBoard from "../../features/employee/dashboard/pages/DashBoard.jsx";
 import Login from "../../features/auth/pages/Login.jsx";
-import EmployeeAttendance from "../../pages/Employee/Attendance/EmployeeAttendance.jsx";
-import LeaveDashboardView from "../../pages/Employee/Leaves/LeaveDashboardView.jsx";
-import EmployeeTaskList from "../../pages/Employee/Tasks/AssignedTasksPortal.jsx";
-import EmployeeProfile from "../../pages/Employee/Profile/EmployeeProfileView.jsx";
+import EmployeeAttendance from "../../features/employee/attendance/pages/EmployeeAttendance.jsx";
+import LeaveDashboardView from "../../features/employee/leaves/pages/LeaveDashboardView.jsx";
+import EmployeeTaskList from "../../features/employee/tasks/pages/AssignedTasksPortal.jsx";
+import EmployeeProfile from "../../features/employee/profile/pages/EmployeeProfileView.jsx";
 
 // Shared route infrastructure and feature-scoped data providers.
 import NotFoundPage from "../../shared/pages/NotFoundPage.jsx";

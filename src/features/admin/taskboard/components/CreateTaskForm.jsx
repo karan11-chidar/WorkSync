@@ -200,7 +200,7 @@ function CreateTaskForm({
           `Task Created!`,
           `New ${formState.formData.taskTitle} added successfully .`,
         );
-        console.log(formState)
+        dispatch({ type: "RESET_FORM" });
       } else {
         await updateTask(editingTask.id, formState.formData);
         toastSuccess(
@@ -210,6 +210,7 @@ function CreateTaskForm({
       }
       // Close the modal after submission
       handleClose();
+
     } catch (error) {
       console.log(error.message);
       toastError(error?.message || "Something went wrong");

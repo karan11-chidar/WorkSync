@@ -60,6 +60,7 @@ const INITIAL_FORM_STATE = {
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
     phone: "",
     department: "",
     jobRole: "",
@@ -131,7 +132,7 @@ const formReducer = (state, action) => {
 
 
 function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
-  const { createEmployee,updateEmployee } = useEmployee();
+  const { createEmployee,updateEmployee, departmentList } = useEmployee();
 
   //----------------------------------------------------------
   // Local Component States
@@ -370,22 +371,41 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
                 {formStates.formError.email}
               </span>
             </div>
-            <div className="space-y-1">
-              <label className="font-semibold text-slate-600">
-                Phone Number
-              </label>
-              <input
-                value={formStates.formData.phone}
-                onChange={handleChange}
-                name="phone"
-                type="text"
-                placeholder="+91 9876543210"
-                className={getInputClass("phone")}
-              />
-              <span className="text-rose-500 text-[10px] font-semibold">
-                {formStates.formError.phone}
-              </span>
+            {/* Phone Number */}
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-600">
+                  Phone Number
+                </label>
+                <input
+                  value={formStates.formData.phone}
+                  onChange={handleChange}
+                  name="phone"
+                  type="text"
+                  placeholder="+91 9876543210"
+                  className={getInputClass("phone")}
+                />
+                <span className="text-rose-500 text-[10px] font-semibold">
+                  {formStates.formError.phone}
+                </span>
             </div>
+          </div>
+          {/* Password */}
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">
+              Password <span className="text-rose-500">*</span>
+            </label>
+            <input
+              value={formStates.formData.password}
+              onChange={handleChange}
+              name="password"
+              type="password"
+              required
+              placeholder="Enter a strong password"
+              className={getInputClass("password")}
+            />
+            <span className="text-rose-500 text-[10px] font-semibold">
+              {formStates.formError.password}
+            </span>
           </div>
 
           {/* Dept & Role */}
@@ -401,7 +421,7 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
                 }
               >
                 <option value="">Select Department</option>
-                {availableDepts.map((d) => (
+                {departmentList.map((d) => (
                   <option key={d} value={d}>
                     {d}
                   </option>

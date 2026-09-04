@@ -1,7 +1,7 @@
 import React from "react";
-import LeaveHeader from "./LeaveHeader";
-import ListLeaves from "./ListLeaves";
-import TimeOffRequestForm from "./TimeOffRequestForm";
+import LeaveHeader from "../components/LeaveHeader.jsx";
+import ListLeaves from "../components/ListLeaves.jsx";
+import TimeOffRequestForm from "../components/TimeOffRequestForm.jsx";
 
 function LeaveLedger() {
   return (

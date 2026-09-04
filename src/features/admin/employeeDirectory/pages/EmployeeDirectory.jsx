@@ -67,8 +67,7 @@ function EmployeeDirectory() {
    * @returns {void}
    */
   const handleEditEmployee = (employee) => {
-    setSelectedEmployee(null); // Drawer Close
-    console.log("Editing employee:", employee);
+    setSelectedEmployee(null); 
     setEditingEmployee(employee);
     setIsAdding(true);
   };
@@ -90,8 +89,8 @@ function EmployeeDirectory() {
    */
   const handleDeleteEmployee = async (employeeId) => {
     // Implement the logic to delete the employee from your data source
-    console.log(`Delete employee with ID: ${employeeId}`);
     try {
+      
       await deleteEmployee(employeeId);
       toastSuccess(`Delete employee with ID: ${employeeId}`);
     } catch (error) {
