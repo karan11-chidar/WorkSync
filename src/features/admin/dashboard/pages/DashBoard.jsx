@@ -1,8 +1,8 @@
 import React from "react";
-import Header from "./Header";
-import CardsGrid from "./CardsGrid";
-import AnalyticsCharts from "./AnalyticsCharts";
-import BottomSection from "./BottomSection";
+import Header from "../components/Header";
+import CardsGrid from "../components/CardsGrid";
+import AnalyticsCharts from "../components/AnalyticsCharts";
+import BottomSection from "../components/BottomSection";
 function DashBoard() {
   return (
     <main

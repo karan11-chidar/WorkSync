@@ -31,6 +31,7 @@
  *     firstName: "",
  *     lastName: "",
  *     email: "",
+ *     password: "",
  *     phone: "",
  *     department: "",
  *     jobRole: "",
@@ -52,6 +53,7 @@
  * 3. Ensures phone number is a valid 10-digit number or a valid +91 number.
  * 4. Validates salary as a number.
  * 5. Validates performance rating to be between 1 and 5.
+ * 6. Validates required fields including password.
  * 
  * Workflow:
  * ----------------------------------------------------------------------------
@@ -88,12 +90,14 @@ const employeeValidation = ({
   performanceRating,
   address,
   privateNotes,
+  password,
 }) => {
 
   const errors = {
     firstName: "",
     lastName: "",
     email: "",
+    password: "",
     phone: "",
     department: "",
     jobRole: "",
@@ -127,6 +131,13 @@ const employeeValidation = ({
       ? "Phone number is required and must be a valid 10-digit number or a valid +91 number"
       : "";
   
+  // Validate password
+errors.password =
+  password.trim() === ""
+    ? "Password is required"
+    : password.length < 6
+      ? "Password must be at least 6 characters"
+      : "";
   // Validate department
   errors.department = department.trim() === "" ? "Department is required" : "";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import StateCards from "./StateCards";
-import AttendanceCalendarHeader from "./AttendanceCalendarHeader";
-import AttendanceCalendarGrid from "./AttendanceCalendarGrid";
+import StateCards from "../components/StateCards";
+import AttendanceCalendarHeader from "../components/AttendanceCalendarHeader";
+import AttendanceCalendarGrid from "../components/AttendanceCalendarGrid";
 import {
   Percent,
   CheckCircle,

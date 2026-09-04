@@ -8,7 +8,7 @@
  * Implements employee CRUD operations for the admin employee directory.
  * This module centralizes calls to the persistence layer and provides
  * reusable service functions for employee creation, update, deletion,
- * and list retrieval.
+ * employee list retrieval, and department list retrieval.
  *
  * Workflow:
  * ----------------------------------------------------------------------------
@@ -16,21 +16,20 @@
  * - updateEmployeeService: modify an existing employee record.
  * - deleteEmployeeService: remove an employee record.
  * - getEmployeeListService: retrieve the current employee directory.
+ * - getDepartmentsListService: retrieve available department names.
  *
  * Dependencies:
  * ----------------------------------------------------------------------------
- * - Firebase or other backend persistence layer (not directly imported here).
+ * - Firebase Firestore for employee and department persistence.
+ * - Firebase Authentication for employee account creation.
  *
  * ============================================================================
  */
 
-
 // Generate random color function
 import getRandomColor from "../constants/employeeColorTheme";
 
-
 // Firebase Backend Api's
-
 import {
   collection,
   deleteDoc,
@@ -40,8 +39,10 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../../../firebase/firebaseConfig";
 
+import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
+
+import { db, secondaryAuth } from "../../../../firebase/firebaseConfig";
 /**
  * createEmployeeService
  *
@@ -71,10 +72,39 @@ import { db } from "../../../../firebase/firebaseConfig";
  * @throws {Error} When employee creation or the transaction fails.
  */
 const createEmployeeService = async (employeeData, currentUser) => {
+  let createdAuthUser = null;
+
   try {
+    const { email, password, ...employeeProfile } = employeeData;
+
     const avatarColor = getRandomColor();
+
+    // --------------------------------------------------
+    // 1. Create Employee Firebase Auth Account
+    // --------------------------------------------------
+
+    const userCredential = await createUserWithEmailAndPassword(
+      secondaryAuth,
+      email,
+      password,
+    );
+
+    createdAuthUser = userCredential.user;
+
+    const employeeUid = createdAuthUser.uid;
+
+    // --------------------------------------------------
+    // 2. Prepare Firestore References
+    // --------------------------------------------------
+
     const employeeRef = doc(collection(db, "employeesList"));
+
     const counterRef = doc(db, "counters", "employeeIdCounter");
+
+    const usersRef = doc(db, "users", employeeUid);
+    // --------------------------------------------------
+    // 3. Create Employee Firestore Profile
+    // --------------------------------------------------
 
     const employeeId = await runTransaction(db, async (transaction) => {
       const counterSnapshot = await transaction.get(counterRef);
@@ -89,37 +119,77 @@ const createEmployeeService = async (employeeData, currentUser) => {
         });
       } else {
         const counterData = counterSnapshot.data();
+
         nextValue = counterData.currentValue + 1;
 
         transaction.update(counterRef, {
           currentValue: nextValue,
         });
       }
+
       transaction.set(employeeRef, {
-        ...employeeData,
+        ...employeeProfile,
+
+        uid: employeeUid,
+
+        email,
+
         employeeId: `EMP-${String(nextValue).padStart(3, "0")}`,
+
         createdBy: currentUser.uid,
+
         createdAt: serverTimestamp(),
+
         updatedAt: serverTimestamp(),
+
         avatarColor,
+
         joiningDate: serverTimestamp(),
+      });
+      // Login / authorization profile
+      transaction.set(usersRef, {
+        email,
+        role: "employee",
+        userName: employeeProfile.firstName,
       });
 
       return `EMP-${String(nextValue).padStart(3, "0")}`;
     });
+    // --------------------------------------------------
+    // 4. Return Created Employee
+    // --------------------------------------------------
 
     return {
       id: employeeRef.id,
+
+      uid: employeeUid,
+
       employeeId,
+
       avatarColor,
-      ...employeeData,
+
+      ...employeeProfile,
+
+      email,
+
       joiningDate: new Date(),
     };
   } catch (error) {
+    // --------------------------------------------------
+    // 5. Rollback Auth User If Firestore Fails
+    // --------------------------------------------------
+
+    if (createdAuthUser) {
+      try {
+        await deleteUser(createdAuthUser);
+      } catch (rollbackError) {
+        console.error("Failed to rollback Firebase Auth user:", rollbackError);
+      }
+    }
+
     throw error;
   }
 };
-
 /**
  * updateEmployeeService
  *
@@ -194,19 +264,19 @@ const getEmployeeListService = async () => {
  * @returns {Promise<Array<Object>>} Resolves with the list of departments  objects.
  * @throws {Error} When retrieval fails.
  */
-const getDepartmentsListService = async() => {
+const getDepartmentsListService = async () => {
   try {
-    const collectionRef = collection(db, 'departments');
+    const collectionRef = collection(db, "departments");
     const departmentLists = await getDocs(collectionRef);
-    return departmentLists.docs.map((dep) =>dep.data().departmentName);
+    return departmentLists.docs.map((dep) => dep.data().departmentName);
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
 export {
   createEmployeeService,
   updateEmployeeService,
   deleteEmployeeService,
   getEmployeeListService,
-  getDepartmentsListService
+  getDepartmentsListService,
 };
