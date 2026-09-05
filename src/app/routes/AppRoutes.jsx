@@ -1,11 +1,33 @@
+/**
+ * @fileoverview Application Route Configuration Module
+ *
+ * Centralizes all route definitions for the WorkSync application, organizing
+ * routes into two distinct role-based portals (Admin and Employee). Implements
+ * role-based access control through ProtectedRoute components and manages
+ * route transitions with a consistent loading indicator.
+ *
+ * @module app/routes/AppRoutes
+ * @requires react
+ * @requires react-router-dom
+ * @requires Layouts (AdminLayout, EmployeeLayout)
+ * @requires Features (Admin & Employee portal pages)
+ * @requires Providers (Feature-scoped context providers)
+ */
+
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 
+// ============================================================================
+// Layout Shells
+// ============================================================================
 // Portal layout shells used by the nested admin and employee route trees.
 import AdminLayout from "../../layouts/AdminLayout.jsx";
 import EmployeeLayout from "../../layouts/EmployeeLayout.jsx";
 
-// Admin portal route views.
+// ============================================================================
+// Admin Portal Routes
+// ============================================================================
+// Admin portal page components and their respective data providers.
 import AdminDashBoard from "../../features/admin/dashboard/pages/DashBoard.jsx";
 import EmployeeDirectory from "../../features/admin/employeeDirectory/pages/EmployeeDirectory.jsx";
 import TaskBoard from "../../features/admin/taskboard/pages/TaskBoard.jsx";
@@ -13,7 +35,10 @@ import Departments from "../../features/admin/departments/pages/Departments.jsx"
 import TodayAttendance from "../../features/admin/attendance/pages/TodayAttendance.jsx";
 import LeaveLedger from "../../features/admin/leaves/pages/LeaveLedger.jsx";
 
-// Employee portal route views and the public authentication entry point.
+// ============================================================================
+// Employee Portal & Auth Routes
+// ============================================================================
+// Employee portal page components and the public authentication entry point.
 import EmployeeDashBoard from "../../features/employee/dashboard/pages/DashBoard.jsx";
 import Login from "../../features/auth/pages/Login.jsx";
 import EmployeeAttendance from "../../features/employee/attendance/pages/EmployeeAttendance.jsx";
@@ -21,31 +46,98 @@ import LeaveDashboardView from "../../features/employee/leaves/pages/LeaveDashbo
 import EmployeeTaskList from "../../features/employee/tasks/pages/AssignedTasksPortal.jsx";
 import EmployeeProfile from "../../features/employee/profile/pages/EmployeeProfileView.jsx";
 
-// Shared route infrastructure and feature-scoped data providers.
+// ============================================================================
+// Shared Infrastructure
+// ============================================================================
+// Shared route infrastructure, context providers, and UI components.
 import NotFoundPage from "../../shared/pages/NotFoundPage.jsx";
 import LinearProgressStream from "../../shared/components/Animations/LinearProgressStream.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import DepartmentProvider from "../../features/admin/departments/context/DepartmentProvider.jsx";
 import EmployeeProvider from "../../features/admin/employeeDirectory/context/EmployeeProvider.jsx";
 import TaskBoardProvider from "../../features/admin/taskboard/contexts/TaskBoardProvider.jsx";
+import DashBoardProvider from "../../features/employee/dashboard/contexts/DashboardProvider.jsx";
 
-/** Minimum visible duration for the route transition indicator, in ms. */
-const MIN_ROUTE_LOADER_TIME = 1000;
+// ============================================================================
+// Constants
+// ============================================================================
 
 /**
- * Defines the application's public and role-protected route hierarchy.
+ * Minimum visible duration for route transition loading indicator (milliseconds).
+ * Prevents the loading bar from flickering on fast route changes while still
+ * providing visual feedback on slower navigation transitions.
  *
- * Admin and employee portals are rendered through their respective layouts
- * and guarded by `ProtectedRoute`. Feature providers are mounted at the route
- * boundary where their state is consumed. A short loading indicator is shown
- * whenever the pathname changes to provide consistent route-transition
- * feedback.
+ * @type {number}
+ * @constant
+ */
+const MIN_ROUTE_LOADER_TIME = 1000;
+
+// ============================================================================
+// Component Definition
+// ============================================================================
+
+/**
+ * AppRoutes Component
  *
- * @returns {JSX.Element} The application route tree and transition indicator.
+ * Defines the complete routing hierarchy for the WorkSync application with
+ * support for two role-based portals: Admin and Employee. Implements:
+ *
+ * - **Authentication**: Public login route for all users
+ * - **Admin Portal**: Protected routes for administrative functions (dashboard,
+ *   employee directory, task management, department management, attendance tracking,
+ *   leave management)
+ * - **Employee Portal**: Protected routes for employee self-service (dashboard,
+ *   attendance, leave requests, task assignments, profile management)
+ * - **Route Protection**: All portal routes guarded by role-based ProtectedRoute component
+ * - **Feature Providers**: Context providers mounted at route boundaries for feature-scoped
+ *   state management
+ * - **Route Transitions**: Visual loading indicator shown on every route change for
+ *   consistent UX feedback
+ *
+ * @component
+ * @returns {React.ReactElement} The application route tree with transition indicator
+ *
+ * @example
+ * // Typical usage in App.jsx with React Router
+ * <BrowserRouter>
+ *   <AppRoutes />
+ * </BrowserRouter>
  */
 function AppRoutes() {
+  // =========================================================================
+  // State Management
+  // =========================================================================
+
+  /**
+   * Loading state for route transition indicator.
+   * Set to true when route pathname changes, then reset after MIN_ROUTE_LOADER_TIME.
+   *
+   * @type {[boolean, Function]}
+   */
   const [isLoading, setIsLoading] = useState(false);
+
+  /**
+   * Current location in the application.
+   * Used to trigger loading indicator on pathname changes.
+   *
+   * @type {Location}
+   */
   const location = useLocation();
+
+  // =========================================================================
+  // Effects
+  // =========================================================================
+
+  /**
+   * Effect: Route Transition Loading Indicator
+   *
+   * Displays a loading indicator whenever the pathname changes to provide
+   * visual feedback to users during route transitions. The loading state
+   * is maintained for a minimum duration (MIN_ROUTE_LOADER_TIME) to prevent
+   * flickering on fast transitions.
+   *
+   * Cleanup: Clears the timeout timer on component unmount or dependency change.
+   */
   useEffect(() => {
     setIsLoading(true);
 
@@ -57,15 +149,28 @@ function AppRoutes() {
   }, [location.pathname]);
   return (
     <>
+      {/* Route transition loading indicator */}
       <LinearProgressStream isLoading={isLoading} />
+
       <Routes>
-        {/* 🎬 Login Entrance */}
+        {/* ===================================================================
+            PUBLIC ROUTES (No authentication required)
+            =================================================================== */}
+
+        {/* Login page - Entry point for all users */}
         <Route path="/" element={<Login />} />
 
+        {/* ===================================================================
+            ADMIN PORTAL (Role: admin)
+            Protected routes for administrative operations
+            =================================================================== */}
+
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-          {/* 👑 Admin Portal Layout Wrapper */}
           <Route path="/admin" element={<AdminLayout />}>
+            {/* Dashboard - High-level admin overview and analytics */}
             <Route path="dashboard" element={<AdminDashBoard />} />
+
+            {/* Department Management - Create, update, delete departments */}
             <Route
               path="departments"
               element={
@@ -76,6 +181,8 @@ function AppRoutes() {
                 </>
               }
             />
+
+            {/* Employee Directory - Manage employee records and information */}
             <Route
               path="employees"
               element={
@@ -86,6 +193,8 @@ function AppRoutes() {
                 </>
               }
             />
+
+            {/* Task Management - Create and manage organizational tasks */}
             <Route
               path="tasks"
               element={
@@ -94,26 +203,60 @@ function AppRoutes() {
                 </TaskBoardProvider>
               }
             />
+
+            {/* Attendance Tracking - View today's attendance records */}
             <Route path="attendance" element={<TodayAttendance />} />
+
+            {/* Leave Management - Approve and manage leave requests */}
             <Route path="leaves" element={<LeaveLedger />} />
 
+            {/* Catch-all for undefined admin routes */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
 
-        {/* 🧑‍💻 Employee Portal Layout Wrapper */}
+        {/* ===================================================================
+            EMPLOYEE PORTAL (Role: employee)
+            Protected routes for employee self-service functions
+            =================================================================== */}
+
         <Route element={<ProtectedRoute allowedRoles={["employee"]} />}>
           <Route path="/employee" element={<EmployeeLayout />}>
-            <Route path="dashboard" element={<EmployeeDashBoard />} />
+            {/* Dashboard - Employee overview and key metrics */}
+            <Route
+              path="dashboard"
+              element={
+                <DashBoardProvider>
+                  <EmployeeDashBoard />
+                </DashBoardProvider>
+              }
+            />
+
+            {/* Leave Management - Submit and track leave requests */}
             <Route path="leaves" element={<LeaveDashboardView />} />
+
+            {/* Attendance - View personal attendance records */}
             <Route path="attendance" element={<EmployeeAttendance />} />
+
+            {/* Task List - View assigned tasks and updates */}
             <Route path="tasks" element={<EmployeeTaskList />} />
+
+            {/* Profile - View and edit personal profile information */}
             <Route path="profile" element={<EmployeeProfile />} />
+
+            {/* View another employee's profile by ID */}
             <Route path="profile/:employeeId" element={<EmployeeProfile />} />
+
+            {/* Catch-all for undefined employee routes */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
 
+        {/* ===================================================================
+            FALLBACK ROUTE (Undefined paths)
+            =================================================================== */}
+
+        {/* Global catch-all for any undefined routes */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>

@@ -2,7 +2,7 @@
 import React from "react";
 
 /** Provides the authenticated employee to dashboard actions. */
-import { useAuth } from "../../../auth/context/AuthProvider";
+import { useAuth } from "../../../auth/context/AuthContext";
 
 /** Dashboard context consumed by employee dashboard components. */
 import DashboardContext from "./DashboardContext";
@@ -121,13 +121,20 @@ const DashboardProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const data = await getTodayAttendanceService(user.uid);
-      setAttendanceData(data);
+      if(data === null) 
+        setAttendanceData({ status: "NOT_CLOCKED_IN" });
+      else setAttendanceData(data);
     } catch (error) {
       toastError("Error fetching attendance data:", error.message);
     } finally {
       setIsLoading(false);
     }
   };
+  React.useEffect(() => {
+    if (user?.uid) {
+      getAttendanceData();
+    }
+  }, [user?.uid]);
   return (
     <DashboardContext.Provider
       value={{
@@ -138,6 +145,7 @@ const DashboardProvider = ({ children }) => {
         getAttendanceData,
         isLoading,
         attendanceData,
+        user,
       }}
     >
       {children}
