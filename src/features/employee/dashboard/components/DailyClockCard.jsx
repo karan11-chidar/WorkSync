@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+/** React runtime and state hook used by the attendance card. */
+import { useState } from "react";
+
+/** Icons used for attendance status, actions, dates, and completion feedback. */
 import {
   Clock,
   LogIn,
@@ -9,13 +12,19 @@ import {
   CalendarDays,
 } from "lucide-react";
 
+/**
+ * Displays the employee's daily attendance controls and time logs.
+ *
+ * The card supports clocking in, starting or ending a break, and clocking
+ * out while showing the current shift status and recorded timestamps.
+ *
+ * @returns {JSX.Element} The interactive daily attendance card.
+ */
 export default function DailyClockCard() {
   const todayDateString = "Sunday, July 5, 2026";
 
-  // स्टेट फ्लो: 'NOT_CLOCKED_IN' -> 'WORKING' -> 'ON_BREAK' -> 'COMPLETED'
   const [clockState, setClockState] = useState("NOT_CLOCKED_IN");
 
-  // टाइमिंग रिकॉर्ड्स
   const [timeLogs, setTimeLogs] = useState({
     checkIn: "--:--",
     checkOut: "--:--",
@@ -23,7 +32,7 @@ export default function DailyClockCard() {
     totalBreakMins: 0,
   });
 
-  // 1. Clock In Handler
+  /** Records the current time and starts the employee's shift. */
   const handleClockIn = () => {
     const currentTime = new Date().toLocaleTimeString([], {
       hour: "2-digit",
@@ -33,7 +42,7 @@ export default function DailyClockCard() {
     setClockState("WORKING");
   };
 
-  // 2. Break Toggle Handler
+  /** Starts a break or resumes work, adding 15 minutes when resuming. */
   const handleBreakToggle = () => {
     if (clockState === "WORKING") {
       setClockState("ON_BREAK");
@@ -46,7 +55,7 @@ export default function DailyClockCard() {
     }
   };
 
-  // 3. Clock Out Handler
+  /** Records the current time and marks the employee's shift as complete. */
   const handleClockOut = () => {
     const currentTime = new Date().toLocaleTimeString([], {
       hour: "2-digit",

@@ -1,5 +1,5 @@
 import { onAuthStateChanged } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { auth } from "../../../firebase/firebaseConfig";
 import AuthContext from "./AuthContext";
 import getUserProfile from "../services/profileService";
