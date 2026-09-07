@@ -1,7 +1,28 @@
-/** React runtime and state hook used by the attendance card. */
-import { useState } from "react";
+/**
+ * @fileoverview Daily Clock Card Component
+ *
+ * Provides an interactive UI for employees to manage daily attendance,
+ * including clock-in/out operations and break management. Displays current
+ * attendance status, timestamps, and action buttons based on shift state.
+ *
+ * @module features/employee/dashboard/components/DailyClockCard
+ */
 
-/** Icons used for attendance status, actions, dates, and completion feedback. */
+/**
+ * Lucide React icon components for attendance UI.
+ *
+ * Icons represent various attendance states and actions:
+ * - Clock: Generic time/attendance indicator with optional spinning animation
+ * - LogIn: Clock-in action trigger and status display
+ * - LogOut: Clock-out action trigger and status display
+ * - Coffee: Break status indicator icon
+ * - Play: Resume work from break action button
+ * - CheckCircle2: Completion and success feedback indicator
+ * - CalendarDays: Date/calendar display in header section
+ *
+ * @requires lucide-react
+ * @type {Object}
+ */
 import {
   Clock,
   LogIn,
@@ -13,69 +34,168 @@ import {
 } from "lucide-react";
 
 /**
- * Displays the employee's daily attendance controls and time logs.
+ * Custom hook for accessing dashboard attendance management context.
  *
- * The card supports clocking in, starting or ending a break, and clocking
- * out while showing the current shift status and recorded timestamps.
+ * Provides access to attendance operations and data:
+ * - clockIn(): Initiate shift start
+ * - clockOut(): Complete shift end
+ * - startBreak(): Begin break period
+ * - endBreak(): Resume work after break
+ * - attendanceData: Current employee attendance record with status and timestamps
+ * - isLoading: Boolean flag indicating async operation in progress
  *
- * @returns {JSX.Element} The interactive daily attendance card.
+ * @requires ../contexts/DashboardContext
+ * @type {Function}
+ * @returns {Object} Dashboard context with attendance management methods and data
+ */
+import { useDashboardContext } from "../contexts/DashboardContext";
+import AttendanceCardSkeleton from "./AttendanceCardSkeleton";
+import DashboardSkeleton from "./DashboardSkeleton";
+/**
+ * Loading animation component for attendance operations.
+ *
+ * Displays a visual loading indicator while async attendance actions
+ * (clock-in, clock-out, break management) are being processed. Replaces
+ * the entire card content to prevent user interaction during state transitions.
+ *
+ * @requires ../../../../shared/components/Animations/AttendanceLoader
+ * @type {React.ComponentType}
+ */
+/**
+ * DailyClockCard Component
+ *
+ * Interactive attendance management card that allows employees to:
+ * - Clock in/out of shifts
+ * - Manage break periods (start/resume)
+ * - View current attendance status and timestamps
+ * - See shift completion summary
+ *
+ * The component displays different UI states based on attendance status:
+ * - NOT_CLOCKED_IN: Shows clock-in button
+ * - WORKING: Shows break and clock-out buttons
+ * - ON_BREAK: Shows resume work and clock-out buttons
+ * - COMPLETED: Shows shift summary with check-in/out times
+ *
+ * Responsive design adapts from single-column (mobile) to multi-column layouts
+ * on larger screens. Loading state is handled via AttendanceLoader component.
+ *
+ * @component
+ * @returns {React.ReactElement} The interactive daily attendance card or loader
+ *
+ * @example
+ * // Use within employee dashboard
+ * <DailyClockCard />
+ *
+ * @throws {Error} If DashboardContext is not available in component tree
  */
 export default function DailyClockCard() {
-  const todayDateString = "Sunday, July 5, 2026";
+  // =========================================================================
+  // Context & State
+  // =========================================================================
 
-  const [clockState, setClockState] = useState("NOT_CLOCKED_IN");
+  /**
+   * Attendance management functions and data from dashboard context.
+   *
+   * @type {Object}
+   * @property {Function} clockIn - Async function to initiate shift
+   * @property {Function} clockOut - Async function to complete shift
+   * @property {Function} startBreak - Async function to start break period
+   * @property {Function} endBreak - Async function to end break period
+   * @property {Object} attendanceData - Current attendance record with status, times, breaks
+   * @property {boolean} isLoading - Indicates if an async operation is in progress
+   */
+  const { clockIn, clockOut, startBreak, endBreak, attendanceData, isLoading } =
+    useDashboardContext();
 
-  const [timeLogs, setTimeLogs] = useState({
-    checkIn: "--:--",
-    checkOut: "--:--",
-    breakStart: null,
-    totalBreakMins: 0,
+  /**
+   * Today's date formatted as a human-readable string.
+   * Format: "Monday, September 5, 2026"
+   *
+   * @type {string}
+   */
+  const todayDateString = new Date().toLocaleDateString([], {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
 
-  /** Records the current time and starts the employee's shift. */
-  const handleClockIn = () => {
-    const currentTime = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    setTimeLogs((prev) => ({ ...prev, checkIn: currentTime }));
-    setClockState("WORKING");
+  // =========================================================================
+  // Event Handlers
+  // =========================================================================
+
+  /**
+   * Handler for clock-in action.
+   *
+   * Initiates shift start by calling the clockIn() context function.
+   * Handles loading state and any async operation errors internally via context.
+   *
+   * @async
+   * @function handleClockIn
+   * @returns {Promise<void>}
+   */
+  const handleClockIn = async () => {
+    await clockIn();
   };
 
-  /** Starts a break or resumes work, adding 15 minutes when resuming. */
-  const handleBreakToggle = () => {
-    if (clockState === "WORKING") {
-      setClockState("ON_BREAK");
-    } else if (clockState === "ON_BREAK") {
-      setTimeLogs((prev) => ({
-        ...prev,
-        totalBreakMins: prev.totalBreakMins + 15,
-      }));
-      setClockState("WORKING");
+  /**
+   * Handler for break toggle action.
+   *
+   * Manages break period transitions based on current attendance status:
+   * - If WORKING: Initiates break period
+   * - If ON_BREAK: Resumes work after break
+   *
+   * Only triggers if attendance status is either WORKING or ON_BREAK.
+   *
+   * @async
+   * @function handleBreakToggle
+   * @returns {Promise<void>}
+   */
+  const handleBreakToggle = async () => {
+    if (attendanceData?.status === "WORKING") {
+      await startBreak();
+    } else if (attendanceData?.status === "ON_BREAK") {
+      await endBreak();
     }
   };
 
-  /** Records the current time and marks the employee's shift as complete. */
-  const handleClockOut = () => {
-    const currentTime = new Date().toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    setTimeLogs((prev) => ({ ...prev, checkOut: currentTime }));
-    setClockState("COMPLETED");
+  /**
+   * Handler for clock-out action.
+   *
+   * Completes the shift by calling the clockOut() context function.
+   * Handles loading state and any async operation errors internally via context.
+   *
+   * @async
+   * @function handleClockOut
+   * @returns {Promise<void>}
+   */
+  const handleClockOut = async () => {
+    await clockOut();
   };
 
+  // =========================================================================
+  // Render
+  // =========================================================================
+
+  /**
+   * Display loading indicator while async attendance operations are in progress.
+   * Prevents user interaction during state transitions.
+   */
+  if (isLoading) {
+    return <AttendanceCardSkeleton />;
+  }
   return (
     <div className="w-full max-w-xl mx-auto p-2">
-      <div
-        className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5"
-        id="today-clock-card"
-      >
-        {/* Header Section - Mobile Safe flex row */}
+      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-5">
+        {/* ===================================================================
+            HEADER SECTION
+            Displays card title with animated status indicator and current date.
+            Responsive layout: stacked on mobile, side-by-side on larger screens.
+            =================================================================== */}
         <div className="flex flex-col lg:flex-row items-center justify-between border-b border-slate-100 pb-3.5 gap-2">
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 shrink-0">
             <Clock
-              className={`h-4 w-4 text-indigo-500 ${clockState === "WORKING" ? "animate-spin [animation-duration:3s]" : ""}`}
+              className={`h-4 w-4 text-indigo-500 ${attendanceData?.status === "WORKING" ? "animate-spin [animation-duration:3s]" : ""}`}
             />
             Attendance & Clock Daily
           </h3>
@@ -85,21 +205,26 @@ export default function DailyClockCard() {
           </span>
         </div>
 
-        {/* Status Banner - Stacked on mobile, side-by-side on sm screens */}
+        {/* ===================================================================
+            STATUS BANNER SECTION
+            Displays current attendance status with color-coded indicator icon.
+            Shows shift check-in time, break duration, and clock-out time.
+            Responsive: stacked on mobile, horizontal on larger screens.
+            =================================================================== */}
         <div className="p-4 bg-slate-50/80 border border-slate-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3">
             <div
               className={`p-3 rounded-xl transition-all duration-300 shadow-xxs shrink-0 ${
-                clockState === "NOT_CLOCKED_IN"
+                attendanceData?.status === "NOT_CLOCKED_IN"
                   ? "bg-indigo-50 text-indigo-600 ring-4 ring-indigo-50/50"
-                  : clockState === "WORKING"
+                  : attendanceData?.status === "WORKING"
                     ? "bg-emerald-50 text-emerald-600 ring-4 ring-emerald-50"
-                    : clockState === "ON_BREAK"
+                    : attendanceData?.status === "ON_BREAK"
                       ? "bg-amber-50 text-amber-600 ring-4 ring-amber-50"
                       : "bg-slate-100 text-slate-600"
               }`}
             >
-              {clockState === "ON_BREAK" ? (
+              {attendanceData?.status === "ON_BREAK" ? (
                 <Coffee className="h-5 w-5" />
               ) : (
                 <Clock className="h-5 w-5" />
@@ -110,29 +235,37 @@ export default function DailyClockCard() {
                 Current Status
               </span>
               <span className="text-xs sm:text-sm font-bold text-slate-800 block mt-0.5">
-                {clockState === "NOT_CLOCKED_IN" &&
+                {attendanceData?.status === "NOT_CLOCKED_IN" &&
                   "Absent • Shift Not Started"}
-                {clockState === "WORKING" && "Active • On The Clock"}
-                {clockState === "ON_BREAK" && "Stepped Out • On Break"}
-                {clockState === "COMPLETED" && "Shift Finished • Signed Out"}
+                {attendanceData?.status === "WORKING" &&
+                  "Active • On The Clock"}
+                {attendanceData?.status === "ON_BREAK" &&
+                  "Stepped Out • On Break"}
+                {attendanceData?.status === "COMPLETED" &&
+                  "Shift Finished • Signed Out"}
               </span>
             </div>
           </div>
 
-          {/* Time logs inside banner - Handled with borders for mobile formatting */}
-          {clockState !== "NOT_CLOCKED_IN" && (
+          {/* ===================================================================
+              TIME LOGS DISPLAY
+              Shows check-in time, break duration, and check-out time.
+              Displayed as vertical labels on desktop, horizontal on mobile.
+              Only visible when employee has clocked in.
+              =================================================================== */}
+          {attendanceData && attendanceData.status !== "NOT_CLOCKED_IN" && (
             <div className="flex flex-row sm:flex-col justify-start sm:text-right font-mono text-[10px] text-slate-400 gap-3 sm:gap-0.5 pt-2 sm:pt-0 border-t sm:border-t-0 sm:border-l border-slate-200 sm:pl-4">
               <div>
-                In:{" "}
+                In:
                 <span className="text-slate-700 font-bold">
-                  {timeLogs.checkIn}
+                  {attendanceData?.checkIn || "--:--"}
                 </span>
               </div>
-              {timeLogs.totalBreakMins > 0 && (
+              {attendanceData?.totalBreakMinutes > 0 && (
                 <div>
-                  Break:{" "}
+                  Break:
                   <span className="text-amber-600 font-bold">
-                    {timeLogs.totalBreakMins}m
+                    {attendanceData?.totalBreakMinutes}m
                   </span>
                 </div>
               )}
@@ -140,9 +273,18 @@ export default function DailyClockCard() {
           )}
         </div>
 
-        {/* INTERACTIVE CONTROLLER BUTTONS */}
+        {/* ===================================================================
+            ACTION BUTTONS SECTION
+            Renders context-aware buttons based on current attendance status:
+            - NOT_CLOCKED_IN: Single "Clock-In Shift" button
+            - WORKING/ON_BREAK: "Take Break"/"Resume Work" + "Clock-Out End" buttons
+            - COMPLETED: Summary display showing shift times and completion status
+            
+            Mobile Responsive: Vertical stack on mobile (flex-col),
+            2-column grid on larger screens (sm:grid-cols-2).
+            =================================================================== */}
         <div className="w-full">
-          {clockState === "NOT_CLOCKED_IN" && (
+          {attendanceData?.status === "NOT_CLOCKED_IN" && (
             <button
               type="button"
               onClick={handleClockIn}
@@ -153,19 +295,22 @@ export default function DailyClockCard() {
             </button>
           )}
 
-          {(clockState === "WORKING" || clockState === "ON_BREAK") && (
-            /* MOBILE FIX: Vertical layout on mobile (flex-col), Grid on larger screens (sm:grid-cols-2) */
+          {(attendanceData?.status === "WORKING" ||
+            attendanceData?.status === "ON_BREAK") && (
+            /* Responsive button layout:
+               - Mobile (xs/sm): Vertical flex layout (flex-col) for full-width buttons
+               - Tablet/Desktop (sm+): 2-column grid layout for side-by-side buttons */
             <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={handleBreakToggle}
                 className={`h-11 font-bold rounded-xl text-xs flex items-center gap-2 justify-center cursor-pointer transition-all active:scale-[0.99] border w-full ${
-                  clockState === "ON_BREAK"
+                  attendanceData?.status === "ON_BREAK"
                     ? "bg-emerald-600 hover:bg-emerald-700 text-white border-transparent shadow-sm"
                     : "bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200"
                 }`}
               >
-                {clockState === "ON_BREAK" ? (
+                {attendanceData?.status === "ON_BREAK" ? (
                   <>
                     <Play className="h-4 w-4 fill-white" />
                     Resume Work
@@ -189,7 +334,7 @@ export default function DailyClockCard() {
             </div>
           )}
 
-          {clockState === "COMPLETED" && (
+          {attendanceData?.status === "COMPLETED" && (
             <div className="space-y-3 bg-slate-50/60 p-4 rounded-xl border border-slate-100 shadow-xxs">
               <div className="grid grid-cols-2 text-xs font-mono text-slate-600 divide-x divide-slate-200/60 text-center">
                 <div className="space-y-0.5">
@@ -197,7 +342,7 @@ export default function DailyClockCard() {
                     SHIFT IN
                   </span>
                   <span className="font-bold text-slate-800 text-xs sm:text-sm">
-                    {timeLogs.checkIn}
+                    {attendanceData?.checkIn || "--:--"}
                   </span>
                 </div>
                 <div className="space-y-0.5">
@@ -205,7 +350,7 @@ export default function DailyClockCard() {
                     SHIFT OUT
                   </span>
                   <span className="font-bold text-slate-800 text-xs sm:text-sm">
-                    {timeLogs.checkOut}
+                    {attendanceData?.checkOut || "--:--"}
                   </span>
                 </div>
               </div>

@@ -2,11 +2,10 @@
 import React from "react";
 
 /** Provides the authenticated employee to dashboard actions. */
-import { useAuth } from "../../../auth/context/AuthProvider";
+import { useAuth } from "../../../auth/context/AuthContext";
 
 /** Dashboard context consumed by employee dashboard components. */
 import DashboardContext from "./DashboardContext";
-
 /** Attendance service operations exposed through the dashboard context. */
 import {
   clockInService,
@@ -14,6 +13,9 @@ import {
   startBreakService,
   endBreakService,
   getTodayAttendanceService,
+  getTasksDataService,
+  getEmployeeDataService,
+  getDepartmentEmployeesService
 } from "../services/attendanceService";
 
 /** Displays recoverable attendance errors to the employee. */
@@ -30,9 +32,32 @@ import { toastError } from "../../../../shared/services/toastService";
  * @returns {JSX.Element} Dashboard context provider with attendance controls.
  */
 const DashboardProvider = ({ children }) => {
+  /**
+   * Authenticated employee context.
+   */
   const { user } = useAuth();
+  /**
+   * Local state for loading status, attendance data, and employee profile.
+   */
   const [isLoading, setIsLoading] = React.useState(false);
+  /**
+   * Attendance data for the authenticated employee.
+   * Includes clock-in/out times, break status, and shift state.
+   */
   const [attendanceData, setAttendanceData] = React.useState(null);
+  /** Employee profile data for the authenticated employee.
+   * Includes personal info, department, designation, and metadata.
+   */
+  const [employeeData, setEmployeeData] = React.useState(null);
+  /** Tasks data for the authenticated employee.
+   * Includes assigned tasks, deadlines, and completion status.
+   */
+  const [tasksData, setTasksData] = React.useState(null);
+  /** Department employees data for the authenticated employee's department.
+   * Includes colleagues' profiles, roles, and contact information.
+   */
+  const [departmentEmployeesData, setDepartmentEmployeesData] =
+    React.useState(null);
 
   /**
    * Starts the authenticated employee's current shift.
@@ -121,13 +146,97 @@ const DashboardProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const data = await getTodayAttendanceService(user.uid);
-      setAttendanceData(data);
+      if (data === null) setAttendanceData({ status: "NOT_CLOCKED_IN" });
+      else setAttendanceData(data);
     } catch (error) {
       toastError("Error fetching attendance data:", error.message);
     } finally {
       setIsLoading(false);
     }
   };
+
+  /**
+   * Loads the authenticated employee's profile data from Firestore.
+   * @async
+   * @returns {Promise<void>} Resolves after employee data is loaded.
+   * @throws {Error} Errors are caught and displayed through the error toast.
+   */
+  const getEmployeeData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getEmployeeDataService(user.uid);
+      setEmployeeData(data);
+    } catch (error) {
+      toastError("Error fetching employee data:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  /**
+   * Loads the authenticated employee's tasks data from Firestore.
+   * @async
+   * @returns {Promise<void>} Resolves after tasks data is loaded.
+   * @throws {Error} Errors are caught and displayed through the error toast.
+   */
+  const getTasksData = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getTasksDataService(user.uid);
+      setTasksData(data);
+    } catch (error) {
+      toastError("Error fetching tasks data:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  /**
+   * Loads the authenticated employee's department employees data from Firestore.
+   * @async
+   * @returns {Promise<void>} Resolves after department employees data is loaded.
+   * @throws {Error} Errors are caught and displayed through the error toast.
+   */
+  const getDepartmentEmployeesData = async () => {
+    try {
+      if (!employeeData?.department) {
+        throw new Error("Employee department is not available");
+      }
+
+      setIsLoading(true);
+      const data = await getDepartmentEmployeesService(employeeData?.department);
+      setDepartmentEmployeesData(data);
+    } catch (error) {
+      toastError("Error fetching department employees data:", error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  /**
+   * Automatically fetches today's attendance data when the authenticated user changes.
+   * Ensures that the dashboard always reflects the current employee's attendance state.
+   * @effect
+   * @dependency [user?.uid] - Triggers re-fetch when the authenticated user's UID changes.
+   */
+  React.useEffect(() => {
+    if (user?.uid) {
+      getAttendanceData();
+    }
+  }, [user?.uid]);
+
+  /**
+   * Automatically fetches today's attendance data when the authenticated user changes.
+   * Ensures that the dashboard always reflects the current employee's attendance state.
+   * @effect
+   * @dependency [user?.uid] - Triggers re-fetch when the authenticated user's UID changes.
+   */
+  React.useEffect(() => {
+    getEmployeeData();
+    getTasksData();
+  }, []);
+  React.useEffect(() => {
+    if (employeeData?.department) {
+      getDepartmentEmployeesData();
+    }
+  }, [employeeData]);
   return (
     <DashboardContext.Provider
       value={{
@@ -136,8 +245,15 @@ const DashboardProvider = ({ children }) => {
         startBreak,
         endBreak,
         getAttendanceData,
+        getDepartmentEmployeesData,
+        getEmployeeData,
+        getTasksData,
         isLoading,
         attendanceData,
+        user,
+        employeeData,
+        tasksData,
+        departmentEmployeesData,
       }}
     >
       {children}

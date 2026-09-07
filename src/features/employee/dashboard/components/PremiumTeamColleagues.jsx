@@ -1,70 +1,30 @@
+/**
+ * Displays the employee's department teammates in a compact card layout.
+ * Each colleague has a status indicator, role label, and quick actions for
+ * messaging or sending email. If no coworkers are available, a friendly empty
+ * state is shown instead.
+ */
 import React from "react";
 import { Users, Mail, MessageSquare, ShieldAlert } from "lucide-react";
+import { useDashboardContext } from "../contexts/DashboardContext";
 
 export default function PremiumTeamColleagues() {
-  // 1. Static Dummy Data (UI स्क्रॉलर टेस्ट करने के लिए 7 एम्प्लॉइज़ डाले हैं)
-  const currentEmployee = { department: "Engineering" };
+  const { employeeData, departmentEmployeesData } = useDashboardContext();
 
-  const myColleagues = [
-    {
-      id: "COL-01",
-      firstName: "Rahul",
-      lastName: "Sharma",
-      role: "Lead Frontend Dev",
-      avatarColor: "from-blue-500 to-cyan-500",
-      workStatus: "Active",
-    },
-    {
-      id: "COL-02",
-      firstName: "Priya",
-      lastName: "Verma",
-      role: "UI/UX Specialist",
-      avatarColor: "from-pink-500 to-rose-500",
-      workStatus: "On Break",
-    },
-    {
-      id: "COL-03",
-      firstName: "Aman",
-      lastName: "Singh",
-      role: "Senior Backend Dev",
-      avatarColor: "from-violet-500 to-indigo-500",
-      workStatus: "Remote",
-    },
-    {
-      id: "COL-04",
-      firstName: "Neha",
-      lastName: "Patel",
-      role: "QA Engineer",
-      avatarColor: "from-emerald-500 to-green-500",
-      workStatus: "Active",
-    },
-    {
-      id: "COL-05",
-      firstName: "Rohit",
-      lastName: "Gupta",
-      role: "DevOps Specialist",
-      avatarColor: "from-orange-500 to-red-500",
-      workStatus: "Active",
-    },
-    {
-      id: "COL-06",
-      firstName: "Amit",
-      lastName: "Mishra",
-      role: "Data Scientist",
-      avatarColor: "from-teal-500 to-emerald-600",
-      workStatus: "Remote",
-    },
-    {
-      id: "COL-07",
-      firstName: "Vikas",
-      lastName: "Soni",
-      role: "Full Stack Intern",
-      avatarColor: "from-slate-600 to-slate-800",
-      workStatus: "On Break",
-    },
-  ];
+  /**
+   * Local list of coworkers from the same department.
+   * Falls back to an empty array when the dashboard context data is unavailable.
+   */
+  const myColleagues = (departmentEmployeesData || []).filter(
+    (employee) => employee.uid !== employeeData?.uid,
+  );
 
-  // स्टेटस डॉट कलर मैप
+  /**
+   * Returns the correct status color class for a teammate based on employment state.
+   *
+   * @param {string} status - Current colleague employment status.
+   * @returns {string} Tailwind CSS class used for the indicator dot.
+   */
   const getStatusDotColor = (status) => {
     switch (status) {
       case "Active":
@@ -76,6 +36,21 @@ export default function PremiumTeamColleagues() {
     }
   };
 
+  /**
+   * Handles the quick message action for a selected colleague.
+   * Placeholder action for future chat or messaging integration.
+   */
+  const handleMessage = () => {
+    console.log("message btn click");
+  };
+
+  /**
+   * Handles the email action for a selected colleague.
+   * Placeholder action for future mail flow or contact trigger.
+   */
+  const handleEmail = () => {
+    console.log("email click btn ");
+  };
   return (
     <div className="w-full max-w-sm mx-auto p-2">
       <div
@@ -85,7 +60,7 @@ export default function PremiumTeamColleagues() {
         {/* Card Header */}
         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3.5">
           <Users className="h-4 w-4 text-indigo-500" />
-          My Team ({currentEmployee.department})
+          My Team ({employeeData?.department})
         </h3>
 
         {myColleagues.length === 0 ? (
@@ -100,8 +75,8 @@ export default function PremiumTeamColleagues() {
           /* FIX: 5 एम्प्लॉइज़ के बाद ऑटोमैटिक स्क्रॉल करने के लिए max-h और overflow-y सेट किया है */
           <div className="space-y-3 max-h-85 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
             {myColleagues.map((colleague) => {
-              const initials = `${colleague.firstName[0]}${colleague.lastName[0]}`;
-              const dotColor = getStatusDotColor(colleague.workStatus);
+              const initials = `${colleague?.firstName?.[0] || ""}${colleague?.lastName?.[0] || ""}`;
+              const dotColor = getStatusDotColor(colleague?.employmentStatus);
 
               return (
                 <div
@@ -112,7 +87,7 @@ export default function PremiumTeamColleagues() {
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative shrink-0">
                       <div
-                        className={`h-9 w-9 rounded-full bg-linear-to-br ${colleague.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase font-sans`}
+                        className={`h-9 w-9 rounded-full bg-linear-to-br ${colleague?.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase font-sans`}
                       >
                         {initials}
                       </div>
@@ -124,10 +99,10 @@ export default function PremiumTeamColleagues() {
                     {/* Middle: Info */}
                     <div className="truncate">
                       <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
-                        {colleague.firstName} {colleague.lastName}
+                        {colleague?.firstName} {colleague?.lastName}
                       </h4>
                       <span className="text-[10px] text-slate-400 block truncate mt-0.5 font-medium">
-                        {colleague.role}
+                        {colleague?.jobRole}
                       </span>
                     </div>
                   </div>
@@ -135,12 +110,14 @@ export default function PremiumTeamColleagues() {
                   {/* Right: Actions */}
                   <div className="flex items-center gap-1 shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
                     <button
+                      onClick={handleMessage}
                       type="button"
                       className="p-1.5 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors active:scale-90"
                     >
                       <MessageSquare size={13} />
                     </button>
                     <button
+                      onClick={handleEmail}
                       type="button"
                       className="p-1.5 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors active:scale-90"
                     >
