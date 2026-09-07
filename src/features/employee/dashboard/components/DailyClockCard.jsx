@@ -49,7 +49,8 @@ import {
  * @returns {Object} Dashboard context with attendance management methods and data
  */
 import { useDashboardContext } from "../contexts/DashboardContext";
-
+import AttendanceCardSkeleton from "./AttendanceCardSkeleton";
+import DashboardSkeleton from "./DashboardSkeleton";
 /**
  * Loading animation component for attendance operations.
  *
@@ -60,7 +61,6 @@ import { useDashboardContext } from "../contexts/DashboardContext";
  * @requires ../../../../shared/components/Animations/AttendanceLoader
  * @type {React.ComponentType}
  */
-import AttendanceLoader from "../../../../shared/components/Animations/AttendanceLoader";
 /**
  * DailyClockCard Component
  *
@@ -182,7 +182,7 @@ export default function DailyClockCard() {
    * Prevents user interaction during state transitions.
    */
   if (isLoading) {
-    return <AttendanceLoader />;
+    return <AttendanceCardSkeleton />;
   }
   return (
     <div className="w-full max-w-xl mx-auto p-2">
@@ -258,7 +258,7 @@ export default function DailyClockCard() {
               <div>
                 In:
                 <span className="text-slate-700 font-bold">
-                  {attendanceData?.checkIn?.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) || "--:--"}
+                  {attendanceData?.checkIn || "--:--"}
                 </span>
               </div>
               {attendanceData?.totalBreakMinutes > 0 && (
@@ -342,7 +342,7 @@ export default function DailyClockCard() {
                     SHIFT IN
                   </span>
                   <span className="font-bold text-slate-800 text-xs sm:text-sm">
-                    {attendanceData?.checkIn.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) || "--:--"}
+                    {attendanceData?.checkIn || "--:--"}
                   </span>
                 </div>
                 <div className="space-y-0.5">
@@ -350,7 +350,7 @@ export default function DailyClockCard() {
                     SHIFT OUT
                   </span>
                   <span className="font-bold text-slate-800 text-xs sm:text-sm">
-                    {attendanceData?.checkOut?.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) || "--:--"}
+                    {attendanceData?.checkOut || "--:--"}
                   </span>
                 </div>
               </div>

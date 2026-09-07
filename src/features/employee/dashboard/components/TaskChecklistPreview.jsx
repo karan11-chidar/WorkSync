@@ -1,57 +1,36 @@
 import React from "react";
 import { ClipboardList, Calendar, ArrowUpRight } from "lucide-react";
+import { useDashboardContext } from "../contexts/DashboardContext";
+import { useNavigate } from "react-router-dom";
 
+/**
+ * Returns the visual styling classes for a given task priority.
+ *
+ * @param {"High" | "Medium" | "Low" | string} priority - Priority level assigned to the task.
+ * @returns {string} Tailwind CSS classes used to render the priority badge.
+ */
+const getPriorityStyle = (priority) => {
+  switch (priority) {
+    case "High":
+      return "text-rose-600 bg-rose-50 border-rose-100";
+    case "Medium":
+      return "text-amber-600 bg-amber-50 border-amber-100";
+    default:
+      return "text-emerald-600 bg-emerald-50 border-emerald-100"; // Low
+  }
+};
+
+/**
+ * Displays a compact task checklist summary for the employee dashboard.
+ * The component reads assigned tasks from the dashboard context, highlights
+ * priority and status, and provides a quick navigation link to the full task list.
+ *
+ * @returns {JSX.Element} A dashboard card showing the employee's task checklist.
+ */
 export default function TaskChecklistPreview() {
-  // 1. Static Dummy Data (UI स्क्रॉलर टेस्ट करने के लिए 5 टास्क रखे हैं)
-  const myTasks = [
-    {
-      id: "TSK-01",
-      title: "Design Login Screen & Wireframes",
-      dueDate: "2026-07-10",
-      priority: "High",
-      status: "In Progress",
-    },
-    {
-      id: "TSK-02",
-      title: "Optimize Analytics Aggregation API",
-      dueDate: "2026-07-15",
-      priority: "Medium",
-      status: "Pending",
-    },
-    {
-      id: "TSK-03",
-      title: "Review HR Compliance Document",
-      dueDate: "2026-07-04",
-      priority: "Low",
-      status: "Completed",
-    },
-    {
-      id: "TSK-04",
-      title: "Setup Firebase Push Notifications",
-      dueDate: "2026-07-18",
-      priority: "High",
-      status: "Pending",
-    },
-    {
-      id: "TSK-05",
-      title: "Fix TaskMaster Elite Grid Bugs",
-      dueDate: "2026-07-20",
-      priority: "Low",
-      status: "In Progress",
-    },
-  ];
-
-  // प्रायरिटी के हिसाब से डॉट्स/टेक्स्ट कलर का मैप
-  const getPriorityStyle = (priority) => {
-    switch (priority) {
-      case "High":
-        return "text-rose-600 bg-rose-50 border-rose-100";
-      case "Medium":
-        return "text-amber-600 bg-amber-50 border-amber-100";
-      default:
-        return "text-emerald-600 bg-emerald-50 border-emerald-100"; // Low
-    }
-  };
+  const { tasksData } = useDashboardContext();
+  const myTasks = tasksData || [];
+  const navigate = useNavigate();
 
   return (
     <div className="w-full max-w-xl mx-auto p-2">
@@ -63,6 +42,7 @@ export default function TaskChecklistPreview() {
             Task Checklist
           </h3>
           <button
+            onClick={() => navigate("/employee/tasks")}
             type="button"
             className="text-xs text-indigo-600 hover:text-indigo-800 font-bold inline-flex items-center gap-0.5 hover:underline transition-all cursor-pointer active:scale-95"
           >
@@ -79,7 +59,6 @@ export default function TaskChecklistPreview() {
             </p>
           </div>
         ) : (
-          /* FIX: अधिकतम 3 टास्क दिखाने के बाद स्क्रॉल करने के लिए max-h और overflow-y सेट किया है */
           <div className="space-y-3 max-h-72.5 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
             {myTasks.map((task) => {
               const priorityClass = getPriorityStyle(task.priority);
