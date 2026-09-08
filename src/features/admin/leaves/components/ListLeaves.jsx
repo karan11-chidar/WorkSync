@@ -140,7 +140,7 @@ export default function ListLeaves() {
                           className="h-10 w-10 rounded-xl object-cover ring-2 ring-indigo-50 shadow-xs shrink-0 bg-slate-100"
                         />
                       ) : (
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-indigo-400 text-white flex items-center justify-center text-xs font-black uppercase shadow-xs shrink-0 ring-2 ring-indigo-50">
+                        <div className="h-10 w-10 rounded-xl bg-linear-to-tr from-indigo-600 via-indigo-500 to-indigo-400 text-white flex items-center justify-center text-xs font-black uppercase shadow-xs shrink-0 ring-2 ring-indigo-50">
                           {initials}
                         </div>
                       )}
@@ -221,7 +221,7 @@ export default function ListLeaves() {
                       <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
                         Submitted Justification
                       </span>
-                      <p className="italic text-slate-700 font-medium break-words text-[11px]">
+                      <p className="italic text-slate-700 font-medium wrap-break-word text-[11px]">
                         "
                         {req.reason ||
                           "No written justification was provided for this application."}
