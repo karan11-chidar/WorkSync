@@ -1,6 +1,16 @@
 import React from "react";
 import { Layers, Clock, CheckCircle, XCircle } from "lucide-react";
 
+/**
+ * Displays aggregate task status counts for an employee.
+ *
+ * @param {Object} props - Task count props.
+ * @param {number} props.total - Total assigned tasks.
+ * @param {number} props.inProgress - Tasks currently in progress.
+ * @param {number} props.completed - Completed tasks.
+ * @param {number} props.rejected - Rejected tasks.
+ * @returns {JSX.Element} The task statistics grid.
+ */
 export default function TaskStatsGrid({
   total,
   inProgress,

@@ -1,6 +1,11 @@
 import React from 'react'
 import DepartmentBarChart from './DepartmentBarChart';
 import BudgetAllocation from './BudgetAllocation';
+/**
+ * Renders analytics charts for the administrator dashboard.
+ *
+ * @returns {JSX.Element} The dashboard analytics charts.
+ */
 function AnalyticsCharts() {
   return (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">

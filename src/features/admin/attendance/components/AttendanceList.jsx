@@ -9,6 +9,11 @@ import {
   RefreshCw,
 } from "lucide-react";
 
+/**
+ * Renders the attendance records available to administrators.
+ *
+ * @returns {JSX.Element} The administrator attendance list.
+ */
 export default function AttendanceList() {
   // 1. Static Dummy Data (UI रेंडर करने के लिए)
   const combinedLog = [

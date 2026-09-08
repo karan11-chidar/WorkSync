@@ -3,6 +3,11 @@ import LeaveDashboardHeader from "../components/LeaveDashboardHeader"; // 1. ह
 import ApplyLeaveForm from "../components/ApplyLeaveForm"; // 2. फॉर्म
 import LeaveHistoryTable from "../components/LeaveHistoryTable"; // 3. टेबल
 
+/**
+ * Composes the employee leave dashboard view.
+ *
+ * @returns {JSX.Element} The leave dashboard page.
+ */
 export default function LeaveDashboardView() {
   return (
     <div className="w-full space-y-6">

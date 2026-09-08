@@ -8,7 +8,19 @@ import {
   Star,
   FileText,
   IndianRupee,
+  Building2,
 } from "lucide-react";
+import formatTimeStamp from "../../../../shared/utils/formatTimeStamp";
+/**
+ * Displays the selected employee's details and available actions.
+ *
+ * @param {Object} props - Component props.
+ * @param {Object|null} props.selectedEmployee - Employee currently shown in the drawer.
+ * @param {Function} props.setSelectedEmployee - Closes or updates the selected employee.
+ * @param {Function} props.handleEditEmployee - Opens the employee editing flow.
+ * @param {Function} props.handleDeleteEmployee - Deletes the selected employee.
+ * @returns {JSX.Element|null} The detail drawer, or null when no employee is selected.
+ */
 export function EmployeeDetailDrawer({
   selectedEmployee,
   setSelectedEmployee,
@@ -93,6 +105,7 @@ export function EmployeeDetailDrawer({
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               {selectedEmployee.jobRole}
+              <span> </span>
               <span className="font-semibold text-slate-700">
                 {selectedEmployee.department}
               </span>
@@ -143,7 +156,15 @@ export function EmployeeDetailDrawer({
                 Joining Date
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                {selectedEmployee.joiningDate?.toDate().toLocaleDateString()}
+                {formatTimeStamp(selectedEmployee?.joiningDate)[0]}
+              </div>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                Blood Group
+              </span>
+              <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
+                {selectedEmployee?.bloodGroup}
               </div>
             </div>
           </div>
@@ -183,6 +204,20 @@ export function EmployeeDetailDrawer({
                 >
                   <span className="leading-relaxed">
                     {selectedEmployee.address || "No office address logged"}
+                  </span>
+                </a>
+              </div>
+              <div className="flex items-start gap-2">
+                <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(selectedEmployee?.officeLocation || "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  <span className="leading-relaxed">
+                    {selectedEmployee?.officeLocation ||
+                      "No office address logged"}
                   </span>
                 </a>
               </div>
@@ -230,6 +265,6 @@ export function EmployeeDetailDrawer({
       </div>
     </div>
   );
-};
+}
 
 export default EmployeeDetailDrawer;

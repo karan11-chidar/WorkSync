@@ -1,6 +1,18 @@
 import React from "react";
 import { XCircle, AlertCircle } from "lucide-react";
 
+/**
+ * Renders the modal used to submit a task rejection reason.
+ *
+ * @param {Object} props - Modal state and event handlers.
+ * @param {boolean} props.isOpen - Whether the modal is visible.
+ * @param {string} props.reasonText - Current rejection reason.
+ * @param {Function} props.setReasonText - Updates the rejection reason.
+ * @param {string|null} props.modalError - Validation error shown in the modal.
+ * @param {Function} props.onClose - Closes the modal.
+ * @param {Function} props.onSubmit - Submits the rejection reason.
+ * @returns {JSX.Element|null} The rejection modal when open.
+ */
 export default function TaskRejectModal({
   isOpen,
   reasonText,

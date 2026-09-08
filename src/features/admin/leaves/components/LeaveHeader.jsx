@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Filter, Inbox, CheckCircle2, XCircle, Layers } from "lucide-react";
 
+/**
+ * Renders the leave-management header and status filter controls.
+ *
+ * @returns {JSX.Element} The leave header.
+ */
 export default function LeaveHeader() {
   const [filterStatus, setFilterStatus] = useState("All");
 

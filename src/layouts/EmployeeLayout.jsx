@@ -5,6 +5,11 @@ import MobileHeader from "../shared/components/MobileHeader";
 import LinearProgressStream from "../shared/components/Animations/LinearProgressStream";
 import { Home, CalendarCheck, FileText, CheckSquare, User } from "lucide-react";
 import { useAuth } from "../features/auth/context/AuthContext";
+/**
+ * Provides the shared layout for employee routes.
+ *
+ * @returns {JSX.Element} The employee layout.
+ */
 function EmployeeLayout() {
   const { hideLoader } = useAuth();
   useEffect(() => {

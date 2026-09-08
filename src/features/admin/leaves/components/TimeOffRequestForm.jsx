@@ -8,6 +8,11 @@ import {
   Layers,
 } from "lucide-react";
 
+/**
+ * Renders the form used to submit an employee time-off request.
+ *
+ * @returns {JSX.Element} The time-off request form.
+ */
 export default function TimeOffRequestForm() {
   // 1. Static Employees Data (ड्रॉपडाउन लिस्ट को भरने के लिए)
   const activeEmployees = [

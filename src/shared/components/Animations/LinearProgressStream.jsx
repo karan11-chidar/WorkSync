@@ -1,5 +1,12 @@
 import React from "react";
 
+/**
+ * Displays a thin progress indicator while an operation is loading.
+ *
+ * @param {Object} props - Progress state.
+ * @param {boolean} props.isLoading - Whether the indicator should be visible.
+ * @returns {JSX.Element|null} The progress stream or null when inactive.
+ */
 export default function LinearProgressStream({ isLoading }) {
   if (!isLoading) return null;
 

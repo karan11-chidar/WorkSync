@@ -9,6 +9,11 @@ import {
   Inbox,
 } from "lucide-react";
 
+/**
+ * Renders the administrator's leave request list.
+ *
+ * @returns {JSX.Element} The leave request list.
+ */
 export default function ListLeaves() {
   const staticRequests = [
     {

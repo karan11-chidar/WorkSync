@@ -1,6 +1,11 @@
 import React from "react";
 import { FileText } from "lucide-react";
 
+/**
+ * Renders the employee's submitted leave history.
+ *
+ * @returns {JSX.Element} The leave history table.
+ */
 export default function LeaveHistoryTable() {
   // UI टेस्टिंग के लिए स्टेटिक रिकॉर्ड्स एरे (स्क्रॉल टेस्ट करने के लिए 7 रिकॉर्ड्स रखे हैं)
   const myLeaves = [

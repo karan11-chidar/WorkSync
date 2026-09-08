@@ -1,6 +1,14 @@
 import { Star, Eye } from "lucide-react";
 import { useState } from "react";
-function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
+/**
+ * Renders employee records in a desktop table layout.
+ *
+ * @param {Object} props - Table props.
+ * @param {Array} props.employees - Employee records to display.
+ * @param {Function} props.handleSelectEmployee - Selects an employee for details.
+ * @returns {JSX.Element} The desktop employee table.
+ */
+function DesktopEmployeeTable({ employees, handleSelectEmployee }) {
   const renderStatus = (status) => {
     switch (status) {
       case "Active":
@@ -65,7 +73,7 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <button
-                        onClick={() =>handleSelectEmployee(emp)}
+                        onClick={() => handleSelectEmployee(emp)}
                         className={`h-10 w-10 rounded-full bg-linear-to-br ${emp.avatarColor}flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white hover:ring-indigo-500 transition-all hover:scale-105`}
                       >
                         {initials}
@@ -108,7 +116,9 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
 
                   {/* Status */}
 
-                  <td className="px-6 py-5">{renderStatus(emp.employmentStatus)}</td>
+                  <td className="px-6 py-5">
+                    {renderStatus(emp.employmentStatus)}
+                  </td>
 
                   {/* Rating */}
 
@@ -141,7 +151,7 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
 
                   <td className="px-6 py-5 text-center">
                     <button
-                      onClick={() =>handleSelectEmployee(emp)}
+                      onClick={() => handleSelectEmployee(emp)}
                       className="
                         inline-flex
                         items-center

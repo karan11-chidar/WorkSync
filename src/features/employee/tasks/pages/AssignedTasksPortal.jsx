@@ -4,6 +4,11 @@ import TaskItemRow from "../components/TaskItemRow";
 import TaskRejectModal from "../components/TaskRejectModal";
 import { ClipboardList } from "lucide-react";
 
+/**
+ * Displays the employee's assigned tasks and task actions.
+ *
+ * @returns {JSX.Element} The assigned tasks page.
+ */
 export default function AssignedTasksPortal() {
   // लाइव टास्क डेटा एरे
   const [tasks, setTasks] = useState([

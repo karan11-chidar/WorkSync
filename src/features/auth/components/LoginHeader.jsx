@@ -1,6 +1,11 @@
 import React from "react";
 import logo from "../../../../public/icon-512.png";
 
+/**
+ * Renders the branding header for the login page.
+ *
+ * @returns {JSX.Element} The login header.
+ */
 function Header() {
   return (
     <div className="sm:mx-auto sm:w-full sm:max-w-xl text-center flex items-center justify-center flex-col">

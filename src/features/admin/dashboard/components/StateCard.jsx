@@ -1,4 +1,10 @@
 import React from 'react'
+/**
+ * Displays one administrator dashboard metric card.
+ *
+ * @param {Object} props - Metric card properties.
+ * @returns {JSX.Element} The metric card.
+ */
 function StateCard(props) {
   return (
     <div

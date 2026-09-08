@@ -1,5 +1,10 @@
 import React, { useState } from 'react'
 import { Calendar,Search } from 'lucide-react';
+/**
+ * Renders the heading and controls for the attendance list.
+ *
+ * @returns {JSX.Element} The attendance list header.
+ */
 function ListHeader() {
     const [searchTerm, setSearchTerm] = useState('');
   return (

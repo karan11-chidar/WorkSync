@@ -1,6 +1,11 @@
 import React from 'react'
 import StateCard from './StateCard';
 import { TrendingUp, Users, Clock, CalendarClock,IndianRupee,Wallet,CheckCircle2,AlertCircle } from "lucide-react";
+/**
+ * Renders the administrator dashboard summary cards.
+ *
+ * @returns {JSX.Element} The summary card grid.
+ */
 function CardsGrid() {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">

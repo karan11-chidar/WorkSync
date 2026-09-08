@@ -9,6 +9,15 @@ import {
   RotateCcw,
 } from "lucide-react";
 
+/**
+ * Renders one employee task with status and rejection actions.
+ *
+ * @param {Object} props - Task row props.
+ * @param {Object} props.task - Task displayed in the row.
+ * @param {Function} props.onUpdateStatus - Updates the task status.
+ * @param {Function} props.onTriggerReject - Opens the rejection flow.
+ * @returns {JSX.Element} The task row.
+ */
 export default function TaskItemRow({ task, onUpdateStatus, onTriggerReject }) {
   return (
     <div

@@ -3,6 +3,11 @@ import LeaveHeader from "../components/LeaveHeader.jsx";
 import ListLeaves from "../components/ListLeaves.jsx";
 import TimeOffRequestForm from "../components/TimeOffRequestForm.jsx";
 
+/**
+ * Displays the administrator leave ledger.
+ *
+ * @returns {JSX.Element} The leave ledger page.
+ */
 function LeaveLedger() {
   return (
     <div className="space-y-6">

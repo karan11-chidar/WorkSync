@@ -1,11 +1,16 @@
-import React from 'react'
-import StateCard from './StateCard'
-import { ClipboardList,Clock,AlertTriangle,CircleCheck } from "lucide-react";
-import { useTaskBoard } from '../contexts/TaskBoardContext';
-import PremiumUniversalLoader from '../../../../shared/components/Animations/PremiumUniversalLoader';
+import React from "react";
+import StateCard from "./StateCard";
+import { ClipboardList, Clock, AlertTriangle, CircleCheck } from "lucide-react";
+import { useTaskBoard } from "../contexts/TaskBoardContext";
+import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
+/**
+ * Displays task board status totals.
+ *
+ * @returns {JSX.Element} The task status card collection.
+ */
 function TasksStateCards() {
-  const { taskList,isLoading } = useTaskBoard();
-if(isLoading)return <PremiumUniversalLoader variant='grid' gridCount={4}/>
+  const { taskList, isLoading } = useTaskBoard();
+  if (isLoading) return <PremiumUniversalLoader variant="grid" gridCount={4} />;
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StateCard
@@ -40,4 +45,4 @@ if(isLoading)return <PremiumUniversalLoader variant='grid' gridCount={4}/>
   );
 }
 
-export default TasksStateCards
+export default TasksStateCards;

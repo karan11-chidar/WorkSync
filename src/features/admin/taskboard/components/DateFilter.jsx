@@ -1,7 +1,14 @@
+/**
+ * Renders the task board date filter.
+ *
+ * @param {Object} props - Filter props.
+ * @param {Function} props.handleChange - Handles date selection changes.
+ * @param {Object} props.filterState - Current filter state.
+ * @returns {JSX.Element} The date filter.
+ */
 function DateFilter({ handleChange, filterState }) {
   return (
-    <div 
-    >
+    <div>
       <input
         name="date-filter"
         placeholder="Select Date"

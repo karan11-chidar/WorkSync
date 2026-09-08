@@ -8,6 +8,11 @@ import React from "react";
 import { Users, Mail, MessageSquare, ShieldAlert } from "lucide-react";
 import { useDashboardContext } from "../contexts/DashboardContext";
 
+/**
+ * Displays colleagues from the employee's department.
+ *
+ * @returns {JSX.Element} The team colleagues panel.
+ */
 export default function PremiumTeamColleagues() {
   const { employeeData, departmentEmployeesData } = useDashboardContext();
 

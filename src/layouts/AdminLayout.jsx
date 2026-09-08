@@ -13,11 +13,16 @@ import {
 import LinearProgressStream from "../shared/components/Animations/LinearProgressStream";
 import { useAuth } from "../features/auth/context/AuthContext";
 import { toastSuccess } from "../shared/services/toastService";
+/**
+ * Provides the shared layout for administrator routes.
+ *
+ * @returns {JSX.Element} The administrator layout.
+ */
 function AdminLayout() {
   const { hideLoader } = useAuth();
   useEffect(() => {
     hideLoader();
-    }, []);
+  }, []);
   // 🔥 ADMIN NAVIGATION MATRIX (100% Lowercase & Space-Free IDs)
   const navItemsAdmin = [
     { id: "dashboard", label: "Company Overview", icon: LayoutDashboard },

@@ -1,5 +1,16 @@
 import React from "react";
 
+/**
+ * Displays one employee attendance summary card.
+ *
+ * @param {Object} props - Summary card props.
+ * @param {string} props.title - Card title.
+ * @param {string|number} props.value - Primary card value.
+ * @param {string} props.subTitle - Supporting card text.
+ * @param {React.ComponentType} props.icon - Icon rendered in the card.
+ * @param {Object} props.colorTheme - Card color configuration.
+ * @returns {JSX.Element} The attendance summary card.
+ */
 function StateCards({ title, value, subTitle, icon: Icon, colorTheme }) {
   // थीम्स का प्रीमियम कॉन्फ़िगरेशन मैप
   const themeMap = {

@@ -1,6 +1,13 @@
 import { toast } from "sonner";
 
 // 1. 🟢 Premium Success Toast
+/**
+ * Shows a success notification.
+ *
+ * @param {string} message - Primary notification message.
+ * @param {string} [description=""] - Optional supporting text.
+ * @returns {string|number} Toast identifier returned by Sonner.
+ */
 export const toastSuccess = (message, description = "") => {
   return toast.success(message, {
     description,
@@ -20,6 +27,13 @@ export const toastSuccess = (message, description = "") => {
 };
 
 // 2. 🔴 Premium Error Toast
+/**
+ * Shows an error notification.
+ *
+ * @param {string} message - Primary notification message.
+ * @param {string} [description=""] - Optional supporting text.
+ * @returns {string|number} Toast identifier returned by Sonner.
+ */
 export const toastError = (message, description = "") => {
   return toast.error(message, {
     description,
@@ -39,6 +53,12 @@ export const toastError = (message, description = "") => {
 };
 
 // 3. ⏳ Premium Loading Toast
+/**
+ * Shows a loading notification.
+ *
+ * @param {string} message - Loading message.
+ * @returns {string|number} Toast identifier returned by Sonner.
+ */
 export const toastLoading = (message) => {
   return toast.loading(message, {
     style: {
@@ -54,6 +74,13 @@ export const toastLoading = (message) => {
 };
 
 // 4. 🔵 Premium Info / Alert Toast
+/**
+ * Shows an informational notification.
+ *
+ * @param {string} message - Primary notification message.
+ * @param {string} [description=""] - Optional supporting text.
+ * @returns {string|number} Toast identifier returned by Sonner.
+ */
 export const toastInfo = (message, description = "") => {
   return toast.info(message, {
     description,
@@ -73,6 +100,16 @@ export const toastInfo = (message, description = "") => {
 };
 
 // 5. ⚡ Premium Promise Toast (For API Calls)
+/**
+ * Shows notifications for the lifecycle of an asynchronous operation.
+ *
+ * @param {Promise} promise - Operation represented by the toast.
+ * @param {Object} messages - Loading, success, and error message configuration.
+ * @param {string} messages.loading - Message shown while the operation runs.
+ * @param {string|Function} messages.success - Success message or formatter.
+ * @param {string|Function} messages.error - Error message or formatter.
+ * @returns {string|number} Toast identifier returned by Sonner.
+ */
 export const toastPromise = (promise, { loading, success, error }) => {
   return toast.promise(promise, {
     loading: loading || "Processing...",

@@ -1,6 +1,11 @@
 import React from "react";
 import { CalendarDays, CheckCircle, Clock, ShieldAlert } from "lucide-react";
 
+/**
+ * Displays leave balances and summary statistics for an employee.
+ *
+ * @returns {JSX.Element} The employee leave dashboard header.
+ */
 export default function LeaveDashboardHeader() {
   // स्टैटिक काउंटर्स जो हेडर को प्रीमियम लुक देंगे
   const stats = [

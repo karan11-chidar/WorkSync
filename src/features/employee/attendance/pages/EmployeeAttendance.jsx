@@ -10,9 +10,6 @@ import {
   XCircle,
 } from "lucide-react";
 
-// --- 🛠️ HELPER FUNCTIONS (कैलेंडर के दिनों को सही ऑब्जेक्ट में बदलने के लिए) ---
-
-// किसी भी तारीख को "DD/MM/YYYY" स्ट्रिंग फ़ॉर्मेट में बदलने के लिए
 const getFormattedDate = (date) => {
   const day = String(date.getDate()).padStart(2, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -20,25 +17,21 @@ const getFormattedDate = (date) => {
   return `${day}/${month}/${year}`;
 };
 
-// चुने हुए महीने के हिसाब से पूरे 35 या 42 दिनों का ग्रिड डेटा तैयार करने के लिए
 const generateCalendarDays = (currentMonth) => {
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
-  // महीने का पहला दिन और उसका हफ़्ते का इंडेक्स (0 = Sun, 1 = Mon...)
   const firstDayOfMonth = new Date(year, month, 1);
   const startDayOfWeek = firstDayOfMonth.getDay();
 
   const days = [];
 
-  // कैलेंडर ग्रिड को रविवार से शुरू करने के लिए पिछले महीने के बचे हुए दिन भरना
   const prevMonthDaysToShow = startDayOfWeek;
   for (let i = prevMonthDaysToShow; i > 0; i--) {
     const d = new Date(year, month, 1 - i);
     days.push({ dayNum: d.getDate(), date: d, isCurrentMonth: false });
   }
 
-  // चालू महीने के सारे दिन भरना
   const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
   for (let i = 1; i <= totalDaysInMonth; i++) {
     const d = new Date(year, month, i);
@@ -55,6 +48,11 @@ const generateCalendarDays = (currentMonth) => {
   return days;
 };
 
+/**
+ * Displays the authenticated employee's attendance history and calendar.
+ *
+ * @returns {JSX.Element} The employee attendance page.
+ */
 export default function EmployeeAttendance() {
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 6, 5)); // July 2026
 

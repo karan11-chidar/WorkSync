@@ -1,5 +1,14 @@
 import React from 'react'
 
+/**
+ * Displays one attendance status summary card.
+ *
+ * @param {Object} props - Card configuration.
+ * @param {string} props.title - Card title.
+ * @param {string} props.textColor - Text color utility class.
+ * @param {Object} props.stats - Attendance statistics shown in the card.
+ * @returns {JSX.Element} The status card.
+ */
 function StateCard({title,textColor,stats}) {
   return (
     <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs lg:gap-0 gap-2 flex-col items-center justify-between hover:shadow-md transition-all duration-200 hover:scale-[1.01] ">

@@ -1,5 +1,10 @@
 import React from "react";
 import {IndianRupee} from "lucide-react";
+/**
+ * Displays the dashboard budget allocation breakdown.
+ *
+ * @returns {JSX.Element} The budget allocation view.
+ */
 function BudgetAllocation() {
   const departments = [
     {

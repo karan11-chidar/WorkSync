@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Calendar, AlertTriangle, Send } from "lucide-react";
 
+/**
+ * Renders the employee leave application form.
+ *
+ * @returns {JSX.Element} The leave application form.
+ */
 export default function ApplyLeaveForm() {
   // लोकल स्टेट्स (Static UI Testing Mode)
   const [leaveType, setLeaveType] = useState("Vacation");

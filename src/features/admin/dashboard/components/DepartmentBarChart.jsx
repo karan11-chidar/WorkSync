@@ -1,6 +1,11 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 
+/**
+ * Renders department-level metrics as a bar chart.
+ *
+ * @returns {JSX.Element} The department bar chart.
+ */
 function DepartmentChart() {
   const deptHeadcounts = [
     { name: "Engineering", count: 42, color: "bg-emerald-500" },

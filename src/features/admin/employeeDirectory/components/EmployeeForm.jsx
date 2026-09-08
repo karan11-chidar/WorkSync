@@ -40,7 +40,7 @@
  * ============================================================================
  */
 // Importing react hooks
-import {  useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 
 // Import components and icons
 import { UserPlus, X, ShieldAlert, IndianRupee } from "lucide-react";
@@ -49,7 +49,10 @@ import { UserPlus, X, ShieldAlert, IndianRupee } from "lucide-react";
 import employeeValidation from "../validations/employeeFormValidation";
 
 // Import toasts show messages users
-import { toastError,toastSuccess } from "../../../../shared/services/toastService";
+import {
+  toastError,
+  toastSuccess,
+} from "../../../../shared/services/toastService";
 
 // Import Providers service
 import { useEmployee } from "../context/EmployeeContext";
@@ -65,6 +68,7 @@ const INITIAL_FORM_STATE = {
     department: "",
     jobRole: "",
     salary: "",
+    bloodGroup: "",
     employmentStatus: "",
     gender: "",
     performanceRating: "1",
@@ -106,6 +110,7 @@ const formReducer = (state, action) => {
         formData: {
           ...INITIAL_FORM_STATE.formData,
           ...action.formData,
+          password: "",
         },
         formError: {},
       };
@@ -130,9 +135,16 @@ const formReducer = (state, action) => {
   }
 };
 
-
+/**
+ * Renders the create and edit employee form.
+ *
+ * @param {Object} props - Form props.
+ * @param {Object|null} props.editingEmployee - Employee being edited, if any.
+ * @param {Function} props.handleCloseModal - Closes the form modal.
+ * @returns {JSX.Element} The employee form.
+ */
 function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
-  const { createEmployee,updateEmployee, departmentList } = useEmployee();
+  const { createEmployee, updateEmployee, departmentList } = useEmployee();
 
   //----------------------------------------------------------
   // Local Component States
@@ -184,8 +196,14 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
    */
   const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    const { isValid, errors } = employeeValidation(formStates.formData); // Validate form data using the employeeValidation function
+    // Copy formData for validation/submission
+    const dataToValidate = { ...formStates.formData };
+
+    // Agar Edit mode hai toh validation check me password skip karein
+    if (editingEmployee !== null) {
+      delete dataToValidate.password;
+    }
+    const { isValid, errors } = employeeValidation(dataToValidate); // Validate form data using the employeeValidation function
     if (!isValid) {
       dispatch({
         // Set form errors if validation fails
@@ -204,7 +222,9 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
           `New ${formStates.formData.firstName} added successfully .`,
         );
       } else {
-        await updateEmployee(editingEmployee.id,formStates.formData);
+        // Edit ke waqt payload se password field hata dein
+        const { password, ...updatePayload } = formStates.formData;
+        await updateEmployee(editingEmployee.id, updatePayload);
         toastSuccess(
           `Employee Editing!`,
           `New ${formStates.formData.firstName} updating successfully .`,
@@ -372,41 +392,43 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
               </span>
             </div>
             {/* Phone Number */}
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-600">
-                  Phone Number
-                </label>
-                <input
-                  value={formStates.formData.phone}
-                  onChange={handleChange}
-                  name="phone"
-                  type="text"
-                  placeholder="+91 9876543210"
-                  className={getInputClass("phone")}
-                />
-                <span className="text-rose-500 text-[10px] font-semibold">
-                  {formStates.formError.phone}
-                </span>
+            <div className="space-y-1">
+              <label className="font-semibold text-slate-600">
+                Phone Number
+              </label>
+              <input
+                value={formStates.formData.phone}
+                onChange={handleChange}
+                name="phone"
+                type="text"
+                placeholder="+91 9876543210"
+                className={getInputClass("phone")}
+              />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formStates.formError.phone}
+              </span>
             </div>
           </div>
           {/* Password */}
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">
-              Password <span className="text-rose-500">*</span>
-            </label>
-            <input
-              value={formStates.formData.password}
-              onChange={handleChange}
-              name="password"
-              type="password"
-              required
-              placeholder="Enter a strong password"
-              className={getInputClass("password")}
-            />
-            <span className="text-rose-500 text-[10px] font-semibold">
-              {formStates.formError.password}
-            </span>
-          </div>
+          {editingEmployee === null && (
+            <div className="space-y-1">
+              <label className="font-semibold text-slate-600">
+                Password <span className="text-rose-500">*</span>
+              </label>
+              <input
+                value={formStates.formData.password}
+                onChange={handleChange}
+                name="password"
+                type="password"
+                required
+                placeholder="Enter a strong password"
+                className={getInputClass("password")}
+              />
+              <span className="text-rose-500 text-[10px] font-semibold">
+                {formStates.formError.password}
+              </span>
+            </div>
+          )}
 
           {/* Dept & Role */}
           <div className="grid grid-cols-2 gap-3">
@@ -524,30 +546,47 @@ function AddEmployeeForm({ editingEmployee, handleCloseModal }) {
                 {formStates.formError.gender}
               </span>
             </div>
+
             <div className="space-y-1">
               <label className="font-semibold text-slate-600">
-                Performance Evaluation (1-5)
+                Blood Group *
               </label>
               <input
-                type="range"
-                min="1"
-                max="5"
-                step="1"
-                value={formStates.formData.performanceRating}
+                value={formStates.formData.bloodGroup}
                 onChange={handleChange}
-                name="performanceRating"
-                className="w-full mt-2 h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                name="bloodGroup"
+                type="text"
+                placeholder="O+"
+                className={getInputClass("bloodGroup")}
               />
               <span className="text-rose-500 text-[10px] font-semibold">
-                {formStates.formError.performanceRating}
+                {formStates.formError.bloodGroup}
               </span>
-              <div className="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
-                <span>1 (Improvement Needed)</span>
-                <span className="text-indigo-600 font-bold">
-                  {formStates.formData.performanceRating} Stars
-                </span>
-                <span>5 (Exceptional)</span>
-              </div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">
+              Performance Evaluation (1-5)
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="5"
+              step="1"
+              value={formStates.formData.performanceRating}
+              onChange={handleChange}
+              name="performanceRating"
+              className="w-full mt-2 h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+            />
+            <span className="text-rose-500 text-[10px] font-semibold">
+              {formStates.formError.performanceRating}
+            </span>
+            <div className="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
+              <span>1 (Improvement Needed)</span>
+              <span className="text-indigo-600 font-bold">
+                {formStates.formData.performanceRating} Stars
+              </span>
+              <span>5 (Exceptional)</span>
             </div>
           </div>
 

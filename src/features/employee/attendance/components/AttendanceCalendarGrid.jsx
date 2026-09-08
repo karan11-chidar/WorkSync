@@ -7,6 +7,18 @@ import {
   Coffee,
 } from "lucide-react";
 
+/**
+ * Renders the employee attendance calendar grid.
+ *
+ * @param {Object} props - Calendar data and event handlers.
+ * @param {Array} props.calendarDays - Days displayed in the current month.
+ * @param {Array} props.attendanceRecords - Employee attendance records.
+ * @param {Array} props.leaveRequests - Approved or pending leave requests.
+ * @param {string} props.employeeId - Employee whose attendance is displayed.
+ * @param {string} props.todayDateString - Current date in display format.
+ * @param {Function} props.getFormattedDate - Formats a calendar date.
+ * @returns {JSX.Element} The attendance calendar grid.
+ */
 export default function AttendanceCalendarGrid({
   calendarDays,
   attendanceRecords,
@@ -15,10 +27,8 @@ export default function AttendanceCalendarGrid({
   todayDateString,
   getFormattedDate,
 }) {
-  // मोबाइल व्यू में जिस तारीख पर यूजर क्लिक करेगा, उसकी पूरी डिटेल्स नीचे दिखाने के लिए स्टेट
   const [selectedDayDetails, setSelectedDayDetails] = useState(null);
 
-  // स्टेटस के आधार पर रंगों का मैप (प्रीमियम सॉलिड और सॉफ्ट कलर्स)
   const getStatusMeta = (status, isLeave, isWeekend, isToday, isPast) => {
     if (status === "Present") {
       return {

@@ -238,6 +238,17 @@ import React from "react";
  *   </PremiumUniversalLoader>
  * )}
  */
+/**
+ * Renders a configurable loading skeleton for common content layouts.
+ *
+ * @param {Object} props - Loader configuration.
+ * @param {boolean} [props.isLoading=true] - Whether the skeleton is visible.
+ * @param {string} [props.variant="card"] - Skeleton layout variant.
+ * @param {number} [props.rows=3] - Number of rows for list layouts.
+ * @param {number} [props.gridCount=3] - Number of items for grid layouts.
+ * @param {React.ReactNode} [props.children=null] - Content rendered after loading.
+ * @returns {JSX.Element} The selected loading skeleton or child content.
+ */
 export default function PremiumUniversalLoader({
   isLoading = true,
   variant = "card", // 'list' | 'grid' | 'profile' | 'card'

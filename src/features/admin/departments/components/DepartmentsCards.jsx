@@ -12,6 +12,14 @@ import { useDepartment } from "../context/DepartmentContext";
 import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
 import EmptyState from "../../../../shared/components/EmptyState";
 
+/**
+ * Renders department cards with edit and delete actions.
+ *
+ * @param {Object} props - Card list props.
+ * @param {Function} props.handleEditOpen - Opens a department for editing.
+ * @param {Function} props.onDelete - Deletes a department.
+ * @returns {JSX.Element} The department card collection.
+ */
 function DepartmentCards({ handleEditOpen, onDelete }) {
   const {departments,loading} = useDepartment();
   const totalBudget = departments.reduce((sum, d) => sum + d.budget, 0);

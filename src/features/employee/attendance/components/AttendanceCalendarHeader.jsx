@@ -1,6 +1,17 @@
 import React from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
+/**
+ * Renders month navigation controls for the attendance calendar.
+ *
+ * @param {Object} props - Header state and event handlers.
+ * @param {Date} props.currentMonth - Month currently displayed.
+ * @param {string[]} props.monthNames - Month labels used by the header.
+ * @param {Function} props.handlePrevMonth - Moves the calendar to the previous month.
+ * @param {Function} props.handleNextMonth - Moves the calendar to the next month.
+ * @param {Function} props.onResetToday - Returns the calendar to the current month.
+ * @returns {JSX.Element} The attendance calendar header.
+ */
 export default function AttendanceCalendarHeader({
   currentMonth,
   monthNames,

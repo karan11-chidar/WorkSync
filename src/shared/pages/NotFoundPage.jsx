@@ -2,6 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ShieldAlert, ArrowLeft, Home } from "lucide-react";
 
+/**
+ * Renders the fallback page for unmatched application routes.
+ *
+ * @returns {JSX.Element} The not-found page.
+ */
 export default function NotFoundPage() {
   const navigate = useNavigate();
 

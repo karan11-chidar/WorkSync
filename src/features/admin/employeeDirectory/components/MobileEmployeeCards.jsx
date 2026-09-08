@@ -1,5 +1,13 @@
-import {useState} from "react";
+import { useState } from "react";
 import { Eye, Star, Building2, IndianRupee } from "lucide-react";
+/**
+ * Renders employee records as cards for narrow screens.
+ *
+ * @param {Object} props - Card list props.
+ * @param {Function} props.handleSelectEmployee - Selects an employee for details.
+ * @param {Array} props.employees - Employee records to display.
+ * @returns {JSX.Element} The mobile employee card list.
+ */
 function MobileEmployeeCards({ handleSelectEmployee, employees }) {
   const statusBadge = (status) => {
     switch (status) {

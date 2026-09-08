@@ -57,6 +57,7 @@ import DepartmentProvider from "../../features/admin/departments/context/Departm
 import EmployeeProvider from "../../features/admin/employeeDirectory/context/EmployeeProvider.jsx";
 import TaskBoardProvider from "../../features/admin/taskboard/contexts/TaskBoardProvider.jsx";
 import DashBoardProvider from "../../features/employee/dashboard/contexts/DashboardProvider.jsx";
+import EmployeeProfileProvider from "../../features/employee/profile/contexts/EmployeeProfileProvider.jsx";
 
 // ============================================================================
 // Constants
@@ -241,11 +242,25 @@ function AppRoutes() {
             {/* Task List - View assigned tasks and updates */}
             <Route path="tasks" element={<EmployeeTaskList />} />
 
-            {/* Profile - View and edit personal profile information */}
-            <Route path="profile" element={<EmployeeProfile />} />
+            {/* Profile - View and edit personal profile information
+            <Route
+              path="profile"
+              element={
+                <EmployeeProfileProvider>
+                  <EmployeeProfile />
+                </EmployeeProfileProvider>
+              }
+            /> */}
 
             {/* View another employee's profile by ID */}
-            <Route path="profile/:employeeId" element={<EmployeeProfile />} />
+            <Route
+              path="profile/:employeeId"
+              element={
+                <EmployeeProfileProvider>
+                  <EmployeeProfile />
+                </EmployeeProfileProvider>
+              }
+            />
 
             {/* Catch-all for undefined employee routes */}
             <Route path="*" element={<NotFoundPage />} />

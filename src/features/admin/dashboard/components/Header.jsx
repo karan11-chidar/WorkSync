@@ -1,5 +1,10 @@
 import React from 'react'
 
+/**
+ * Renders the administrator dashboard header.
+ *
+ * @returns {JSX.Element} The dashboard header.
+ */
 function Header() {
   return (
     <div
