@@ -2,8 +2,8 @@ import React from "react";
 import StateCards from "../components/StateCards";
 import AttendanceCalendarHeader from "../components/AttendanceCalendarHeader";
 import AttendanceCalendarGrid from "../components/AttendanceCalendarGrid";
-import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
 import { useAttendanceCalender } from "../context/AttendanceCalenderContext";
+import AttendancePageSkeleton from "../components/AttendancePageSkeleton";
 
 /**
  * Displays the authenticated employee's attendance history and calendar matrix.
@@ -15,7 +15,7 @@ export default function EmployeeAttendance() {
   const { isLoading, statsData } = useAttendanceCalender();
 
   if (isLoading) {
-    return <PremiumUniversalLoader variant="card" gridCount={4} />;
+    return <AttendancePageSkeleton/>;
   }
 
   return (

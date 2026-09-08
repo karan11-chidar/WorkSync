@@ -1,10 +1,24 @@
-import { Clock3, Calendar, Trash2, Edit2 } from "lucide-react";
+import React from "react";
+import { Clock3, Calendar, Trash2, Edit2, AlertCircle } from "lucide-react";
 import { useTaskBoard } from "../contexts/TaskBoardContext";
 import EmptyState from "../../../../shared/components/EmptyState";
 import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
 import getRandomColor from "../constants/taskCardAvatarColor";
 import formatTimeStamp from "../../../../shared/utils/formatTimeStamp";
 
+/**
+ * TaskDashboardGrid Component
+ *
+ * Renders all assigned tasks in a clean grid card format for the Admin dashboard.
+ * Includes status tags, assignee details, rejection reason highlights, and management controls.
+ *
+ * @component
+ * @param {Object} props - Component props.
+ * @param {Function} props.handleDeleteTask - Callback to delete a task.
+ * @param {Function} props.handleStatusChange - Callback to change task status.
+ * @param {Function} props.handleEditTask - Callback to open task edit modal.
+ * @returns {JSX.Element} Grid layout of task cards.
+ */
 function TaskDashboardGrid({
   handleDeleteTask,
   handleStatusChange,
@@ -76,19 +90,26 @@ function TaskDashboardGrid({
           const assignedFormattedDate =
             formatTimeStamp(t?.dateAssigned)?.[0] || "-";
 
+          const currentStatus = String(t.status || "").toLowerCase();
+          const currentPriority = String(t.priority || "").toLowerCase();
+
           return (
             <div
               key={t.id}
-              className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between hover:-translate-y-0.5 transition-all duration-200"
+              className={`bg-white border rounded-2xl p-5 shadow-xs space-y-4 flex flex-col justify-between hover:-translate-y-0.5 transition-all duration-200 ${
+                currentStatus === "rejected"
+                  ? "border-rose-200 bg-rose-50/10"
+                  : "border-slate-100"
+              }`}
             >
               <div className="space-y-3">
                 {/* Priority & Status header */}
                 <div className="flex items-center justify-between">
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      t.priority === "high"
+                      currentPriority === "high"
                         ? "bg-rose-50 text-rose-700 border border-rose-100"
-                        : t.priority === "medium"
+                        : currentPriority === "medium"
                           ? "bg-amber-50 text-amber-700 border border-amber-100"
                           : "bg-emerald-50 text-emerald-700 border border-emerald-100"
                     }`}
@@ -96,13 +117,17 @@ function TaskDashboardGrid({
                     {t.priority} Priority
                   </span>
 
+                  {/* Dynamic Status Badge (Includes Rejected Status) */}
                   <span
                     className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                      t.status === "completed"
+                      currentStatus === "completed"
                         ? "bg-emerald-100 text-emerald-800"
-                        : t.status === "progress"
-                          ? "bg-sky-100 text-sky-800"
-                          : "bg-amber-100 text-amber-800"
+                        : currentStatus === "rejected"
+                          ? "bg-rose-100 text-rose-800 border border-rose-200"
+                          : currentStatus === "progress" ||
+                              currentStatus === "in progress"
+                            ? "bg-sky-100 text-sky-800"
+                            : "bg-amber-100 text-amber-800"
                     }`}
                   >
                     {t.status}
@@ -121,6 +146,20 @@ function TaskDashboardGrid({
                     {t.description}
                   </p>
                 </div>
+
+                {/* Rejection Justification Highlight Box for Admin */}
+                {currentStatus === "rejected" && t.rejectReason && (
+                  <div className="text-[11px] p-2.5 bg-rose-50 border border-rose-100 text-rose-700 rounded-xl font-medium leading-relaxed">
+                    <div className="flex items-center gap-1.5 font-bold mb-0.5">
+                      <AlertCircle
+                        size={13}
+                        className="shrink-0 text-rose-600"
+                      />
+                      <span>Employee Declined Reason:</span>
+                    </div>
+                    <p className="italic text-rose-800">"{t.rejectReason}"</p>
+                  </div>
+                )}
               </div>
 
               {/* Footer section (Employee Avatar/Photo, Due Date, Controls) */}
@@ -131,13 +170,13 @@ function TaskDashboardGrid({
                     <img
                       src={employeePhoto}
                       alt={`${employee?.firstName || "Employee"} Avatar`}
-                      className="h-8 w-8 rounded-full object-cover ring-2 ring-slate-100 shadow-xs shrink-0 bg-slate-100"
+                      className="h-8 w-8 rounded-full object-cover ring-2 ring-slate-100 shadow-2xs shrink-0 bg-slate-100"
                     />
                   ) : (
                     <div
                       className={`h-8 w-8 rounded-full bg-linear-to-br ${
                         employee?.avatarColor || getRandomColor()
-                      } text-white font-extrabold text-[10px] flex items-center justify-center uppercase shadow-xs shrink-0`}
+                      } text-white font-extrabold text-[10px] flex items-center justify-center uppercase shadow-2xs shrink-0`}
                     >
                       {initials}
                     </div>
@@ -177,7 +216,7 @@ function TaskDashboardGrid({
                 <div className="flex gap-2 pt-1 items-center justify-between border-t border-slate-50 mt-1">
                   <div>
                     <select
-                      value={t.status}
+                      value={currentStatus}
                       onChange={(e) =>
                         handleStatusChange(t.id, e.target.value, t)
                       }
@@ -186,6 +225,7 @@ function TaskDashboardGrid({
                       <option value="pending">🕒 Pending</option>
                       <option value="progress">⚡ In Progress</option>
                       <option value="completed">✅ Completed</option>
+                      <option value="rejected">❌ Rejected / Declined</option>
                     </select>
                   </div>
 

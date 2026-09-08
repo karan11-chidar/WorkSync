@@ -23,6 +23,12 @@ import { toastError } from "../../../../shared/services/toastService";
  * TaskBoardProvider Component
  *
  * Establishes the React context boundary for the admin task board.
+ * Manages employee lists, tasks CRUD, filtering, and payload normalization.
+ *
+ * @component
+ * @param {Object} props - React component props.
+ * @param {React.ReactNode} props.children - Child components wrapped within this Provider.
+ * @returns {JSX.Element} Context provider wrapper.
  */
 function TaskBoardProvider({ children }) {
   const { user } = useAuth();
@@ -48,11 +54,15 @@ function TaskBoardProvider({ children }) {
   const displayTaskList = isFilterActive ? filteredTaskList : taskList;
 
   /**
-   * Helper: Matches assigned employee and extracts avatar/photo URL
+   * Helper: Matches assigned employee ID with employeeList and extracts avatar URL & Auth UID.
+   *
+   * @param {string} assignedEmployeeId - Target employee ID or UID string.
+   * @returns {{ avatarUrl: string, assignedToUid: string }} Object containing avatar URL and Auth UID.
    */
-  const getAssignedAvatarUrl = (assignedEmployeeId) => {
-    if (!assignedEmployeeId) return "";
+  const getAssignedEmployeeDetails = (assignedEmployeeId) => {
+    if (!assignedEmployeeId) return { avatarUrl: "", assignedToUid: "" };
     const target = String(assignedEmployeeId).trim().toLowerCase();
+
     const assignedEmp = employeeList.find((emp) => {
       return (
         (emp.employeeId &&
@@ -62,26 +72,33 @@ function TaskBoardProvider({ children }) {
       );
     });
 
-    return (
+    const avatarUrl =
       assignedEmp?.avatarUrl ||
       assignedEmp?.photoURL ||
       assignedEmp?.avatar ||
-      ""
-    );
-  };
+      "";
 
+    const assignedToUid =
+      assignedEmp?.uid || assignedEmp?.id || assignedEmp?.employeeId || "";
+
+    return { avatarUrl, assignedToUid };
+  };
   /**
    * Creates a new task in the task board.
+   *
+   * @param {Object} formData - Task creation payload from modal form.
    */
   const createTask = async (formData) => {
     try {
       setIsLoading(true);
 
-      const avatarUrl = getAssignedAvatarUrl(formData.assignEmployee);
-
+      const { avatarUrl, assignedToUid } = getAssignedEmployeeDetails(
+        formData.assignEmployee,
+      );
       const payLoad = {
         ...formData,
         avatarUrl,
+        assignedTo: assignedToUid, // Assigned Employee Auth UID
         dateAssigned: new Date(),
       };
 
@@ -100,16 +117,22 @@ function TaskBoardProvider({ children }) {
 
   /**
    * Updates an existing task in the task board.
+   *
+   * @param {string} taskId - Target task ID.
+   * @param {Object} formData - Updated task form parameters.
    */
   const updateTask = async (taskId, formData) => {
     try {
       setIsLoading(true);
 
-      const avatarUrl = getAssignedAvatarUrl(formData.assignEmployee);
+      const { avatarUrl, assignedToUid } = getAssignedEmployeeDetails(
+        formData.assignEmployee,
+      );
 
       const payLoad = {
         ...formData,
         avatarUrl,
+        assignedTo: assignedToUid, // Assigned Employee Auth UID
       };
 
       await updateTaskService(taskId, payLoad);
@@ -128,6 +151,8 @@ function TaskBoardProvider({ children }) {
 
   /**
    * Deletes a task from the task board.
+   *
+   * @param {string} taskId - Target task ID to remove.
    */
   const deleteTask = async (taskId) => {
     try {

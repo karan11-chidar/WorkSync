@@ -1,20 +1,24 @@
 import React, { useState } from "react";
-import { Calendar, AlertTriangle, Send } from "lucide-react";
+import { Calendar, AlertTriangle, Send, Loader2 } from "lucide-react";
+import { useLeaveContext } from "../context/LeaveContext";
 
 /**
- * Renders the employee leave application form.
+ * Renders the employee leave application form synced with Firestore.
  *
+ * @component
  * @returns {JSX.Element} The leave application form.
  */
 export default function ApplyLeaveForm() {
-  // लोकल स्टेट्स (Static UI Testing Mode)
+  const { applyLeave } = useLeaveContext();
+
   const [leaveType, setLeaveType] = useState("Vacation");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
   const [localLeaveError, setLocalLeaveError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalLeaveError(null);
 
@@ -23,24 +27,31 @@ export default function ApplyLeaveForm() {
       return;
     }
 
-    console.log("Leave application submitted:", {
-      leaveType,
-      startDate,
-      endDate,
-      reason,
-    });
-    // फॉर्म रीसेट
-    setStartDate("");
-    setEndDate("");
-    setReason("");
+    if (new Date(endDate) < new Date(startDate)) {
+      setLocalLeaveError("End date cannot be prior to the start date.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await applyLeave({ leaveType, startDate, endDate, reason });
+
+      // Form Reset on success
+      setStartDate("");
+      setEndDate("");
+      setReason("");
+    } catch (error) {
+      setLocalLeaveError(error.message || "Failed to submit request.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div
-      className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4"
+      className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-2xs space-y-4"
       id="request-leave-card"
     >
-      {/* Card Header */}
       <div>
         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
           <Calendar className="h-4 w-4 text-indigo-500" />
@@ -51,24 +62,23 @@ export default function ApplyLeaveForm() {
         </p>
       </div>
 
-      {/* Main Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-4 text-xs font-medium text-slate-600"
       >
         {localLeaveError && (
-          <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-1.5">
-            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+          <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-xl flex items-start gap-1.5 animate-in fade-in">
+            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 text-rose-600" />
             <span className="font-semibold">{localLeaveError}</span>
           </div>
         )}
 
-        {/* Leave Type Select */}
         <div className="space-y-1">
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Leave Type
           </label>
           <select
+            disabled={isSubmitting}
             value={leaveType}
             onChange={(e) => setLeaveType(e.target.value)}
             className="block w-full border border-slate-200 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600 text-slate-700 font-semibold cursor-pointer"
@@ -81,7 +91,6 @@ export default function ApplyLeaveForm() {
           </select>
         </div>
 
-        {/* Date Row Matrix */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div className="space-y-1">
             <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -90,6 +99,7 @@ export default function ApplyLeaveForm() {
             <input
               type="date"
               required
+              disabled={isSubmitting}
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="block w-full border border-slate-200 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600 font-mono font-bold text-slate-700"
@@ -102,6 +112,7 @@ export default function ApplyLeaveForm() {
             <input
               type="date"
               required
+              disabled={isSubmitting}
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="block w-full border border-slate-200 rounded-xl px-3.5 py-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600 font-mono font-bold text-slate-700"
@@ -109,7 +120,6 @@ export default function ApplyLeaveForm() {
           </div>
         </div>
 
-        {/* Reason Textarea */}
         <div className="space-y-1">
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">
             Leave Reason
@@ -117,6 +127,7 @@ export default function ApplyLeaveForm() {
           <textarea
             required
             rows={3}
+            disabled={isSubmitting}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Provide short justification describing your request..."
@@ -124,13 +135,22 @@ export default function ApplyLeaveForm() {
           />
         </div>
 
-        {/* Action Button */}
         <button
           type="submit"
-          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-xs active:scale-[0.99] flex items-center justify-center gap-1.5 cursor-pointer"
+          disabled={isSubmitting}
+          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-2xs active:scale-[0.99] flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
         >
-          <Send size={13} />
-          Submit Request to HR
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Submitting Application...
+            </>
+          ) : (
+            <>
+              <Send size={13} />
+              Submit Request to HR
+            </>
+          )}
         </button>
       </form>
     </div>
