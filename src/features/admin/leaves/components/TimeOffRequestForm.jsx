@@ -6,46 +6,22 @@ import {
   FileText,
   User,
   Layers,
+  Loader2,
 } from "lucide-react";
+import { useAdminLeaveContext } from "../context/AdminLeaveContext";
 
-/**
- * Renders the form used to submit an employee time-off request.
- *
- * @returns {JSX.Element} The time-off request form.
- */
 export default function TimeOffRequestForm() {
-  // 1. Static Employees Data (ड्रॉपडाउन लिस्ट को भरने के लिए)
-  const activeEmployees = [
-    {
-      id: "EMP-001",
-      firstName: "Rahul",
-      lastName: "Sharma",
-      department: "Engineering",
-    },
-    {
-      id: "EMP-002",
-      firstName: "Priya",
-      lastName: "Verma",
-      department: "Design",
-    },
-    {
-      id: "EMP-003",
-      firstName: "Aman",
-      lastName: "Singh",
-      department: "Engineering",
-    },
-    { id: "EMP-004", firstName: "Neha", lastName: "Patel", department: "HR" },
-  ];
+  const { employeeList, fileLeaveForEmployee } = useAdminLeaveContext();
 
-  // Form की स्टेट्स (Static UI Mode)
   const [employeeId, setEmployeeId] = useState("");
   const [leaveType, setLeaveType] = useState("Vacation");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
   const [formError, setFormError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLocalSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError(null);
 
@@ -57,34 +33,44 @@ export default function TimeOffRequestForm() {
       setFormError("Both Start and End dates are required.");
       return;
     }
+    if (new Date(endDate) < new Date(startDate)) {
+      setFormError("End date cannot be earlier than start date.");
+      return;
+    }
     if (!reason.trim()) {
       setFormError("Please provide a written excuse or context.");
       return;
     }
 
-    console.log("Time-off request filed:", {
-      employeeId,
-      leaveType,
-      startDate,
-      endDate,
-      reason,
-    });
+    try {
+      setIsSubmitting(true);
+      await fileLeaveForEmployee({
+        employeeId,
+        leaveType,
+        startDate,
+        endDate,
+        reason,
+      });
 
-    // सबमिशन के बाद फॉर्म रीसेट
-    setEmployeeId("");
-    setLeaveType("Vacation");
-    setStartDate("");
-    setEndDate("");
-    setReason("");
+      // Reset
+      setEmployeeId("");
+      setLeaveType("Vacation");
+      setStartDate("");
+      setEndDate("");
+      setReason("");
+    } catch (err) {
+      setFormError(err.message || "Failed to file request.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="w-full max-w-sm mx-auto space-y-6" id="leave-form-column">
       <div
-        className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4"
+        className="bg-white p-5 rounded-2xl border border-slate-100 shadow-2xs space-y-4"
         id="leave-creation-card"
       >
-        {/* Card Header */}
         <div className="border-b border-slate-50 pb-2">
           <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
             <PlusCircle className="h-4 w-4 text-indigo-600" />
@@ -96,55 +82,48 @@ export default function TimeOffRequestForm() {
           </p>
         </div>
 
-        {/* Main Form */}
         <form
-          onSubmit={handleLocalSubmit}
+          onSubmit={handleSubmit}
           className="space-y-4 text-xs font-medium text-slate-600"
           id="timeoff-request-form"
         >
-          {/* Error Handler View */}
           {formError && (
-            <div
-              className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-1.5"
-              id="timeoff-error"
-            >
+            <div className="p-3 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg flex items-start gap-1.5 animate-in fade-in">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
               <span className="font-semibold text-[11px]">{formError}</span>
             </div>
           )}
 
-          {/* Select Employee */}
           <div className="space-y-1">
-            <label className="text-slate-600 font-bold  flex items-center gap-1">
+            <label className="text-slate-600 font-bold flex items-center gap-1">
               <User size={12} className="text-slate-400" /> Target Employee{" "}
               <span className="text-rose-500">*</span>
             </label>
             <select
+              disabled={isSubmitting}
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600 cursor-pointer text-slate-700 font-medium"
-              id="form-target-employee"
               required
             >
               <option value="">-- Choose Employee --</option>
-              {activeEmployees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.firstName} {emp.lastName} ({emp.department})
+              {employeeList.map((emp) => (
+                <option key={emp.id} value={emp.employeeId || emp.id}>
+                  {emp.firstName} {emp.lastName} ({emp.employeeId || "No ID"})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Select Category */}
           <div className="space-y-1">
-            <label className="text-slate-600 font-bold  flex items-center gap-1">
+            <label className="text-slate-600 font-bold flex items-center gap-1">
               <Layers size={12} className="text-slate-400" /> Absence Type
             </label>
             <select
+              disabled={isSubmitting}
               value={leaveType}
               onChange={(e) => setLeaveType(e.target.value)}
               className="w-full p-2.5 rounded-lg border border-slate-200 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-indigo-600 cursor-pointer text-slate-700 font-medium"
-              id="form-absence-type"
             >
               <option value="Vacation">Vacation Leave</option>
               <option value="Sick">Sick Leave</option>
@@ -156,62 +135,66 @@ export default function TimeOffRequestForm() {
             </select>
           </div>
 
-          {/* Start and End Date row */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-slate-600 font-bold  flex items-center gap-1">
+              <label className="text-slate-600 font-bold flex items-center gap-1">
                 <Calendar size={12} className="text-slate-400" /> Start Date{" "}
                 <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 required
+                disabled={isSubmitting}
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium text-slate-700"
-                id="form-start-date"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-slate-600 font-bold  flex items-center gap-1">
+              <label className="text-slate-600 font-bold flex items-center gap-1">
                 <Calendar size={12} className="text-slate-400" /> End Date{" "}
                 <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 required
+                disabled={isSubmitting}
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 className="w-full p-2.5 rounded-lg border border-slate-200 text-xs focus:ring-1 focus:ring-indigo-600 outline-none bg-white font-medium text-slate-700"
-                id="form-end-date"
               />
             </div>
           </div>
 
-          {/* Reason Description */}
           <div className="space-y-1">
-            <label className="text-slate-600 font-bold  flex items-center gap-1">
+            <label className="text-slate-600 font-bold flex items-center gap-1">
               <FileText size={12} className="text-slate-400" /> Written Excuse /
               Context <span className="text-rose-500">*</span>
             </label>
             <textarea
               required
               rows={4}
+              disabled={isSubmitting}
               placeholder="State the core details, emergency back-ups or timeline contexts clearly..."
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               className="w-full p-2.5 border border-slate-200 rounded-lg text-xs outline-none focus:ring-1 focus:ring-indigo-600 resize-none font-medium text-slate-700 bg-white"
-              id="form-reason"
             />
           </div>
 
-          {/* Action Trigger Button */}
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3 font-bold transition-all cursor-pointer text-center text-xs active:scale-[0.98] shadow-xs"
-            id="form-submit-timeoff"
+            disabled={isSubmitting}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl py-3 font-bold transition-all cursor-pointer text-center text-xs active:scale-[0.98] shadow-2xs flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
-            File Leave Request
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Filing Request...
+              </>
+            ) : (
+              "File Leave Request"
+            )}
           </button>
         </form>
       </div>

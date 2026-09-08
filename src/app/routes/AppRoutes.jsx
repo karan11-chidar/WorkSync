@@ -61,6 +61,7 @@ import EmployeeProfileProvider from "../../features/employee/profile/contexts/Em
 import AttendanceCalenderProvider from "../../features/employee/attendance/context/AttendanceCalenderProvider.jsx";
 import TaskBoardEmployeeProvider from "../../features/employee/tasks/context/TaskBoardEmployeeProvider.jsx";
 import LeaveProvider from "../../features/employee/leaves/context/LeaveProvider.jsx";
+import AdminLeaveProvider from "../../features/admin/leaves/context/AdminLeaveProvider.jsx";
 
 // ============================================================================
 // Constants
@@ -212,7 +213,14 @@ function AppRoutes() {
             <Route path="attendance" element={<TodayAttendance />} />
 
             {/* Leave Management - Approve and manage leave requests */}
-            <Route path="leaves" element={<LeaveLedger />} />
+            <Route
+              path="leaves"
+              element={
+                <AdminLeaveProvider>
+                  <LeaveLedger />
+                </AdminLeaveProvider>
+              }
+            />
 
             {/* Catch-all for undefined admin routes */}
             <Route path="*" element={<NotFoundPage />} />
