@@ -1,134 +1,80 @@
-/**
- * Lucide React icon components used for displaying task metadata and actions.
- * - ClipboardList: Visual identifier for task/clipboard operations.
- * - Calendar: Displays date-related information (due dates).
- * - Trash2: Represents delete/remove action functionality.
- * - Edit2: Represents edit/modify action functionality.
- */
 import { Clock3, Calendar, Trash2, Edit2 } from "lucide-react";
-
-/**
- * Custom React hook providing access to the task board context.
- * Provides: taskList, isLoading, employeeList, and task management operations.
- */
 import { useTaskBoard } from "../contexts/TaskBoardContext";
-
-/**
- * Shared component that displays an empty state message when no data is available.
- * Used to show a user-friendly message when no tasks are assigned.
- */
 import EmptyState from "../../../../shared/components/EmptyState";
-
-/**
- * Premium animation loader component for displaying loading states.
- * Displays a grid of skeleton cards while data is being fetched.
- */
 import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
 import getRandomColor from "../constants/taskCardAvatarColor";
-/**
- * Displays a responsive grid of task cards for the admin task dashboard.
- *
- * Renders all tasks from the task board context in a grid layout that adapts
- * to different screen sizes (1 column on mobile, 2 on tablet, 3 on desktop).
- * Shows loading state while fetching tasks, empty state when no tasks exist,
- * and provides edit/delete controls for each task card.
- *
- * @component
- * @param {Object} props Component properties.
- * @param {Function} props.setEditingTask Updates the parent's editing task state for modal.
- * @param {Function} props.setIsOpenTask Controls the visibility of the task form modal.
- * @returns {JSX.Element} Rendered task grid, loader, or empty state.
- */
-function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }) {
-  const { taskList, isLoading, employeeList,displayTaskList } = useTaskBoard();
+import formatTimeStamp from "../../../../shared/utils/formatTimeStamp";
+
+function TaskDashboardGrid({
+  handleDeleteTask,
+  handleStatusChange,
+  handleEditTask,
+}) {
+  const {
+    taskList,
+    isLoading,
+    employeeList = [],
+    displayTaskList = [],
+  } = useTaskBoard();
+
   if (isLoading) {
     return <PremiumUniversalLoader variant="card" gridCount={4} />;
   }
-  if (!taskList &&taskList.length === 0) {
+
+  if (!taskList || taskList.length === 0) {
     return (
       <EmptyState
-        title=" No tasks assigned yet"
-        description="Try assigning a brand-new deliverable to a registered staff member
-            to fill up this workspace."
+        title="No tasks assigned yet"
+        description="Try assigning a brand-new deliverable to a registered staff member to fill up this workspace."
       />
     );
   }
+
   if (displayTaskList.length === 0 && taskList.length > 0) {
-    return <EmptyState
-      title=" No tasks match the current filters"
-      description="Try adjusting your filter criteria to see more tasks."
-    />;
+    return (
+      <EmptyState
+        title="No tasks match the current filters"
+        description="Try adjusting your filter criteria to see more tasks."
+      />
+    );
   }
 
-
-  /**
-   * Converts various date formats to a localized date string.
-   *
-   * Handles multiple date input formats commonly encountered with Firestore/Firebase:
-   * - Firebase Timestamp objects (has `toDate()` method)
-   * - JavaScript Date objects
-   * - Date strings (ISO format or parseable by Date constructor)
-   * - Firestore timestamp-like objects (with `seconds` property)
-   *
-   * Returns a localized date string (e.g., "8/30/2026") or "-" if date is null/undefined
-   * or cannot be parsed.
-   *
-   * @param {Timestamp|Date|string|Object|null} date The date to format in any supported format.
-   * @returns {string} Formatted date string in local locale format, or "-" if invalid.
-   * @example
-   * // Firebase Timestamp
-   * formatFirestoreDate(firebaseTimestamp) // "8/30/2026"
-   * // JavaScript Date
-   * formatFirestoreDate(new Date(2026, 7, 30)) // "8/30/2026"
-   * // Date string
-   * formatFirestoreDate("2026-08-30") // "8/30/2026"
-   * // Firestore object
-   * formatFirestoreDate({ seconds: 1725052800 }) // "8/30/2026"
-   * // Null/undefined
-   * formatFirestoreDate(null) // "-"
-   */
-  const formatFirestoreDate = (date) => {
-    if (!date) return "-";
-
-    // Firebase Timestamp
-    if (typeof date.toDate === "function") {
-      return date.toDate().toLocaleDateString();
-    }
-
-    // JavaScript Date
-    if (date instanceof Date) {
-      return date.toLocaleDateString();
-    }
-
-    // String
-    if (typeof date === "string") {
-      return new Date(date).toLocaleDateString();
-    }
-
-    // Firestore timestamp-like object
-    if (typeof date.seconds === "number") {
-      return new Date(date.seconds * 1000).toLocaleDateString();
-    }
-
-    return "-";
-  };
   return (
     <div className="w-full p-2">
-      {/* 
-        Responsive Grid Layout:
-        - 1 column on mobile (default)
-        - 2 columns on tablet screens (md breakpoint)
-        - 3 columns on desktop screens (lg breakpoint)
-        Gap between cards is 24px (6 * 4px spacing units)
-      */}
       <div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         id="tasks-cards-grid"
       >
         {displayTaskList.map((t) => {
-          const employee = employeeList.find(
-            (emp) => emp.employeeId === t.assignEmployee,
-          );
+          const targetId =
+            t.assignEmployee || t.assigneEmpId || t.assignedTo || t.employeeId;
+
+          // Search employee record in context list
+          const employee = employeeList.find((emp) => {
+            if (!targetId) return false;
+            const target = String(targetId).trim().toLowerCase();
+            return (
+              (emp.employeeId &&
+                String(emp.employeeId).trim().toLowerCase() === target) ||
+              (emp.uid && String(emp.uid).trim().toLowerCase() === target) ||
+              (emp.id && String(emp.id).trim().toLowerCase() === target)
+            );
+          });
+
+          // Priority Order: Task direct avatar -> Matched Employee Avatar
+          const employeePhoto =
+            t?.avatarUrl ||
+            employee?.avatarUrl ||
+            employee?.photoURL ||
+            employee?.avatar ||
+            null;
+
+          const firstNameInitial = employee?.firstName?.[0] || "";
+          const lastNameInitial = employee?.lastName?.[0] || "";
+          const initials = `${firstNameInitial}${lastNameInitial}` || "E";
+
+          const assignedFormattedDate =
+            formatTimeStamp(t?.dateAssigned)?.[0] || "-";
 
           return (
             <div
@@ -177,28 +123,41 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
                 </div>
               </div>
 
-              {/* Footer section (Employee, Due Date, Controls) */}
+              {/* Footer section (Employee Avatar/Photo, Due Date, Controls) */}
               <div className="pt-4 border-t border-slate-100 space-y-3">
-                {/* Assignee info */}
+                {/* Assignee Info with Multi-Field Avatar Support */}
                 <div className="flex items-center gap-2.5">
-                  <div
-                    className={`h-7 w-7 rounded-full bg-linear-to-br ${getRandomColor()} text-white font-extrabold text-[10px] flex items-center justify-center uppercase shadow-xs`}
-                  >
-                    {`${employee?.firstName[0]}`}
-                  </div>
-                  <div>
-                    <span className="text-xs font-semibold text-slate-800 block leading-tight">
-                      {`${employee?.firstName} ${employee?.lastName}`}
-                    </span>
-                    <span className="text-[9px] text-slate-400 block font-mono">
-                      ID: {employee?.employeeId}
-                    </span>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-indigo-50 px-2.5 py-1.5">
-                    <Clock3 className="h-3.5 w-3.5 text-indigo-500" />
+                  {employeePhoto ? (
+                    <img
+                      src={employeePhoto}
+                      alt={`${employee?.firstName || "Employee"} Avatar`}
+                      className="h-8 w-8 rounded-full object-cover ring-2 ring-slate-100 shadow-xs shrink-0 bg-slate-100"
+                    />
+                  ) : (
+                    <div
+                      className={`h-8 w-8 rounded-full bg-linear-to-br ${
+                        employee?.avatarColor || getRandomColor()
+                      } text-white font-extrabold text-[10px] flex items-center justify-center uppercase shadow-xs shrink-0`}
+                    >
+                      {initials}
+                    </div>
+                  )}
 
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs font-semibold text-slate-800 block leading-tight truncate">
+                      {employee
+                        ? `${employee.firstName || ""} ${employee.lastName || ""}`.trim()
+                        : "Unassigned"}
+                    </span>
+                    <span className="text-[9px] text-slate-400 block font-mono truncate">
+                      ID: {employee?.employeeId || targetId || "N/A"}
+                    </span>
+                  </div>
+
+                  <div className="ml-auto flex items-center gap-1.5 rounded-lg bg-indigo-50 px-2.5 py-1.5 shrink-0">
+                    <Clock3 className="h-3.5 w-3.5 text-indigo-500" />
                     <span className="text-xs font-bold text-indigo-700">
-                      {t.estimateHour} H
+                      {t.estimateHour || 0} H
                     </span>
                   </div>
                 </div>
@@ -207,10 +166,10 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
                 <div className="flex items-center justify-between text-[10px] text-slate-400 font-medium">
                   <span className="flex items-center gap-1 font-mono">
                     <Calendar className="h-3 w-3 shrink-0 text-slate-400" />
-                    Due: {t.dueDate}
+                    Due: {t.dueDate || "-"}
                   </span>
                   <span className="font-mono">
-                    Assigned: {formatFirestoreDate(t.dateAssigned)}
+                    Assigned: {assignedFormattedDate}
                   </span>
                 </div>
 
@@ -219,7 +178,9 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
                   <div>
                     <select
                       value={t.status}
-                      onChange={(e) => handleStatusChange(t.id, e.target.value,t)}
+                      onChange={(e) =>
+                        handleStatusChange(t.id, e.target.value, t)
+                      }
                       className="px-2 py-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-md text-[10px] font-bold text-slate-700 focus:outline-none cursor-pointer transition-colors"
                     >
                       <option value="pending">🕒 Pending</option>
@@ -230,19 +191,17 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
 
                   {/* Action Buttons: Edit and Delete */}
                   <div className="flex items-center gap-1.5">
-                    {/* EDIT BUTTON */}
                     <button
-                      onClick={() => {
-                        handleEditTask(t);
-                      }}
+                      type="button"
+                      onClick={() => handleEditTask(t)}
                       className="p-1.5 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded-lg cursor-pointer transition-colors"
                       title="Edit task"
                     >
                       <Edit2 className="h-3.5 w-3.5" />
                     </button>
 
-                    {/* DELETE BUTTON */}
                     <button
+                      type="button"
                       onClick={() => handleDeleteTask(t.id)}
                       className="p-1.5 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg cursor-pointer transition-colors"
                       title="Delete task"
@@ -259,4 +218,5 @@ function TaskDashboardGrid({handleDeleteTask,handleStatusChange,handleEditTask }
     </div>
   );
 }
+
 export default TaskDashboardGrid;

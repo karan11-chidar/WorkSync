@@ -1,24 +1,22 @@
 import React from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { useAttendanceCalender } from "../context/AttendanceCalenderContext";
 
 /**
- * Renders month navigation controls for the attendance calendar.
+ * Renders month navigation controls for the attendance calendar header.
  *
- * @param {Object} props - Header state and event handlers.
- * @param {Date} props.currentMonth - Month currently displayed.
- * @param {string[]} props.monthNames - Month labels used by the header.
- * @param {Function} props.handlePrevMonth - Moves the calendar to the previous month.
- * @param {Function} props.handleNextMonth - Moves the calendar to the next month.
- * @param {Function} props.onResetToday - Returns the calendar to the current month.
+ * @component
  * @returns {JSX.Element} The attendance calendar header.
  */
-export default function AttendanceCalendarHeader({
-  currentMonth,
-  monthNames,
-  handlePrevMonth,
-  handleNextMonth,
-  onResetToday,
-}) {
+export default function AttendanceCalendarHeader() {
+  const {
+    currentMonth,
+    monthNames,
+    handlePrevMonth,
+    handleNextMonth,
+    handleResetToday,
+  } = useAttendanceCalender();
+
   return (
     <div className="bg-slate-900 text-white p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       {/* Title Details */}
@@ -36,7 +34,7 @@ export default function AttendanceCalendarHeader({
         </div>
       </div>
 
-      {/* Control Navigation Buttons */}
+      {/* Navigation Buttons */}
       <div className="flex items-center gap-1.5 self-end sm:self-auto">
         <button
           type="button"
@@ -46,13 +44,15 @@ export default function AttendanceCalendarHeader({
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
+
         <button
           type="button"
-          onClick={onResetToday}
+          onClick={handleResetToday}
           className="px-3 py-1.5 bg-slate-800 hover:bg-slate-750 text-[11px] font-bold rounded-xl transition-all border border-slate-700 cursor-pointer active:scale-95 text-slate-200"
         >
           Today
         </button>
+
         <button
           type="button"
           onClick={handleNextMonth}

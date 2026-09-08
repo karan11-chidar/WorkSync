@@ -58,6 +58,7 @@ import EmployeeProvider from "../../features/admin/employeeDirectory/context/Emp
 import TaskBoardProvider from "../../features/admin/taskboard/contexts/TaskBoardProvider.jsx";
 import DashBoardProvider from "../../features/employee/dashboard/contexts/DashboardProvider.jsx";
 import EmployeeProfileProvider from "../../features/employee/profile/contexts/EmployeeProfileProvider.jsx";
+import AttendanceCalenderProvider from "../../features/employee/attendance/context/AttendanceCalenderProvider.jsx";
 
 // ============================================================================
 // Constants
@@ -237,7 +238,14 @@ function AppRoutes() {
             <Route path="leaves" element={<LeaveDashboardView />} />
 
             {/* Attendance - View personal attendance records */}
-            <Route path="attendance" element={<EmployeeAttendance />} />
+            <Route
+              path="attendance"
+              element={
+                <AttendanceCalenderProvider>
+                  <EmployeeAttendance />
+                </AttendanceCalenderProvider>
+              }
+            />
 
             {/* Task List - View assigned tasks and updates */}
             <Route path="tasks" element={<EmployeeTaskList />} />
