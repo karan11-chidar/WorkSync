@@ -39,19 +39,33 @@ export const getAllLeavesService = async () => {
 };
 
 /**
- * Updates status of a leave request ("Approved" or "Rejected").
+ * Updates status of a leave request ("Approved" or "Rejected") 
+ * along with an optional rejection justification reason.
  *
  * @param {string} leaveId - Firestore document ID.
  * @param {string} newStatus - New status ("Approved" or "Rejected").
+ * @param {string} [rejectReason=""] - Written justification if rejected.
  * @returns {Promise<boolean>} Success flag.
  */
-export const updateLeaveStatusService = async (leaveId, newStatus) => {
+export const updateLeaveStatusService = async (
+  leaveId,
+  newStatus,
+  rejectReason = ""
+) => {
   try {
     const leaveDocRef = doc(db, "leaves", leaveId);
-    await updateDoc(leaveDocRef, {
+    const updateData = {
       status: newStatus,
       updatedAt: serverTimestamp(),
-    });
+    };
+
+    if (String(newStatus).toLowerCase() === "rejected") {
+      updateData.rejectReason = rejectReason || "No justification provided by HR.";
+    } else {
+      updateData.rejectReason = null; // Clear if approved
+    }
+
+    await updateDoc(leaveDocRef, updateData);
     return true;
   } catch (error) {
     console.error(`Error updating leave [${leaveId}] status:`, error);
