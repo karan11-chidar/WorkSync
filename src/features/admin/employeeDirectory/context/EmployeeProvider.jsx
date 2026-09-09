@@ -136,8 +136,22 @@ function EmployeeProvider({ children }) {
    */
   const createEmployee = async (employeeData) => {
     try {
+      /**
+       * FIX 2: Selected Department ke base par location find karna
+       */
+      const selectedDept = (departmentList||[]).find(
+        (dept) =>
+          dept.name?.toLowerCase() === employeeData.department?.toLowerCase() ||
+          dept.id === employeeData.department,
+      );
+
+      // Selected department ki location attach karna
+      const payload = {
+        ...employeeData,
+        officeLocation: selectedDept?.location || "",
+      };
       setIsLoading(true);
-      const createdEmployee = await createEmployeeService(employeeData, user);
+      const createdEmployee = await createEmployeeService(payload, user);
       setEmployeeList((prev) => [...prev, createdEmployee]);
     } catch (error) {
       toastError("Firebase Error" + error.message);
@@ -259,6 +273,7 @@ function EmployeeProvider({ children }) {
           return emp2.joiningDate?.toMillis() - emp1.joiningDate?.toMillis();
         else if (sortValue === "date-joined-old")
           return emp1.joiningDate?.toMillis() - emp2.joiningDate?.toMillis();
+        return 0
       });
     setFilteredEmployeeList(filteredEmployee);
   };

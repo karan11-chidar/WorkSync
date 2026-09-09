@@ -1,5 +1,12 @@
 import { useTaskBoard } from "../contexts/TaskBoardContext";
 
+/**
+ * Renders the task board employee filter.
+ *
+ * @param {Object} props - Filter props.
+ * @param {Function} props.handleChange - Handles employee selection changes.
+ * @returns {JSX.Element} The employee filter.
+ */
 function EmployeeFilter({ handleChange }) {
   const { employeeList } = useTaskBoard();
   return (

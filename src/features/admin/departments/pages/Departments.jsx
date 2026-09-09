@@ -1,10 +1,15 @@
-import {useEffect, useState} from 'react'
-import DepartmentHeader from '../components/DepartmentHeader';
-import CreateDepartment from '../components/DepartmentForm';
-import DepartmentCards from '../components/DepartmentsCards';
-import { useDepartment } from '../context/DepartmentContext';
+import { useEffect, useState } from "react";
+import DepartmentHeader from "../components/DepartmentHeader";
+import CreateDepartment from "../components/DepartmentForm";
+import DepartmentCards from "../components/DepartmentsCards";
+import { useDepartment } from "../context/DepartmentContext";
+/**
+ * Displays the administrator department management page.
+ *
+ * @returns {JSX.Element} The departments page.
+ */
 function Departments() {
-  const { getDepartments,deleteDepartment } = useDepartment();
+  const { getDepartments, deleteDepartment } = useDepartment();
   const [editingDept, setEditingDept] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const handleEditOpen = (dept) => {
@@ -19,8 +24,8 @@ function Departments() {
     setEditingDept(null);
     setModalOpen(false);
   };
-  const onDelete = (id,name) => {
-    alert('❌ Delete Department :'+name);
+  const onDelete = (id, name) => {
+    alert("❌ Delete Department :" + name);
     deleteDepartment(id);
   };
   useEffect(() => {
@@ -31,13 +36,10 @@ function Departments() {
       <DepartmentHeader handleOpenDept={handleOpenDept} />
       <DepartmentCards handleEditOpen={handleEditOpen} onDelete={onDelete} />
       {modalOpen && (
-        <CreateDepartment
-          editingDept={editingDept}
-          handleClose={handleClose}
-        />
+        <CreateDepartment editingDept={editingDept} handleClose={handleClose} />
       )}
     </div>
   );
 }
 
-export default Departments
+export default Departments;

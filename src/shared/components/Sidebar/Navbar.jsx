@@ -1,7 +1,16 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-function Navbar({ navItems, headerTitle }) {
+/**
+ * Renders the primary application navigation bar.
+ *
+ * @param {Object} props - Navigation props.
+ * @param {Array} props.navItems - Navigation links to render.
+ * @param {string} props.headerTitle - Current application title.
+ * @param {string} props.employeeId - Active employee identifier.
+ * @returns {JSX.Element} The navigation bar.
+ */
+function Navbar({ navItems, headerTitle, employeeId }) {
   const isRoutingAdmin = headerTitle?.toLowerCase().includes("admin");
   const basePath = isRoutingAdmin ? "/admin" : "/employee";
   return (
@@ -10,11 +19,16 @@ function Navbar({ navItems, headerTitle }) {
       <nav className="flex-1 px-4 py-6 space-y-1">
         {navItems.map((item) => {
           const Icon = item.icon;
+          const itemPath =
+            !isRoutingAdmin && item.id === "profile"
+              ? `${basePath}/profile/${employeeId}`
+              : `${basePath}/${item.id}`;
+
           return (
             <NavLink
               key={item.id} // 1. Key ekdum opening tag ke andar aayi
               id={`nav-${item.id}`}
-              to={`${basePath}/${item.id}`}
+              to={itemPath}
               // 3. True Function Syntax: Pura className hi ek function hai
               className={({ isActive }) =>
                 `w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-150 cursor-pointer ${

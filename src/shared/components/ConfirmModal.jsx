@@ -1,5 +1,14 @@
 import { AlertTriangle, X } from "lucide-react";
 
+/**
+ * Renders a confirmation dialog for a destructive or irreversible action.
+ *
+ * @param {Object} props - Modal props.
+ * @param {boolean} props.isOpen - Whether the dialog is visible.
+ * @param {Function} props.onClose - Closes the dialog.
+ * @param {Function} props.onConfirm - Confirms the requested action.
+ * @returns {JSX.Element|null} The confirmation dialog when open.
+ */
 function ConfirmModal({
   isOpen,
   title = "Confirm Action",

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Cpu, Loader2, Lock, LogOutIcon, RefreshCw,  } from "lucide-react";
+import { Cpu, Loader2, Lock, LogOutIcon, RefreshCw } from "lucide-react";
 import { useAuth } from "../../../features/auth/context/AuthContext";
 
+/**
+ * Displays the application loader for the active authentication operation.
+ *
+ * @returns {JSX.Element|null} The configured loader or null when inactive.
+ */
 export default function PremiumLoader() {
   const { loaderState } = useAuth();
   const { active, mode } = loaderState;

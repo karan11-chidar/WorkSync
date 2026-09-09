@@ -50,7 +50,6 @@ import {
  */
 import { useDashboardContext } from "../contexts/DashboardContext";
 import AttendanceCardSkeleton from "./AttendanceCardSkeleton";
-import DashboardSkeleton from "./DashboardSkeleton";
 /**
  * Loading animation component for attendance operations.
  *

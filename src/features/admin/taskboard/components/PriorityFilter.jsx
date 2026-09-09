@@ -11,6 +11,13 @@
  */
 import React from "react";
 
+/**
+ * Renders the task priority filter.
+ *
+ * @param {Object} props - Filter props.
+ * @param {Function} props.handleChange - Handles priority selection changes.
+ * @returns {JSX.Element} The priority filter.
+ */
 function PriorityFilter({ handleChange }) {
   return (
     <div>

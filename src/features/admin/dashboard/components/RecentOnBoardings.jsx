@@ -1,5 +1,10 @@
 import React from "react";
 
+/**
+ * Displays employees who were recently onboarded.
+ *
+ * @returns {JSX.Element} The recent onboarding list.
+ */
 function RecentOnboardings() {
   const recentHires = [
     {

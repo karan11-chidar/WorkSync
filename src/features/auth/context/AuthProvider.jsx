@@ -1,9 +1,16 @@
 import { onAuthStateChanged } from "firebase/auth";
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { auth } from "../../../firebase/firebaseConfig";
 import AuthContext from "./AuthContext";
 import getUserProfile from "../services/profileService";
 
+/**
+ * Provides authentication state, session actions, and global loader state.
+ *
+ * @param {Object} props - Provider props.
+ * @param {React.ReactNode} props.children - Components rendered within the provider.
+ * @returns {JSX.Element} The authentication context provider.
+ */
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);

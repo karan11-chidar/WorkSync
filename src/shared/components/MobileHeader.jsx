@@ -1,8 +1,16 @@
-import React from 'react'
+import React from "react";
 import logo from "../../../public/icon-512.png";
 import { Menu } from "lucide-react";
-import SideBar from './Sidebar/SideBar';
-function MobileHeader({headerTitle,setOpenSidebar}) {
+import SideBar from "./Sidebar/SideBar";
+/**
+ * Renders the mobile navigation header.
+ *
+ * @param {Object} props - Header props.
+ * @param {string} props.headerTitle - Current application title.
+ * @param {Function} props.setOpenSidebar - Opens or closes the sidebar.
+ * @returns {JSX.Element} The mobile header.
+ */
+function MobileHeader({ headerTitle, setOpenSidebar }) {
   return (
     <div className="md:hidden lg:hidden h-16 flex items-center bg-slate-900 justify-between border-b border-slate-800 px-4">
       <div className="flex items-center gap-2">
@@ -32,12 +40,13 @@ function MobileHeader({headerTitle,setOpenSidebar}) {
       <button
         onClick={() => {
           setOpenSidebar(true);
-         }}
-        className="md:hidden p-1.5 text-slate-400 hover:text-white">
+        }}
+        className="md:hidden p-1.5 text-slate-400 hover:text-white"
+      >
         <Menu className="h-5 w-5" />
       </button>
     </div>
   );
 }
 
-export default MobileHeader
+export default MobileHeader;

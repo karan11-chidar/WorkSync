@@ -1,6 +1,13 @@
 import React from "react";
 import logo from "../../../../public/icon-512.png";
-function Header({headerTitle}) {
+/**
+ * Renders the sidebar brand and header controls.
+ *
+ * @param {Object} props - Header props.
+ * @param {string} props.headerTitle - Current application title.
+ * @returns {JSX.Element} The sidebar header.
+ */
+function Header({ headerTitle }) {
   return (
     <div className="h-16 flex items-center justify-between border-b border-slate-800 px-4">
       <div className="flex items-center gap-2">

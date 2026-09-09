@@ -1,7 +1,18 @@
 import React from "react";
 
+/**
+ * Displays one employee attendance summary card.
+ *
+ * @component
+ * @param {Object} props - Summary card props.
+ * @param {string} props.title - Card header label.
+ * @param {string|number} props.value - Primary dynamic value.
+ * @param {string} props.subTitle - Contextual footnote string.
+ * @param {React.ComponentType} props.icon - Lucide React Icon component.
+ * @param {string} props.colorTheme - Selected color theme key.
+ * @returns {JSX.Element} Rendered attendance stat card.
+ */
 function StateCards({ title, value, subTitle, icon: Icon, colorTheme }) {
-  // थीम्स का प्रीमियम कॉन्फ़िगरेशन मैप
   const themeMap = {
     emerald: {
       bg: "bg-emerald-50",
@@ -36,8 +47,8 @@ function StateCards({ title, value, subTitle, icon: Icon, colorTheme }) {
     <div
       className={`bg-white border border-slate-100 rounded-2xl p-4 shadow-sm transition-all duration-200 flex flex-col justify-between items-center text-center group ${currentTheme.border}`}
     >
-      {/* Top Section: Icon and Title */}
-      <div className="flex  items-center space-y-1.5 w-full gap-0 lg:gap-4">
+      {/* Top Section */}
+      <div className="flex items-center space-y-1.5 w-full gap-0 lg:gap-4">
         <span className="text-[0.6rem] text-slate-400 font-bold uppercase tracking-wider block">
           {title}
         </span>
@@ -50,14 +61,14 @@ function StateCards({ title, value, subTitle, icon: Icon, colorTheme }) {
         )}
       </div>
 
-      {/* Middle Section: Big Dynamic Value */}
+      {/* Value */}
       <h2
         className={`text-[0.725rem] md:text-2xl font-black block mt-2 tracking-tight ${currentTheme.text}`}
       >
         {value}
       </h2>
 
-      {/* Bottom Section: Subtitle Context */}
+      {/* Subtitle */}
       <span className="text-[0.525rem] font-medium text-slate-400 block mt-1 leading-tight">
         {subTitle}
       </span>

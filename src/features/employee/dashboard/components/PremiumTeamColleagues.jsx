@@ -8,6 +8,11 @@ import React from "react";
 import { Users, Mail, MessageSquare, ShieldAlert } from "lucide-react";
 import { useDashboardContext } from "../contexts/DashboardContext";
 
+/**
+ * Displays colleagues from the employee's department.
+ *
+ * @returns {JSX.Element} The team colleagues panel.
+ */
 export default function PremiumTeamColleagues() {
   const { employeeData, departmentEmployeesData } = useDashboardContext();
 
@@ -38,7 +43,6 @@ export default function PremiumTeamColleagues() {
 
   /**
    * Handles the quick message action for a selected colleague.
-   * Placeholder action for future chat or messaging integration.
    */
   const handleMessage = () => {
     console.log("message btn click");
@@ -46,11 +50,11 @@ export default function PremiumTeamColleagues() {
 
   /**
    * Handles the email action for a selected colleague.
-   * Placeholder action for future mail flow or contact trigger.
    */
   const handleEmail = () => {
     console.log("email click btn ");
   };
+
   return (
     <div className="w-full max-w-sm mx-auto p-2">
       <div
@@ -72,25 +76,50 @@ export default function PremiumTeamColleagues() {
             </p>
           </div>
         ) : (
-          /* FIX: 5 एम्प्लॉइज़ के बाद ऑटोमैटिक स्क्रॉल करने के लिए max-h और overflow-y सेट किया है */
+          /* Teammates List */
           <div className="space-y-3 max-h-85 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200">
-            {myColleagues.map((colleague) => {
+            {myColleagues.map((colleague, index) => {
               const initials = `${colleague?.firstName?.[0] || ""}${colleague?.lastName?.[0] || ""}`;
               const dotColor = getStatusDotColor(colleague?.employmentStatus);
 
+              // Photo URL check from multiple possible properties
+              const avatarPhoto =
+                colleague?.avatarUrl ||
+                colleague?.photoURL ||
+                colleague?.avatar ||
+                null;
               return (
                 <div
-                  key={colleague.id}
+                  key={colleague.id || colleague.uid || index}
                   className="flex items-center justify-between p-3 bg-white border border-slate-100 hover:border-slate-200 rounded-xl gap-3 transition-all duration-200 group shadow-xxs mr-0.5"
                 >
                   {/* Left: Avatar & Initials */}
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative shrink-0">
-                      <div
-                        className={`h-9 w-9 rounded-full bg-linear-to-br ${colleague?.avatarColor} text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase font-sans`}
-                      >
-                        {initials}
-                      </div>
+                      {avatarPhoto ? (
+                        <img
+                          src={avatarPhoto}
+                          alt={`${colleague?.firstName || "Teammate"} Avatar`}
+                          className="h-9 w-9 rounded-full object-cover ring-2 ring-slate-100 shadow-xs bg-slate-100"
+                          onError={(e) => {
+                            console.error(
+                              `❌ Failed to load image for ${colleague?.firstName}:`,
+                              avatarPhoto,
+                            );
+                            e.target.onerror = null;
+                            e.target.style.display = "none";
+                          }}
+                        />
+                      ) : (
+                        <div
+                          className={`h-9 w-9 rounded-full bg-linear-to-br ${
+                            colleague?.avatarColor ||
+                            "from-indigo-500 to-purple-600"
+                          } text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase font-sans`}
+                        >
+                          {initials || "U"}
+                        </div>
+                      )}
                       <span
                         className={`absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full ring-2 ring-white ${dotColor}`}
                       />

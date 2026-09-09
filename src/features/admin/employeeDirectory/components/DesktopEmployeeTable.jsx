@@ -1,6 +1,15 @@
 import { Star, Eye } from "lucide-react";
 import { useState } from "react";
-function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
+
+/**
+ * Renders employee records in a desktop table layout.
+ *
+ * @param {Object} props - Table props.
+ * @param {Array} props.employees - Employee records to display.
+ * @param {Function} props.handleSelectEmployee - Selects an employee for details.
+ * @returns {JSX.Element} The desktop employee table.
+ */
+function DesktopEmployeeTable({ employees = [], handleSelectEmployee }) {
   const renderStatus = (status) => {
     switch (status) {
       case "Active":
@@ -18,11 +27,13 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
         );
 
       case "Inactive":
+      case "Terminated":
         return (
           <span className="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-semibold">
-            Inactive
+            {status}
           </span>
         );
+
       case "Suspended":
         return (
           <span className="px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
@@ -31,7 +42,11 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
         );
 
       default:
-        return null;
+        return (
+          <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+            {status || "Active"}
+          </span>
+        );
     }
   };
 
@@ -53,33 +68,50 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
 
           <tbody className="divide-y divide-slate-100">
             {employees.map((emp) => {
-              const initials = emp.firstName[0] + emp.lastName[0];
+              const firstNameInitial = emp.firstName?.[0] || "";
+              const lastNameInitial = emp.lastName?.[0] || "";
+              const initials = `${firstNameInitial}${lastNameInitial}` || "E";
 
               return (
                 <tr
                   key={emp.id}
                   className="group cursor-pointer hover:bg-indigo-50/40 transition-all duration-200"
                 >
-                  {/* Employee */}
-
+                  {/* Employee Avatar + Info */}
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-4">
                       <button
-                        onClick={() =>handleSelectEmployee(emp)}
-                        className={`h-10 w-10 rounded-full bg-linear-to-br ${emp.avatarColor}flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white hover:ring-indigo-500 transition-all hover:scale-105`}
+                        type="button"
+                        onClick={() => handleSelectEmployee(emp)}
+                        className="relative shrink-0"
+                        title="View Profile"
                       >
-                        {initials}
+                        {emp?.avatarUrl ? (
+                          <img
+                            src={emp.avatarUrl}
+                            alt={`${emp.firstName} Avatar`}
+                            className="h-10 w-10 rounded-full object-cover shadow-md ring-2 ring-white group-hover:ring-indigo-500 transition-all group-hover:scale-105 bg-slate-100"
+                          />
+                        ) : (
+                          <div
+                            className={`h-10 w-10 rounded-full bg-linear-to-br ${
+                              emp.avatarColor || "from-indigo-600 to-indigo-800"
+                            } flex items-center justify-center text-white font-bold text-xs shadow-md ring-2 ring-white group-hover:ring-indigo-500 transition-all group-hover:scale-105 uppercase`}
+                          >
+                            {initials}
+                          </div>
+                        )}
                       </button>
 
-                      <div className=" group ">
-                        <h3 className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-all ">
+                      <div className="group">
+                        <h3 className="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-all">
                           {emp.firstName} {emp.lastName}
                         </h3>
 
-                        <p className="text-[11px] hover:text-slate-700 hover:underline text-slate-500 mt-1 ">
+                        <p className="text-[11px] text-slate-500 mt-1">
                           <a
                             href={`mailto:${emp.email}`}
-                            className="hover:text-slate-600"
+                            className="hover:text-indigo-600 hover:underline"
                           >
                             {emp.email}
                           </a>
@@ -89,38 +121,36 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
                   </td>
 
                   {/* Employee ID */}
-
                   <td className="px-6 py-5 font-mono text-xs tracking-wide text-slate-500">
-                    {emp.employeeId}
+                    {emp.employeeId || emp.id}
                   </td>
 
-                  {/* Department */}
-
+                  {/* Department & Role */}
                   <td className="px-6 py-5">
                     <h4 className="text-sm font-semibold text-slate-900">
-                      {emp.jobRole}
+                      {emp.jobRole || "N/A"}
                     </h4>
 
                     <p className="text-[11px] text-slate-500 mt-1">
-                      {emp.department}
+                      {emp.department || "N/A"}
                     </p>
                   </td>
 
                   {/* Status */}
+                  <td className="px-6 py-5">
+                    {renderStatus(emp.employmentStatus)}
+                  </td>
 
-                  <td className="px-6 py-5">{renderStatus(emp.employmentStatus)}</td>
-
-                  {/* Rating */}
-
+                  {/* Performance Rating */}
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, index) => (
                         <Star
                           key={index}
                           className={`h-3.5 w-3.5 ${
-                            index < emp.performanceRating
+                            index < (emp.performanceRating || 0)
                               ? "fill-amber-400 text-amber-400"
-                              : "text-slate-300"
+                              : "text-slate-200"
                           }`}
                         />
                       ))}
@@ -128,32 +158,34 @@ function DesktopEmployeeTable({ employees,handleSelectEmployee }) {
                   </td>
 
                   {/* Salary */}
-
                   <td className="px-6 py-5 text-right">
                     <h3 className="text-sm font-bold text-slate-900">
-                      ₹{emp.salary.toLocaleString("en-IN")}
+                      ₹{Number(emp.salary || 0).toLocaleString("en-IN")}
                     </h3>
 
                     <p className="text-xs text-slate-400 mt-1">Annual CTC</p>
                   </td>
 
                   {/* Action */}
-
                   <td className="px-6 py-5 text-center">
                     <button
-                      onClick={() =>handleSelectEmployee(emp)}
+                      type="button"
+                      onClick={() => handleSelectEmployee(emp)}
                       className="
                         inline-flex
                         items-center
                         gap-1.5
-                       px-3 py-1.5
-                        rounded-xl                       
+                        px-3 py-1.5
+                        rounded-xl
                         border
                         border-slate-200
                         hover:bg-indigo-50
                         hover:border-indigo-200
                         text-indigo-600
+                        text-xs
+                        font-medium
                         transition-all
+                        cursor-pointer
                       "
                     >
                       <Eye size={14} />

@@ -57,6 +57,11 @@ import DepartmentProvider from "../../features/admin/departments/context/Departm
 import EmployeeProvider from "../../features/admin/employeeDirectory/context/EmployeeProvider.jsx";
 import TaskBoardProvider from "../../features/admin/taskboard/contexts/TaskBoardProvider.jsx";
 import DashBoardProvider from "../../features/employee/dashboard/contexts/DashboardProvider.jsx";
+import EmployeeProfileProvider from "../../features/employee/profile/contexts/EmployeeProfileProvider.jsx";
+import AttendanceCalenderProvider from "../../features/employee/attendance/context/AttendanceCalenderProvider.jsx";
+import TaskBoardEmployeeProvider from "../../features/employee/tasks/context/TaskBoardEmployeeProvider.jsx";
+import LeaveProvider from "../../features/employee/leaves/context/LeaveProvider.jsx";
+import AdminLeaveProvider from "../../features/admin/leaves/context/AdminLeaveProvider.jsx";
 
 // ============================================================================
 // Constants
@@ -208,7 +213,14 @@ function AppRoutes() {
             <Route path="attendance" element={<TodayAttendance />} />
 
             {/* Leave Management - Approve and manage leave requests */}
-            <Route path="leaves" element={<LeaveLedger />} />
+            <Route
+              path="leaves"
+              element={
+                <AdminLeaveProvider>
+                  <LeaveLedger />
+                </AdminLeaveProvider>
+              }
+            />
 
             {/* Catch-all for undefined admin routes */}
             <Route path="*" element={<NotFoundPage />} />
@@ -233,19 +245,54 @@ function AppRoutes() {
             />
 
             {/* Leave Management - Submit and track leave requests */}
-            <Route path="leaves" element={<LeaveDashboardView />} />
+            <Route
+              path="leaves"
+              element={
+                <LeaveProvider>
+                  <LeaveDashboardView />
+                </LeaveProvider>
+              }
+            />
 
             {/* Attendance - View personal attendance records */}
-            <Route path="attendance" element={<EmployeeAttendance />} />
+            <Route
+              path="attendance"
+              element={
+                <AttendanceCalenderProvider>
+                  <EmployeeAttendance />
+                </AttendanceCalenderProvider>
+              }
+            />
 
             {/* Task List - View assigned tasks and updates */}
-            <Route path="tasks" element={<EmployeeTaskList />} />
+            <Route
+              path="tasks"
+              element={
+                <TaskBoardEmployeeProvider>
+                  <EmployeeTaskList />
+                </TaskBoardEmployeeProvider>
+              }
+            />
 
-            {/* Profile - View and edit personal profile information */}
-            <Route path="profile" element={<EmployeeProfile />} />
+            {/* Profile - View and edit personal profile information
+            <Route
+              path="profile"
+              element={
+                <EmployeeProfileProvider>
+                  <EmployeeProfile />
+                </EmployeeProfileProvider>
+              }
+            /> */}
 
             {/* View another employee's profile by ID */}
-            <Route path="profile/:employeeId" element={<EmployeeProfile />} />
+            <Route
+              path="profile/:employeeId"
+              element={
+                <EmployeeProfileProvider>
+                  <EmployeeProfile />
+                </EmployeeProfileProvider>
+              }
+            />
 
             {/* Catch-all for undefined employee routes */}
             <Route path="*" element={<NotFoundPage />} />

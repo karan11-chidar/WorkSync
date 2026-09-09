@@ -1,5 +1,10 @@
 import React from "react";
 
+/**
+ * Displays a loading placeholder for the attendance summary card.
+ *
+ * @returns {JSX.Element} The attendance card skeleton.
+ */
 export default function AttendanceCardSkeleton() {
   return (
     <div className="relative overflow-hidden w-full bg-white rounded-3xl border border-slate-200/70 p-5 sm:p-6 shadow-xs space-y-5">

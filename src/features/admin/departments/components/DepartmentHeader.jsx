@@ -1,6 +1,13 @@
 import { CreditCard, Briefcase, IndianRupee ,Plus} from "lucide-react";
 import { useDepartment } from "../context/DepartmentContext";
 import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
+/**
+ * Renders the department page heading and create action.
+ *
+ * @param {Object} props - Header props.
+ * @param {Function} props.handleOpenDept - Opens the department form.
+ * @returns {JSX.Element} The department header.
+ */
 function DepartmentHeader({ handleOpenDept }) {
   const { departments, loading } = useDepartment();
   return (

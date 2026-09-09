@@ -1,5 +1,5 @@
 import React from "react";
-import { FolderKanban, Sparkles } from "lucide-react";
+import { FolderKanban, Icon, Sparkles } from "lucide-react";
 
 /**
  * ULTRA-PREMIUM EMPTY STATE COMPONENT
@@ -9,6 +9,7 @@ import { FolderKanban, Sparkles } from "lucide-react";
  * @param {string} description - सब-मैसेज
  */
 export default function EmptyState({
+  Icon = FolderKanban,
   title = "No Departments Found",
   description = "There are no departments created yet. Once added, your active department cards will show up here.",
 }) {
@@ -27,7 +28,7 @@ export default function EmptyState({
 
           {/* Main Glossy Icon Container */}
           <div className="relative h-24 w-24 bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-2xl flex items-center justify-center shadow-lg shadow-slate-200/50 transition-all duration-300 hover:scale-105">
-            <FolderKanban className="w-11 h-11 text-emerald-500 stroke-[1.5]" />
+            <Icon className="w-11 h-11 text-emerald-500 stroke-[1.5]" />
 
             {/* Sparkle Badge Accent */}
             <div className="absolute -top-1.5 -right-1.5 bg-linear-to-tr from-amber-400 to-yellow-300 p-1.5 rounded-xl shadow-xs border border-white">

@@ -3,6 +3,11 @@ import Header from "../components/Header";
 import CardsGrid from "../components/CardsGrid";
 import AnalyticsCharts from "../components/AnalyticsCharts";
 import BottomSection from "../components/BottomSection";
+/**
+ * Composes the administrator dashboard page.
+ *
+ * @returns {JSX.Element} The administrator dashboard.
+ */
 function DashBoard() {
   return (
     <main

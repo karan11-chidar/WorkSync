@@ -1,5 +1,10 @@
 import React from "react";
 import StateCard from "./StateCard";
+/**
+ * Displays attendance totals in summary cards.
+ *
+ * @returns {JSX.Element} Attendance summary cards.
+ */
 function AttendanceCountCards() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mt-7">

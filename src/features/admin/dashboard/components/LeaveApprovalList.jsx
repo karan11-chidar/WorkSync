@@ -1,6 +1,11 @@
 import React from "react";
 import { Users } from "lucide-react";
 
+/**
+ * Renders pending leave requests for administrator review.
+ *
+ * @returns {JSX.Element} The leave approval list.
+ */
 function LeaveApprovalList() {
   const pendingLeaveRequests = [
     {

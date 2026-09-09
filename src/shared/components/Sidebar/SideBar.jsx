@@ -2,8 +2,20 @@ import Header from "./SideBarHeader";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import { X } from "lucide-react";
+import { useAuth } from "../../../features/auth/context/AuthContext";
 
+/**
+ * Renders the responsive application sidebar.
+ *
+ * @param {Object} props - Sidebar props.
+ * @param {Array} props.navItems - Navigation links to render.
+ * @param {string} props.headerTitle - Current application title.
+ * @param {boolean} props.openSidebar - Whether the sidebar is expanded.
+ * @param {Function} props.setOpenSidebar - Updates sidebar visibility.
+ * @returns {JSX.Element} The application sidebar.
+ */
 function SideBar({ navItems, headerTitle, openSidebar, setOpenSidebar }) {
+  const { user } = useAuth();
   return (
     <>
       {openSidebar && (
@@ -35,7 +47,11 @@ function SideBar({ navItems, headerTitle, openSidebar, setOpenSidebar }) {
 
         {/* Navigation Items - Scrollbar customized for clean look */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 scrollbar-none custom-scrollbar">
-          <Navbar navItems={navItems} headerTitle={headerTitle} />
+          <Navbar
+            navItems={navItems}
+            headerTitle={headerTitle}
+            employeeId={user?.uid}
+          />
         </div>
 
         {/* Sidebar Footer Container */}

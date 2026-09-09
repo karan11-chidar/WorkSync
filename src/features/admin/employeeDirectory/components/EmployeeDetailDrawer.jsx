@@ -8,7 +8,20 @@ import {
   Star,
   FileText,
   IndianRupee,
+  Building2,
 } from "lucide-react";
+import formatTimeStamp from "../../../../shared/utils/formatTimeStamp";
+
+/**
+ * Displays the selected employee's details and available actions.
+ *
+ * @param {Object} props - Component props.
+ * @param {Object|null} props.selectedEmployee - Employee currently shown in the drawer.
+ * @param {Function} props.setSelectedEmployee - Closes or updates the selected employee.
+ * @param {Function} props.handleEditEmployee - Opens the employee editing flow.
+ * @param {Function} props.handleDeleteEmployee - Deletes the selected employee.
+ * @returns {JSX.Element|null} The detail drawer, or null when no employee is selected.
+ */
 export function EmployeeDetailDrawer({
   selectedEmployee,
   setSelectedEmployee,
@@ -16,6 +29,11 @@ export function EmployeeDetailDrawer({
   handleDeleteEmployee,
 }) {
   if (!selectedEmployee) return null;
+
+  // Safe Date Formatting Check (Crash Proof)
+  const formattedJoiningDate =
+    formatTimeStamp(selectedEmployee?.joiningDate)?.[0] || "N/A";
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       {/* Backdrop */}
@@ -41,20 +59,28 @@ export function EmployeeDetailDrawer({
         >
           <button
             onClick={() => setSelectedEmployee(null)}
-            className="bg-black/20 hover:bg-slate-600 p-1.5 rounded-full transition-colors absolute top-4 right-4 text-white active:scale-95"
+            className="bg-black/20 hover:bg-slate-600 p-1.5 rounded-full transition-colors absolute top-4 right-4 text-white active:scale-95 cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Floating Head Initials Avatar */}
-        <div className="px-6 mt-5 flex items-end justify-between ">
-          <div
-            className={`h-15 w-15 rounded-2xl bg-linear-to-br ${selectedEmployee.avatarColor || "from-slate-500 to-slate-700"} ring-4 ring-white flex items-center justify-center text-white text-xl font-bold uppercase shadow-md`}
-          >
-            {selectedEmployee.firstName?.[0]}
-            {selectedEmployee.lastName?.[0]}
-          </div>
+        {/* Floating Head Avatar (Image or Initials Fallback) */}
+        <div className="px-6 mt-5 flex items-end justify-between">
+          {selectedEmployee?.avatarUrl ? (
+            <img
+              src={selectedEmployee.avatarUrl}
+              alt={`${selectedEmployee.firstName} Avatar`}
+              className="h-16 w-16 rounded-2xl ring-4 ring-white object-cover shadow-md bg-slate-100"
+            />
+          ) : (
+            <div
+              className={`h-16 w-16 rounded-2xl bg-linear-to-br ${selectedEmployee.avatarColor || "from-slate-500 to-slate-700"} ring-4 ring-white flex items-center justify-center text-white text-xl font-bold uppercase shadow-md`}
+            >
+              {selectedEmployee.firstName?.[0]}
+              {selectedEmployee.lastName?.[0]}
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-2">
@@ -63,7 +89,7 @@ export function EmployeeDetailDrawer({
                 handleEditEmployee(selectedEmployee);
                 setSelectedEmployee(null);
               }}
-              className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors active:scale-95"
+              className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors active:scale-95 cursor-pointer"
             >
               <Edit className="h-3.5 w-3.5" /> Edit Profile
             </button>
@@ -78,7 +104,7 @@ export function EmployeeDetailDrawer({
                   setSelectedEmployee(null);
                 }
               }}
-              className="p-2 border border-rose-100 rounded-xl hover:bg-rose-50 text-rose-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors"
+              className="p-2 border border-rose-100 rounded-xl hover:bg-rose-50 text-rose-600 flex items-center gap-1.5 text-xs font-semibold shadow-xxs transition-colors cursor-pointer"
             >
               <Trash2 className="h-3.5 w-3.5" /> Delete
             </button>
@@ -93,6 +119,7 @@ export function EmployeeDetailDrawer({
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               {selectedEmployee.jobRole}
+              <span> </span>
               <span className="font-semibold text-slate-700">
                 {selectedEmployee.department}
               </span>
@@ -116,11 +143,11 @@ export function EmployeeDetailDrawer({
               <div className="mt-0.5">
                 <span
                   className={`px-2 py-0.5 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
-                    selectedEmployee.status === "Active"
+                    selectedEmployee.employmentStatus === "Active"
                       ? "bg-green-100 text-green-800"
-                      : selectedEmployee.status === "On Leave"
+                      : selectedEmployee.employmentStatus === "On Leave"
                         ? "bg-amber-100 text-amber-800"
-                        : selectedEmployee.status === "Inactive"
+                        : selectedEmployee.employmentStatus === "Inactive"
                           ? "bg-red-100 text-red-800"
                           : "bg-gray-100 text-gray-800"
                   }`}
@@ -135,7 +162,8 @@ export function EmployeeDetailDrawer({
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5 flex items-center">
                 <IndianRupee width={13} />
-                {selectedEmployee.salary?.toLocaleString()}/yr
+                {Number(selectedEmployee.salary || 0).toLocaleString("en-IN")}
+                /yr
               </div>
             </div>
             <div>
@@ -143,7 +171,15 @@ export function EmployeeDetailDrawer({
                 Joining Date
               </span>
               <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
-                {selectedEmployee.joiningDate?.toDate().toLocaleDateString()}
+                {formattedJoiningDate}
+              </div>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                Blood Group
+              </span>
+              <div className="text-xs font-semibold text-slate-800 font-mono mt-0.5">
+                {selectedEmployee?.bloodGroup || "N/A"}
               </div>
             </div>
           </div>
@@ -176,13 +212,28 @@ export function EmployeeDetailDrawer({
               <div className="flex items-start gap-2">
                 <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
                 <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(selectedEmployee.address)}`}
+                  href={`https://maps.google.com/?q=${encodeURIComponent(selectedEmployee.address || "")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-indigo-600 hover:underline"
                 >
                   <span className="leading-relaxed">
-                    {selectedEmployee.address || "No office address logged"}
+                    {selectedEmployee.address ||
+                      "No residential address logged"}
+                  </span>
+                </a>
+              </div>
+              <div className="flex items-start gap-2">
+                <Building2 className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(selectedEmployee?.officeLocation || "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:underline"
+                >
+                  <span className="leading-relaxed">
+                    {selectedEmployee?.officeLocation ||
+                      "No office address logged"}
                   </span>
                 </a>
               </div>
@@ -230,6 +281,6 @@ export function EmployeeDetailDrawer({
       </div>
     </div>
   );
-};
+}
 
 export default EmployeeDetailDrawer;

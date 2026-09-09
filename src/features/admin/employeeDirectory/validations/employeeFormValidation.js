@@ -91,6 +91,7 @@ const employeeValidation = ({
   address,
   privateNotes,
   password,
+  bloodGroup,
 }) => {
 
   const errors = {
@@ -107,6 +108,7 @@ const employeeValidation = ({
     performanceRating: "",
     address: "",
     privateNotes: "",
+    bloodGroup:''
   };
   // Validation logic for each field
   
@@ -150,6 +152,7 @@ errors.password =
       ? "Salary must be greater than zero."
       : "";
   
+  errors.bloodGroup = bloodGroup.trim() === '' ? "Blood Group is required " : '';
   // Validate employment status
   errors.employmentStatus =
     employmentStatus.trim() === "" ? "Employment status is required" : "";
@@ -157,6 +160,7 @@ errors.password =
   // Validate gender
   errors.gender = gender.trim() === "" ? "Gender is required" : "";
 
+  
   // Validate performance rating
   errors.performanceRating =
     performanceRating === "" ||

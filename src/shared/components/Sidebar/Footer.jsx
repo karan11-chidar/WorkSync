@@ -1,28 +1,35 @@
-import {useState} from 'react'
-import { LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../../../features/auth/services/authService';
-import { useAuth } from '../../../features/auth/context/AuthContext';
+import { useState } from "react";
+import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../../features/auth/services/authService";
+import { useAuth } from "../../../features/auth/context/AuthContext";
+/**
+ * Renders the sidebar footer content.
+ *
+ * @param {Object} props - Footer props.
+ * @param {string} props.headerTitle - Current application title.
+ * @returns {JSX.Element} The sidebar footer.
+ */
 function Footer({ headerTitle }) {
   const navigate = useNavigate();
-  const { showLoader,hideLoader } = useAuth();
+  const { showLoader, hideLoader } = useAuth();
   const [isDisabled, setIsDisabled] = useState(false);
-    const [signOutBtn, setSignOutBtn] = useState('Sign Out');
+  const [signOutBtn, setSignOutBtn] = useState("Sign Out");
   const handleLogout = async () => {
     try {
       setIsDisabled(true);
-      setSignOutBtn('Signing Out')
-      showLoader('logout');
+      setSignOutBtn("Signing Out");
+      showLoader("logout");
       await logout();
       navigate("/");
     } catch (error) {
-      alert("❌ Logout Failed :"+error.message)
+      alert("❌ Logout Failed :" + error.message);
     } finally {
       setIsDisabled(false);
-      setSignOutBtn('Sign Out');
+      setSignOutBtn("Sign Out");
       hideLoader();
     }
-  }
+  };
   return (
     <div className="mt-auto p-4 border-t border-slate-800">
       <div className="hidden md:block mt-4 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
@@ -48,4 +55,4 @@ function Footer({ headerTitle }) {
   );
 }
 
-export default Footer
+export default Footer;

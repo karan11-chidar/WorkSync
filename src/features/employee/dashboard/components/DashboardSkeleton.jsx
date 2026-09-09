@@ -211,6 +211,11 @@ function ShimmerOverlay() {
  * placeholder sections for attendance, tasks, and team members.
  */
 
+/**
+ * Displays the loading layout for the employee dashboard.
+ *
+ * @returns {JSX.Element} The dashboard loading skeleton.
+ */
 export default function DashboardSkeleton() {
   return (
     <div
