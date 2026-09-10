@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Smile,
   Clock,
@@ -9,14 +9,14 @@ import {
   UserCheck,
 } from "lucide-react";
 import { useAdminLeaveContext } from "../context/AdminLeaveContext";
-import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
 import LeaveCardSkeleton from "./LeaveCardSkeleton";
+import AdminLeaveRejectModal from "./AdminLeaveRejectModal";
 
 /**
  * ListLeaves Component
  *
- * Renders the administrator's leave request cards grid with matched employee avatars/photos
- * and smooth cascading entry animations.
+ * Renders the administrator's leave request cards grid with matched employee avatars/photos,
+ * rejection modal integration, and smooth cascading entry animations.
  *
  * @component
  * @returns {JSX.Element} Rendered list of leave request cards.
@@ -28,6 +28,11 @@ export default function ListLeaves() {
     updateLeaveStatus,
     employeeList = [],
   } = useAdminLeaveContext();
+
+  // Local state for rejection modal workflow
+  const [selectedLeaveId, setSelectedLeaveId] = useState(null);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getStatusConfig = (status = "") => {
     const st = String(status).toLowerCase();
@@ -54,8 +59,31 @@ export default function ListLeaves() {
     }
   };
 
+  const handleOpenRejectModal = (leaveId) => {
+    setSelectedLeaveId(leaveId);
+    setIsRejectModalOpen(true);
+  };
+
+  const handleCloseRejectModal = () => {
+    setSelectedLeaveId(null);
+    setIsRejectModalOpen(false);
+  };
+
+  const handleConfirmReject = async (reason) => {
+    if (!selectedLeaveId) return;
+    try {
+      setIsSubmitting(true);
+      await updateLeaveStatus(selectedLeaveId, "Rejected", reason);
+      handleCloseRejectModal();
+    } catch (error) {
+      console.error("Failed to process rejection:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (isLoading) {
-    return <LeaveCardSkeleton/>;
+    return <LeaveCardSkeleton />;
   }
 
   return (
@@ -82,7 +110,6 @@ export default function ListLeaves() {
           id="filtered-requests-feed"
         >
           {leaves.map((req, index) => {
-            // 1. Match employee from employeeList using employeeId or UID
             const targetId = req.employeeId;
             const matchedEmp = employeeList.find((emp) => {
               if (!targetId) return false;
@@ -95,7 +122,6 @@ export default function ListLeaves() {
               );
             });
 
-            // 2. Extract Avatar Photo URL with fallbacks
             const employeePhoto =
               matchedEmp?.avatarUrl ||
               matchedEmp?.photoURL ||
@@ -242,7 +268,7 @@ export default function ListLeaves() {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => updateLeaveStatus(req.id, "Rejected")}
+                        onClick={() => handleOpenRejectModal(req.id)}
                         className="px-3.5 py-1.5 border border-slate-200 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-700 text-slate-600 rounded-xl font-bold transition-all cursor-pointer active:scale-95 text-[11px]"
                       >
                         Reject
@@ -266,6 +292,14 @@ export default function ListLeaves() {
           })}
         </div>
       )}
+
+      {/* Admin Rejection Reason Modal Integration */}
+      <AdminLeaveRejectModal
+        isOpen={isRejectModalOpen}
+        onClose={handleCloseRejectModal}
+        onSubmit={handleConfirmReject}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }

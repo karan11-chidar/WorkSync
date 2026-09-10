@@ -62,6 +62,7 @@ import AttendanceCalenderProvider from "../../features/employee/attendance/conte
 import TaskBoardEmployeeProvider from "../../features/employee/tasks/context/TaskBoardEmployeeProvider.jsx";
 import LeaveProvider from "../../features/employee/leaves/context/LeaveProvider.jsx";
 import AdminLeaveProvider from "../../features/admin/leaves/context/AdminLeaveProvider.jsx";
+import AttendanceProvider from "../../features/admin/attendance/context/AttendanceProvider.jsx";
 
 // ============================================================================
 // Constants
@@ -210,7 +211,14 @@ function AppRoutes() {
             />
 
             {/* Attendance Tracking - View today's attendance records */}
-            <Route path="attendance" element={<TodayAttendance />} />
+            <Route
+              path="attendance"
+              element={
+                <AttendanceProvider>
+                  <TodayAttendance />
+                </AttendanceProvider>
+              }
+            />
 
             {/* Leave Management - Approve and manage leave requests */}
             <Route

@@ -52,19 +52,24 @@ export function AdminLeaveProvider({ children }) {
    * @param {string} leaveId - Firestore Document ID.
    * @param {string} newStatus - Target status ("Approved" / "Rejected").
    */
-  const updateLeaveStatus = async (leaveId, newStatus) => {
-    try {
-      await updateLeaveStatusService(leaveId, newStatus);
-      setLeaves((prev) =>
-        prev.map((item) =>
-          item.id === leaveId ? { ...item, status: newStatus } : item,
-        ),
-      );
-    } catch (error) {
-      toastError("Failed to update status: " + error.message);
-    }
-  };
-
+ const updateLeaveStatus = async (leaveId, newStatus, rejectReason = "") => {
+   try {
+     await updateLeaveStatusService(leaveId, newStatus, rejectReason);
+     setLeaves((prev) =>
+       prev.map((item) =>
+         item.id === leaveId
+           ? {
+               ...item,
+               status: newStatus,
+               rejectReason: newStatus === "Rejected" ? rejectReason : null,
+             }
+           : item,
+       ),
+     );
+   } catch (error) {
+     toastError("Failed to update status: " + error.message);
+   }
+ };
   /**
    * Files a new time-off request on behalf of an employee.
    *

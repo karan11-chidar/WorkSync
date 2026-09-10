@@ -1,13 +1,12 @@
 import React from "react";
-import { FileText } from "lucide-react";
+import { FileText, AlertCircle } from "lucide-react";
 import { useLeaveContext } from "../context/LeaveContext";
-import PremiumUniversalLoader from "../../../../shared/components/Animations/PremiumUniversalLoader";
 import EmptyState from "../../../../shared/components/EmptyState";
 import LeavePageSkeleton from "./LeavePageSkeleton";
 
 /**
  * Renders the employee's submitted leave history from Firestore.
- * Includes Custom Employee ID column mapping.
+ * Includes Custom Employee ID column mapping and HR rejection feedback.
  *
  * @component
  * @returns {JSX.Element} The leave history table.
@@ -28,7 +27,7 @@ export default function LeaveHistoryTable() {
   };
 
   if (isLoading) {
-    return <LeavePageSkeleton/>;
+    return <LeavePageSkeleton />;
   }
 
   return (
@@ -36,6 +35,7 @@ export default function LeaveHistoryTable() {
       className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-2xs space-y-4"
       id="my-leaves-history"
     >
+      {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
         <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
           <FileText className="h-4 w-4 text-indigo-500" />
@@ -55,56 +55,72 @@ export default function LeaveHistoryTable() {
         </div>
       ) : (
         <>
-          {/* Mobile View Card Layout */}
+          {/* A. MOBILE VIEW CARD LAYOUT */}
           <div className="flex flex-col gap-3 md:hidden max-h-140 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-100">
-            {leaves.map((r) => (
-              <div
-                key={r.id}
-                className="border border-slate-100 rounded-xl p-4 bg-slate-50/50 space-y-3 shadow-2xs mr-0.5"
-              >
-                <div className="flex justify-between items-center">
-                  <div className="space-y-0.5">
-                    <span className="text-xs font-bold text-slate-900 block">
-                      {r.leaveType || "Leave Request"}
-                    </span>
-                    <span className="text-[9px] font-mono text-indigo-600 font-bold block">
-                      ID: {r.employeeId || "-"}
-                    </span>
-                  </div>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getStatusStyle(
-                      r.status,
-                    )}`}
-                  >
-                    {r.status || "Pending"}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500 font-medium">
-                  <div className="space-y-0.5">
-                    <span className="text-slate-400 block font-bold">
-                      DURATION
-                    </span>
-                    <span className="font-mono text-slate-700 font-bold">
-                      {r.startDate} to {r.endDate}
+            {leaves.map((r) => {
+              const isRejected = String(r.status).toLowerCase() === "rejected";
+
+              return (
+                <div
+                  key={r.id}
+                  className="border border-slate-100 rounded-xl p-4 bg-slate-50/50 space-y-3 shadow-2xs mr-0.5"
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-slate-900 block">
+                        {r.leaveType || "Leave Request"}
+                      </span>
+                      <span className="text-[9px] font-mono text-indigo-600 font-bold block">
+                        ID: {r.employeeId || "-"}
+                      </span>
+                    </div>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getStatusStyle(
+                        r.status,
+                      )}`}
+                    >
+                      {r.status || "Pending"}
                     </span>
                   </div>
-                  <div className="space-y-0.5 text-right">
-                    <span className="text-slate-400 block font-bold">
-                      TOTAL DAYS
-                    </span>
-                    <span className="font-mono text-slate-700 font-bold">
-                      {r.days || 1} Days
-                    </span>
+
+                  <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500 font-medium">
+                    <div className="space-y-0.5">
+                      <span className="text-slate-400 block font-bold">
+                        DURATION
+                      </span>
+                      <span className="font-mono text-slate-700 font-bold">
+                        {r.startDate} to {r.endDate}
+                      </span>
+                    </div>
+                    <div className="space-y-0.5 text-right">
+                      <span className="text-slate-400 block font-bold">
+                        TOTAL DAYS
+                      </span>
+                      <span className="font-mono text-slate-700 font-bold">
+                        {r.days || 1} Days
+                      </span>
+                    </div>
                   </div>
+
+                  <div className="text-[11px] text-slate-600 bg-white p-2 rounded-lg border border-slate-100 italic truncate">
+                    Reason: "{r.reason}"
+                  </div>
+
+                  {/* HR Rejection Feedback for Mobile */}
+                  {isRejected && r.rejectReason && (
+                    <div className="p-2.5 bg-rose-50 border border-rose-100 text-rose-700 rounded-xl text-[11px] space-y-1">
+                      <span className="font-bold flex items-center gap-1 text-[9px] uppercase tracking-wider">
+                        <AlertCircle size={12} /> HR Rejection Feedback:
+                      </span>
+                      <p className="italic font-medium">"{r.rejectReason}"</p>
+                    </div>
+                  )}
                 </div>
-                <div className="text-[11px] text-slate-600 bg-white p-2 rounded-lg border border-slate-100 italic truncate">
-                  "{r.reason}"
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Desktop View Table Layout */}
+          {/* B. DESKTOP VIEW TABLE LAYOUT */}
           <div
             className="hidden md:block overflow-x-auto border border-slate-100 rounded-xl max-h-68.75 overflow-y-auto"
             id="leaves-history-table"
@@ -116,51 +132,64 @@ export default function LeaveHistoryTable() {
                   <th className="px-5 py-3.5">Type</th>
                   <th className="px-5 py-3.5">Dates Matrix</th>
                   <th className="px-5 py-3.5">Span</th>
-                  <th className="px-5 py-3.5">Reason Statement</th>
+                  <th className="px-5 py-3.5">Reason Statement / Feedback</th>
                   <th className="px-5 py-3.5">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                {leaves.map((r) => (
-                  <tr
-                    key={r.id}
-                    className="hover:bg-slate-50/40 transition-colors"
-                  >
-                    <td className="px-5 py-3.5 font-mono font-bold text-indigo-600">
-                      {r.employeeId || "-"}
-                    </td>
-                    <td className="px-5 py-3.5 text-slate-900 font-bold">
-                      {r.leaveType || "Leave Request"}
-                    </td>
-                    <td className="px-5 py-3.5 text-slate-500">
-                      <span className="font-mono font-semibold">
-                        {r.startDate}
-                      </span>{" "}
-                      <span className="text-slate-300 mx-0.5">to</span>{" "}
-                      <span className="font-mono font-semibold">
-                        {r.endDate}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3.5 font-mono text-slate-800 font-bold">
-                      {r.days || 1} Days
-                    </td>
-                    <td
-                      className="px-5 py-3.5 max-w-45 truncate text-slate-600"
-                      title={r.reason}
+                {leaves.map((r) => {
+                  const isRejected =
+                    String(r.status).toLowerCase() === "rejected";
+
+                  return (
+                    <tr
+                      key={r.id}
+                      className="hover:bg-slate-50/40 transition-colors align-top"
                     >
-                      {r.reason}
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getStatusStyle(
-                          r.status,
-                        )}`}
-                      >
-                        {r.status || "Pending"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                      <td className="px-5 py-3.5 font-mono font-bold text-indigo-600 whitespace-nowrap">
+                        {r.employeeId || "-"}
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-900 font-bold whitespace-nowrap">
+                        {r.leaveType || "Leave Request"}
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-500 whitespace-nowrap">
+                        <span className="font-mono font-semibold">
+                          {r.startDate}
+                        </span>{" "}
+                        <span className="text-slate-300 mx-0.5">to</span>{" "}
+                        <span className="font-mono font-semibold">
+                          {r.endDate}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3.5 font-mono text-slate-800 font-bold whitespace-nowrap">
+                        {r.days || 1} Days
+                      </td>
+                      <td className="px-5 py-3.5 max-w-xs text-slate-600">
+                        <p className="truncate" title={r.reason}>
+                          {r.reason}
+                        </p>
+                        {/* HR Rejection Feedback Box inside Table */}
+                        {isRejected && r.rejectReason && (
+                          <div className="mt-2 p-2 bg-rose-50 border border-rose-100 text-rose-700 rounded-lg text-[10px] space-y-0.5">
+                            <span className="font-bold uppercase tracking-wider text-[8px] flex items-center gap-1">
+                              <AlertCircle size={11} /> HR Feedback:
+                            </span>
+                            <p className="italic">"{r.rejectReason}"</p>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-5 py-3.5 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border ${getStatusStyle(
+                            r.status,
+                          )}`}
+                        >
+                          {r.status || "Pending"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

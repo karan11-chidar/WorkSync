@@ -26,10 +26,6 @@ export default function AuthProvider({ children }) {
   };
 
   const hideLoader = () => {
-    console.log("hideLoader called", {
-      pathname: window.location.pathname,
-      time: performance.now(),
-    });
     setLoaderState({
       active: false,
       mode: null,
