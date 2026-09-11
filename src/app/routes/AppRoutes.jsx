@@ -63,6 +63,7 @@ import TaskBoardEmployeeProvider from "../../features/employee/tasks/context/Tas
 import LeaveProvider from "../../features/employee/leaves/context/LeaveProvider.jsx";
 import AdminLeaveProvider from "../../features/admin/leaves/context/AdminLeaveProvider.jsx";
 import AttendanceProvider from "../../features/admin/attendance/context/AttendanceProvider.jsx";
+import DashboardProvider from "../../features/admin/dashboard/contexts/DashboardProvider.jsx";
 
 // ============================================================================
 // Constants
@@ -174,7 +175,14 @@ function AppRoutes() {
         <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
           <Route path="/admin" element={<AdminLayout />}>
             {/* Dashboard - High-level admin overview and analytics */}
-            <Route path="dashboard" element={<AdminDashBoard />} />
+            <Route
+              path="dashboard"
+              element={
+                <DashboardProvider>
+                  <AdminDashBoard />
+                </DashboardProvider>
+              }
+            />
 
             {/* Department Management - Create, update, delete departments */}
             <Route

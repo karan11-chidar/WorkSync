@@ -26,7 +26,6 @@ export const LeaveProvider = ({ children }) => {
   const [resolvedEmpId, setResolvedEmpId] = useState(user?.employeeId || "");
   const [leaves, setLeaves] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
   const employeeName =
     `${user?.firstName || ""} ${user?.lastName || ""}`.trim() || "Employee";
 
@@ -56,7 +55,6 @@ export const LeaveProvider = ({ children }) => {
         customEmpId || resolvedEmpId,
         authUid,
       );
-
       setLeaves(leaveData || []);
     } catch (error) {
       console.error("Failed to fetch leave data:", error);
