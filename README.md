@@ -84,6 +84,16 @@ cd WorkSync
 npm install
 ```
 
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in the Firebase configuration values before running or building the app:
+
+```bash
+copy .env.example .env
+```
+
+The `.env` file is ignored by Git. For Netlify deployments, add the same `VITE_*` variables in **Site configuration > Environment variables** before triggering a new deploy. Vite embeds `VITE_*` values in the browser bundle, so Firebase Authentication and API-key restrictions should also be configured in the Firebase Console.
+
 ### Run Locally
 
 ```bash
