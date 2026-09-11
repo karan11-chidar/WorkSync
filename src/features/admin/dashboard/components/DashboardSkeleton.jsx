@@ -76,7 +76,7 @@ function DashboardSkeleton() {
           {[1, 2].map((section) => (
             <div
               key={section}
-              className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-6 h-[420px] sm:h-125 flex flex-col space-y-4"
+              className="bg-white rounded-2xl border border-slate-100 p-4 sm:p-6 h-105 sm:h-125 flex flex-col space-y-4"
             >
               <div className="flex justify-between items-center pb-3 sm:pb-4 border-b border-slate-100">
                 <div className="space-y-1.5 sm:space-y-2">
