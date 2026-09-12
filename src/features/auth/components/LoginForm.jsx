@@ -66,8 +66,8 @@ function LoginForm() {
             password: "adminpassword123",
           }
         : {
-            email: "employee@workplace.com",
-            password: "employeepassword123",
+            email: "arjun.mehta@worksync.demo",
+            password: "123456",
           };
 
     try {
@@ -81,6 +81,7 @@ function LoginForm() {
 
       toast.dismiss(toastId);
       toastSuccess("Demo Login Successful!", `Welcome to the ${role} demo.`);
+      hideLoader();
     } catch (error) {
       toastError(`Demo Login Failed: ${error.message}`);
       hideLoader();
